@@ -264,7 +264,7 @@ print('\n')
 
 # old data
 '''
-z_operator
+z_operator:
     aklt tensor
     ('tn_normalization = ', array(0.00484694))
     ('psi = ', array(-1.62630326e-19))
@@ -278,7 +278,7 @@ z_operator
     ('operator_expectetion = ', '-0.290986622678143')
     bp_expectation = -0.31419954558956675
     
-i_operator
+i_operator:
     aklt tensor
     ('tn_normalization = ', array(0.00484694))
     ('psi = ', array(0.00484694))
