@@ -8,21 +8,21 @@ import copy as cp
 'THIS CODE IS SIMULATING A HONEYCOMB AKLT STATE'
 
 # Initialize
-t_max = 60
+t_max = 20
 n = 16
 l = 2 * np.sqrt(n)
 aklt_spin_dim = 4
 spin_half_dim = 2
 c = 1. / np.sqrt(3)
 singlet = np.array([[0., 1.], [-1., 0.]]) / np.sqrt(2)
-
+'''
 tensor = np.array([[[[1, 0], [0, 0]], [[0, 0], [0, 0]]],
                    [[[0, c], [c, 0]], [[c, 0], [0, 0]]],
                    [[[0, 0], [0, c]], [[0, c], [c, 0]]],
                    [[[0, 0], [0, 0]], [[0, 0], [0, 1]]]])
 '''
-tensor = np.random.rand(4, 2, 2, 2)
-'''
+tensor = np.random.rand(4, 2, 2, 2) + np.random.rand(4, 2, 2, 2) * 1j
+
 physical_spins = []
 virtual_spins = []
 for i in range(n):
@@ -238,12 +238,17 @@ for i in range(len(indices_list)):
 
 for i in range(len(final_tensors_list)):
     print(final_tensors_name[i], final_tensors_list[i].shape, ' - ', final_indices_list[i])
+'''
+contraction_order = [56, 16, 72, 17, 73, 57, 18, 74, 19, 75, 58, 20, 76, 21, 77, 59, 22, 78, 23, 79,
+                     48, 104, 60, 49, 105, 62, 24, 80, 25, 81, 61, 26, 82, 27, 83, 28, 84, 29, 85, 63, 30, 86, 31, 87,
+                     50, 106, 65, 51, 107, 67, 34, 90, 35, 91, 66, 36, 92, 37, 93, 38, 94, 39, 95, 64, 32, 88, 33, 89,
+                     52, 108, 68, 53, 109, 70, 40, 96, 41, 97, 69, 42, 98, 43, 99, 44, 100, 45, 101, 71, 46, 102, 47, 103, 54, 110, 55, 111]
+'''
 
 contraction_order = [56, 16, 72, 17, 73, 57, 18, 74, 19, 75, 58, 20, 76, 21, 77, 59, 22, 78, 23, 79,
                      48, 104, 60, 49, 105, 62, 24, 80, 25, 81, 61, 26, 82, 27, 83, 28, 84, 29, 85, 63, 30, 86, 31, 87,
                      50, 106, 65, 51, 107, 67, 34, 90, 35, 91, 66, 36, 92, 37, 93, 38, 94, 39, 95, 64, 32, 88, 33, 89,
                      52, 108, 68, 53, 109, 70, 40, 96, 41, 97, 69, 42, 98, 43, 99, 44, 100, 45, 101, 71, 46, 102, 47, 103, 54, 110, 55, 111]
-
 # Contracting the Tensor Network for normalization
 tn_normalization = tnc.scon(final_tensors_list, tuple(final_indices_list), contraction_order)
 
