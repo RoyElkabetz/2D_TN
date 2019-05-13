@@ -8,7 +8,7 @@ import copy as cp
 'THIS CODE IS SIMULATING A HONEYCOMB AKLT STATE'
 
 # Initialize
-t_max = 20
+t_max = 30
 n = 16
 l = 2 * np.sqrt(n)
 aklt_spin_dim = 4
