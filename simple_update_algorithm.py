@@ -21,19 +21,19 @@ def simple_update(TT, LL, Uij, imat, smat):
 
     n, m = np.shape(imat)
     for Ek in range(m):
-        ## (a) Find tensors Ti, Tj and their corresponding dimensions connected along edge Ek.
 
+        ## (a) Find tensors Ti, Tj and their corresponding legs connected along edge Ek.
         tidx = np.nonzero(imat[:, Ek])[0]
         tdim = smat[tidx, Ek]
         Ti = [TT[tidx[0]], tdim[0]]
         Tj = [TT[tidx[1]], tdim[1]]
         lamda = LL[Ek]
 
-        # collecting all neighboring (edges, legs_dim)
+        # collecting all neighboring (edges, legs)
         Ti_alldim = [list(np.nonzero(imat[tidx[0], :])[0]), list(smat[tidx[0], np.nonzero(imat[tidx[0], :])[0]])]
         Tj_alldim = [list(np.nonzero(imat[tidx[1], :])[0]), list(smat[tidx[1], np.nonzero(imat[tidx[1], :])[0]])]
 
-        # removing the Ek edge and leg_dim
+        # removing the Ek edge and leg
         Ti_alldim[0].remove(Ek)
         Ti_alldim[1].remove(smat[tidx[0], Ek])
         Tj_alldim[0].remove(Ek)
@@ -48,12 +48,29 @@ def simple_update(TT, LL, Uij, imat, smat):
             Ti[0] = np.einsum(Ti[0], range(len(Ti[0].shape)), Ti_lamdas[Em], [Ti_alldim[1][Em]], range(len(Ti[0].shape)))
             Tj[0] = np.einsum(Tj[0], range(len(Tj[0].shape)), Tj_lamdas[Em], [Tj_alldim[1][Em]], range(len(Tj[0].shape)))
 
-
         ## (c) Group all virtual legs m!=Ek to form Pl, Pr MPS tensors
+        i_perm = np.array(range(len(Ti[0].shape)))
+        j_perm = np.array(range(len(Tj[0].shape)))
 
+        # swapping the k leg with the element in the 1 place
+        i_perm[[1, Ti[1]]] = i_perm[[Ti[1], 1]]
+        j_perm[[1, Tj[1]]] = j_perm[[Tj[1], 1]]
+
+        # reshaping Ti, Tj
+        i_prod = np.delete(np.array(Ti[0].shape), [0, Ti[1]])
+        j_prod = np.delete(np.array(Tj[0].shape), [0, Tj[1]])
+        i_shape = [Ti[0].shape[0], Ti[0].shape[Ti[1]], np.prod(i_prod)]
+        j_shape = [Tj[0].shape[0], Tj[0].shape[Tj[1]], np.prod(j_prod)]
+        Pl, i_revperm, i_revshape = permshape(Ti[0], i_perm, i_shape)
+        Pr, j_revperm, j_revshape = permshape(Tj[0], j_perm, j_shape)
 
         ## (d) QR/LQ decompose Pl, Pr to obtain Q1, R and L, Q2 sub-tensors, respectively
-
+        Pl = np.transpose(np.reshape(Pl, (i_shape[0] * i_shape[1], i_shape[2])))
+        Pr = np.transpose(np.reshape(Pr, (j_shape[0] * j_shape[1], j_shape[2])))
+        Q1, R = np.linalg.qr(Pl, 'complete')
+        Q2, L = np.linalg.qr(Pr, 'complete')
+        R = np.reshape(R, (R.shape[0], i_shape[0], R.shape[1] / i_shape[0]))
+        L = np.reshape(L, (L.shape[0], j_shape[0], L.shape[1] / j_shape[0]))
 
         ## (e) Contract the ITE gate Ui,Ek , with R, L and lambda_k to form theta tensor.
 
@@ -72,7 +89,9 @@ def simple_update(TT, LL, Uij, imat, smat):
 
 
 def permshape(T, perm, shp, order=None):
+
     # permuting and then reshaping a tensor
+
     if order == None:
         T = np.transpose(T, perm)
         old_shape = T.shape
