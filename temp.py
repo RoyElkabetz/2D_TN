@@ -5,6 +5,7 @@ from random import shuffle
 
 d = 2
 p = 3
+D_max = d ** 2
 
 T0 = np.random.rand(p, d, d, d, d)
 T1 = np.random.rand(p, d, d, d, d)
@@ -30,6 +31,6 @@ for i in range(8):
 Uij = np.random.rand(d, d)
 
 
-TT, LL = su.simple_update(TT, LL, Uij, imat, smat)
+TT, LL = su.simple_update(TT, LL, Uij, imat, smat, D_max)
 
 
