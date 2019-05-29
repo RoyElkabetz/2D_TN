@@ -34,10 +34,11 @@ pauli_z = np.array([[1, 0, 0], [0, 0, 0], [0, 0, -1.]])
 pauli_y = np.array([[0, -1j, 0.], [1j, 0, -1j], [0, 1j, 0.]]) / np.sqrt(2)
 pauli_x = np.array([[0, 1, 0], [1, 0, 1], [0, 1., 0]]) / np.sqrt(2)
 
-t_list = np.linspace(0, 0.1, 100)
+t_list = np.linspace(1e-1, 1e-5, 100)
 Uij = np.random.rand(d, d)
 H_term = np.kron(pauli_x, pauli_x) + np.kron(pauli_y, pauli_y) + np.kron(pauli_z, pauli_z)
 hij = H_term.reshape(p, p, p, p)
+hij_energy_term, _, _ = su.permshape(hij, [0, 2, 1, 3], [p, p, p, p])
 hij, _, _ = su.permshape(hij, [0, 2, 1, 3], [p ** 2, p ** 2])
 unitary = [np.reshape(linalg.expm(-t * hij), [p, p, p, p]) for t in range(len(t_list))]
 
@@ -50,10 +51,22 @@ plt.figure()
 plt.plot(range(len(usum[0:80])), usum[0:80])
 plt.show()
 '''
-
-
+energy_per_site_per_bond = []
+save_data = np.zeros((D_max, len(t_list)), dtype=float)
 for i in range(len(t_list)):
-    print('i = ', i)
-    TT, LL = su.simple_update(TT, LL, unitary[i], imat, smat, D_max)
+    for j in range(1):
+        print('i, j = ', i, j)
+        TT, LL = su.simple_update(TT, LL, unitary[i], imat, smat, D_max)
+        energy_per_site_per_bond.append(su.cacl_energy_per_site(TT, LL, imat, smat, hij_energy_term))
+        save_data[:, i] = LL[4]
 
+
+plt.figure()
+plt.plot(range(len(t_list)), save_data[0, :], 'o')
+plt.plot(range(len(t_list)), save_data[1, :], 'o')
+plt.show()
+
+plt.figure()
+plt.plot(range(len(t_list)), energy_per_site_per_bond, 'o')
+plt.show()
 
