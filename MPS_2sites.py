@@ -4,9 +4,10 @@ import simple_update_algorithm as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
-d = 20
+d = 2
 p = 2
 D_max = d
+J = 1
 
 T0 = np.random.rand(p, d, d)
 T1 = np.random.rand(p, d, d)
@@ -31,30 +32,23 @@ pauli_z = np.array([[1, 0], [0, -1]])
 pauli_y = np.array([[0, -1j], [1j, 0]])
 pauli_x = np.array([[0, 1], [1, 0]])
 
-#pauli_z = np.array([[1, 0, 0], [0, 0, 0], [0, 0, -1.]])
-#pauli_y = np.array([[0, -1j, 0.], [1j, 0, -1j], [0, 1j, 0.]]) / np.sqrt(2)
-#pauli_x = np.array([[0, 1, 0], [1, 0, 1], [0, 1., 0]]) / np.sqrt(2)
+sz = 0.5 * pauli_z
+sy = 0.5 * pauli_y
+sx = 0.5 * pauli_x
 
-t_list = np.exp(np.array(range(-1, -70, -1)) / 10.)
-heisenberg = np.real(np.kron(pauli_x, pauli_x) + np.kron(pauli_y, pauli_y) + np.kron(pauli_z, pauli_z))
+
+t_list = np.exp(np.array(np.linspace(-1, -10, 100)))
+heisenberg = J * np.real(np.kron(sx, sx) + np.kron(sy, sy) + np.kron(sz, sz))
 hij = np.reshape(heisenberg, (p, p, p, p))
 hij_perm = [0, 2, 1, 3]
-hij_energy_term = np.transpose(hij, hij_perm)
-hij = np.reshape(hij_energy_term, [p ** 2, p ** 2])
+hij_energy_term = cp.deepcopy(hij)
+hij = np.transpose(hij, hij_perm)
+hij = np.reshape(hij, [p ** 2, p ** 2])
 unitary = [np.reshape(linalg.expm(-t_list[t] * hij), [p, p, p, p]) for t in range(len(t_list))]
 
 
-# check unitary values
-'''
-usum = []
-for j in range(len(unitary)):
-    usum.append(np.sum(np.real(unitary[j])))
-plt.figure()
-plt.plot(range(len(usum)), usum)
-plt.show()
-'''
 
-iterations = 3
+iterations = 1
 energy = []
 save_data = np.zeros((D_max, len(t_list) * iterations), dtype=float)
 T0_in_time = np.zeros((len(np.ravel(TT[0])), len(t_list) * iterations))
@@ -73,7 +67,6 @@ plt.figure()
 plt.title('lambda0 values')
 plt.plot(range(len(t_list) * iterations), save_data[0, :], 'o')
 plt.plot(range(len(t_list) * iterations), save_data[1, :], 'o')
-plt.plot(range(len(t_list) * iterations), save_data[2, :], 'o')
 plt.grid()
 plt.show()
 
