@@ -5,7 +5,7 @@ from scipy import linalg
 from random import shuffle
 import matplotlib.pyplot as plt
 
-d = 2
+d = 3
 p = 3
 D_max = d
 J = 1.
