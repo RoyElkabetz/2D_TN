@@ -9,13 +9,30 @@ p = 2
 D_max = d
 J = 1
 
+
+
+
+"""
 T0 = np.random.rand(p, d, d)
 T1 = np.random.rand(p, d, d)
 T2 = np.random.rand(p, d, d)
+T3 = np.random.rand(p, d, d)
+TT = [T0, T1, T2, T3]
+imat = np.array([[1, 0, 0, 1],
+                 [1, 1, 0, 0],
+                 [0, 1, 1, 0],
+                 [0, 0, 1, 1]])
 
-
+smat = np.array([[2, 0, 0, 1],
+                 [1, 2, 0, 0],
+                 [0, 1, 2, 0],
+                 [0, 0, 1, 2]])
+"""
+"""
+T0 = np.random.rand(p, d, d)
+T1 = np.random.rand(p, d, d)
+T2 = np.random.rand(p, d, d)
 TT = [T0, T1, T2]
-
 imat = np.array([[1, 0, 1],
                  [1, 1, 0],
                  [0, 1, 1]])
@@ -23,9 +40,19 @@ imat = np.array([[1, 0, 1],
 smat = np.array([[2, 0, 1],
                  [1, 2, 0],
                  [0, 1, 2]])
+"""
+
+T0 = np.random.rand(p, d, d)
+T1 = np.random.rand(p, d, d)
+TT = [T0, T1]
+imat = np.array([[1, 1],
+                 [1, 1]])
+
+smat = np.array([[2, 1],
+                 [2, 1]])
 
 LL = []
-for i in range(3):
+for i in range(imat.shape[1]):
     LL.append(np.ones(d, dtype=float) / d)
 
 pauli_z = np.array([[1, 0], [0, -1]])
@@ -37,7 +64,7 @@ sy = 0.5 * pauli_y
 sx = 0.5 * pauli_x
 
 
-t_list = np.exp(np.array(np.linspace(-1, -10, 100)))
+t_list = np.exp(np.array(np.linspace(-1, -10, 300)))
 heisenberg = J * np.real(np.kron(sx, sx) + np.kron(sy, sy) + np.kron(sz, sz))
 hij = np.reshape(heisenberg, (p, p, p, p))
 hij_perm = [0, 2, 1, 3]
@@ -65,8 +92,8 @@ for i in range(len(t_list)):
 
 plt.figure()
 plt.title('lambda0 values')
-plt.plot(range(len(t_list) * iterations), save_data[0, :], 'o')
-plt.plot(range(len(t_list) * iterations), save_data[1, :], 'o')
+for k in range(save_data.shape[0]):
+    plt.plot(range(len(t_list) * iterations), save_data[k, :], 'o')
 plt.grid()
 plt.show()
 

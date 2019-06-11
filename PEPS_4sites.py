@@ -5,9 +5,9 @@ from scipy import linalg
 from random import shuffle
 import matplotlib.pyplot as plt
 
-d = 4
+d = 2
 p = 3
-D_max = 4
+D_max = d
 J = 1.
 
 T0 = np.random.rand(p, d, d, d, d)
@@ -62,8 +62,8 @@ for i in range(len(t_list)):
 
 plt.figure()
 plt.title('lambda0 values')
-plt.plot(range(len(t_list) * iterations), save_data[0, :], 'o')
-plt.plot(range(len(t_list) * iterations), save_data[1, :], 'o')
+for k in range(save_data.shape[0]):
+    plt.plot(range(len(t_list) * iterations), save_data[k, :], 'o')
 plt.grid()
 plt.show()
 

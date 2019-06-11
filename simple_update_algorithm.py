@@ -127,10 +127,10 @@ def simple_update(TT, LL, Uij, imat, smat, D_max):
                               range(len(Tjtild.shape)))
 
         # Normalize and save new Ti Tj and lambda_k
-        TT[tidx[0]] = cp.copy(Titild) / np.sum(Titild)
-        TT[tidx[1]] = cp.copy(Tjtild) / np.sum(Tjtild)
-        #TT[tidx[0]] = cp.copy(Titild)
-        #TT[tidx[1]] = cp.copy(Tjtild)
+        #TT[tidx[0]] = cp.copy(Titild) / np.sum(Titild)
+        #TT[tidx[1]] = cp.copy(Tjtild) / np.sum(Tjtild)
+        TT[tidx[0]] = cp.copy(Titild)
+        TT[tidx[1]] = cp.copy(Tjtild)
         LL[Ek] = cp.copy(lamda_ktild / np.sum(lamda_ktild))
     return TT, LL
 
@@ -152,6 +152,7 @@ def permshape(T, perm, shp, order=None):
         reverse_perm = np.argsort(perm)
         return T, reverse_perm, old_shape
 
+
 def imaginary_time_evolution(R, L, eigen_k, unitary):
     eig_k_mat = np.diag(eigen_k)
     tensor_list = [R, L, eig_k_mat, unitary]
@@ -160,11 +161,6 @@ def imaginary_time_evolution(R, L, eigen_k, unitary):
     forder = [-1, -2, -3, -4]
     theta = tnc.scon(tensor_list, indices, order, forder)
     return theta
-
-
-def print_shape(v, v_name):
-    name = v_name + '.shape = '
-    print(name, v.shape)
 
 
 def gauge_fix(Ti, Tj, Ti_absorbed_lamdas, Tj_absorbed_lamdas, i_leg, j_leg, lamda_k):
@@ -205,7 +201,6 @@ def gauge_fix(Ti, Tj, Ti_absorbed_lamdas, Tj_absorbed_lamdas, i_leg, j_leg, lamd
     Tj_idx_new[j_leg] = len(Tj_idx_old)
     Ti = np.einsum(Ti, Ti_idx_old, np.linalg.pinv(x), [Ti_idx_old[i_leg], len(Ti_idx_old)], Ti_idx_new)
     Tj = np.einsum(Tj, Tj_idx_old, np.linalg.pinv(y), [Tj_idx_old[j_leg], len(Tj_idx_old)], Tj_idx_new)
-
     return Ti, Tj, lamda_k_tild
 
 def energy_per_site(TT, LL, imat, smat, Oij):
@@ -272,7 +267,7 @@ def energy_per_site(TT, LL, imat, smat, Oij):
         tensors = [Ti[0], np.conj(Ti[0]), Tj[0], np.conj(Tj[0]), Oij, np.diag(lamda_k), np.diag(lamda_k)]
         indices = [Ti_idx, Ti_conj_idx, Tj_idx, Tj_conj_idx, Oij_idx, lamda_k_idx, lamda_k_conj_idx]
         two_site_energy = tnc.scon(tensors, indices)
-        print('two site energy = ', two_site_energy)
+        #print('two site energy = ', two_site_energy)
 
         ## prepering list of tensors and indices for two site normalization
         l = 3000
@@ -285,12 +280,12 @@ def energy_per_site(TT, LL, imat, smat, Oij):
         indices = [Ti_idx, Ti_conj_idx, Tj_idx, Tj_conj_idx, lamda_k_idx, lamda_k_conj_idx]
         two_site_norm = tnc.scon(tensors, indices)
         two_site_energy /= two_site_norm
-        print('normalized two site energy = ', two_site_energy)
+        #print('normalized two site energy = ', two_site_energy)
 
         energy_per_site += two_site_energy
     energy_per_site /= n
-    print('normalized - energy per site = ', energy_per_site)
-    print('\n')
+    #print('normalized - energy per site = ', energy_per_site)
+    #print('\n')
     return energy_per_site
 
 
