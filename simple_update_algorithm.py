@@ -78,7 +78,6 @@ def simple_update(TT, LL, Uij, imat, smat, D_max):
         Pl, i_revperm, i_revshape = permshape(Ti[0], i_perm, i_shape)
         Pr, j_revperm, j_revshape = permshape(Tj[0], j_perm, j_shape)
 
-
         ## (d) QR/LQ decompose Pl, Pr to obtain Q1, R and L, Q2 sub-tensors, respectively
         Pl = np.transpose(np.reshape(Pl, (i_shape[0] * i_shape[1], i_shape[2])))
         Pr = np.transpose(np.reshape(Pr, (j_shape[0] * j_shape[1], j_shape[2])))
@@ -93,13 +92,13 @@ def simple_update(TT, LL, Uij, imat, smat, D_max):
         # reshaping theta into a matrix
         new_shape = [theta.shape[0] * theta.shape[1], theta.shape[2] * theta.shape[3]]
         theta = np.reshape(theta, new_shape)
-        #print('Ek = ', Ek)
-        #print('theta sum = ', np.sum(theta))
 
         ## (f) Obtain R', L', lambda'_k tensors by applying an SVD to theta and truncating
         ##     the tensors by keeping the D largest singular values.
         Rtild, lamda_ktild, Ltild = np.linalg.svd(theta)
+        lamda_ktild /= np.sum(lamda_ktild)
         Ltild = np.transpose(Ltild)
+        print('lambda_k_tilde = ', lamda_ktild)
 
         # trancating the SVD results up to D_max eigenvalues
         Rtild = Rtild[:, 0:D_max] if D_max < len(lamda_ktild) else Rtild
@@ -129,11 +128,11 @@ def simple_update(TT, LL, Uij, imat, smat, D_max):
                               range(len(Tjtild.shape)))
 
         # Normalize and save new Ti Tj and lambda_k
-        #TT_new[tidx[0]] = cp.copy(Titild) / np.sum(Titild)
-        #TT_new[tidx[1]] = cp.copy(Tjtild) / np.sum(Tjtild)
+        TT_new[tidx[0]] = cp.copy(Titild / np.sum(Titild))
+        TT_new[tidx[1]] = cp.copy(Tjtild / np.sum(Tjtild))
 
-        TT_new[tidx[0]] = cp.copy(Titild)
-        TT_new[tidx[1]] = cp.copy(Tjtild)
+        #TT_new[tidx[0]] = cp.copy(Titild)
+        #TT_new[tidx[1]] = cp.copy(Tjtild)
         LL_new[Ek] = cp.copy(lamda_ktild / np.sum(lamda_ktild))
 
     return TT_new, LL_new
@@ -197,7 +196,7 @@ def gauge_fix(Ti, Tj, Ti_absorbed_lamdas, Tj_absorbed_lamdas, i_leg, j_leg, lamd
     wi, lamda_k_tild, wj = np.linalg.svd(lamda_k_prime)
     lamda_k_tild /= np.sum(lamda_k_tild)
 
-    # x and y costruction
+    # x and y construction
     x = np.matmul(np.matmul(np.conj(np.transpose(wi)), np.diag(np.sqrt(di))), np.conj(np.transpose(ui)))
     y = np.matmul(np.matmul(uj, np.diag(np.sqrt(dj))), wj)
 
@@ -210,9 +209,6 @@ def gauge_fix(Ti, Tj, Ti_absorbed_lamdas, Tj_absorbed_lamdas, i_leg, j_leg, lamd
     Tj_idx_new[j_leg] = len(Tj_idx_old)
     Ti = np.einsum(Ti, Ti_idx_old, np.linalg.pinv(x), [Ti_idx_old[i_leg], len(Ti_idx_old)], Ti_idx_new)
     Tj = np.einsum(Tj, Tj_idx_old, np.linalg.pinv(y), [Tj_idx_old[j_leg], len(Tj_idx_old)], Tj_idx_new)
-    print('x = ', x)
-    print('y = ', y)
-    print('lambda_k_tilde = ', lamda_k_tild)
     return Ti, Tj, lamda_k_tild
 
 def energy_per_site(TT, LL, imat, smat, Oij):
@@ -292,12 +288,8 @@ def energy_per_site(TT, LL, imat, smat, Oij):
         indices = [Ti_idx, Ti_conj_idx, Tj_idx, Tj_conj_idx, lamda_k_idx, lamda_k_conj_idx]
         two_site_norm = tnc.scon(tensors, indices)
         two_site_energy /= two_site_norm
-        #print('normalized two site energy = ', two_site_energy)
-
         energy_per_site += two_site_energy
     energy_per_site /= n
-    #print('normalized - energy per site = ', energy_per_site)
-    #print('\n')
     return energy_per_site
 
 

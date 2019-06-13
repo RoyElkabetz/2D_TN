@@ -4,19 +4,17 @@ import simple_update_algorithm as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
-d = 2
+d = 3
 p = 2
 D_max = d
 J = 1
 
 
-
-
-
+"""
 T0 = np.random.rand(p, d, d)
-T1 = np.random.rand(p, d, d)
-T2 = np.random.rand(p, d, d)
-T3 = np.random.rand(p, d, d)
+T1 = cp.copy(T0)
+T2 = cp.copy(T0)
+T3 = cp.copy(T0)
 TT = [T0, T1, T2, T3]
 imat = np.array([[1, 0, 0, 1],
                  [1, 1, 0, 0],
@@ -27,7 +25,7 @@ smat = np.array([[2, 0, 0, 1],
                  [1, 2, 0, 0],
                  [0, 1, 2, 0],
                  [0, 0, 1, 2]])
-
+"""
 """
 T0 = np.random.rand(p, d, d)
 T1 = np.random.rand(p, d, d)
@@ -41,16 +39,16 @@ smat = np.array([[2, 0, 1],
                  [1, 2, 0],
                  [0, 1, 2]])
 """
-"""
-T0 = np.random.rand(p, d, d)
-T1 = np.random.rand(p, d, d)
+
+T0 = np.random.rand(p, d, d) - np.random.rand(p, d, d)
+T1 = cp.copy(T0)
 TT = [T0, T1]
 imat = np.array([[1, 1],
                  [1, 1]])
 
 smat = np.array([[2, 1],
                  [2, 1]])
-"""
+
 LL = []
 for i in range(imat.shape[1]):
     LL.append(np.ones(d, dtype=float) / d)
@@ -63,8 +61,8 @@ sz = 0.5 * pauli_z
 sy = 0.5 * pauli_y
 sx = 0.5 * pauli_x
 
-t_list = np.exp(np.array(np.linspace(-1, -10, 1000)))
-heisenberg = -J * np.real(np.kron(sx, sx) + np.kron(sy, sy) + np.kron(sz, sz))
+t_list = np.exp(np.array(np.linspace(-1, -10, 100)))
+heisenberg = J * np.real(np.kron(sx, sx) + np.kron(sy, sy) + np.kron(sz, sz))
 hij = np.reshape(heisenberg, (p, p, p, p))
 hij_perm = [0, 2, 1, 3]
 hij_energy_term = cp.deepcopy(hij)
