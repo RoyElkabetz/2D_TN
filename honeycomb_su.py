@@ -4,57 +4,42 @@ import simple_update_algorithm1 as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
-d = 10
+d = 2
 p = 2
 D_max = d
-J = 1
+J = 1.
 
-
-"""
-T0 = np.random.rand(p, d, d)
+T0 = np.random.rand(p, d, d, d)
 T1 = cp.copy(T0)
 T2 = cp.copy(T0)
 T3 = cp.copy(T0)
-TT = [T0, T1, T2, T3]
-imat = np.array([[1, 0, 0, 1],
-                 [1, 1, 0, 0],
-                 [0, 1, 1, 0],
-                 [0, 0, 1, 1]])
+T4 = cp.copy(T0)
+T5 = cp.copy(T0)
 
-smat = np.array([[2, 0, 0, 1],
-                 [1, 2, 0, 0],
-                 [0, 1, 2, 0],
-                 [0, 0, 1, 2]])
-"""
-"""
-T0 = np.random.rand(p, d, d)
-T1 = np.random.rand(p, d, d)
-T2 = np.random.rand(p, d, d)
-TT = [T0, T1, T2]
-imat = np.array([[1, 0, 1],
-                 [1, 1, 0],
-                 [0, 1, 1]])
+TT = [T0, T1, T2, T3, T4, T5]
 
-smat = np.array([[2, 0, 1],
-                 [1, 2, 0],
-                 [0, 1, 2]])
-"""
 
-#T0 = np.random.rand(p, d, d)
-#T1 = np.random.rand(p, d, d)
-T0 = np.arange(np.float(p * d * d)).reshape(p, d, d)
-T1 = cp.copy(T0)
-TT = [T0, T1]
-imat = np.array([[1, 1],
-                 [1, 1]])
+imat = np.array([[1, 1, 1, 0, 0, 0, 0, 0, 0],
+                 [1, 0, 0, 1, 1, 0, 0, 0, 0],
+                 [0, 1, 0, 1, 0, 1, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 1, 1, 1, 0],
+                 [0, 0, 0, 0, 1, 0, 1, 0, 1],
+                 [0, 0, 1, 0, 0, 0, 0, 1, 1]])
 
-smat = np.array([[2, 1],
-                 [2, 1]])
+smat = np.array([[1, 2, 3, 0, 0, 0, 0, 0, 0],
+                 [1, 0, 0, 2, 3, 0, 0, 0, 0],
+                 [0, 1, 0, 2, 0, 3, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 1, 2, 3, 0],
+                 [0, 0, 0, 0, 1, 0, 2, 0, 3],
+                 [0, 0, 1, 0, 0, 0, 0, 2, 3]])
 
 LL = []
-for i in range(imat.shape[1]):
+for i in range(9):
     LL.append(np.ones(d, dtype=float) / d)
-    #LL.append(np.random.rand(d))
+
+#sz = np.array([[1, 0, 0], [0, 0, 0], [0, 0, -1.]])
+#sy = np.array([[0, -1j, 0.], [1j, 0, -1j], [0, 1j, 0.]]) / np.sqrt(2)
+#sx = np.array([[0, 1, 0], [1, 0, 1], [0, 1., 0]]) / np.sqrt(2)
 
 pauli_z = np.array([[1, 0], [0, -1]])
 pauli_y = np.array([[0, -1j], [1j, 0]])
@@ -63,16 +48,8 @@ pauli_x = np.array([[0, 1], [1, 0]])
 sz = 0.5 * pauli_z
 sy = 0.5 * pauli_y
 sx = 0.5 * pauli_x
-'''
-sz = np.array([[1, 0, 0], [0, 0, 0], [0, 0, -1.]])
-sy = np.array([[0, -1j, 0.], [1j, 0, -1j], [0, 1j, 0.]]) / np.sqrt(2)
-sx = np.array([[0, 1, 0], [1, 0, 1], [0, 1., 0]]) / np.sqrt(2)
 
-sz = np.array([[3. / 2, 0, 0, 0], [0, 1. / 2, 0, 0], [0, 0, -1. / 2, 0], [0, 0, 0, -3. / 2]])
-sy = np.array([[0, np.sqrt(3), 0, 0], [-np.sqrt(3), 0, 2, 0], [0, -2, 0, np.sqrt(3)], [0, 0, -np.sqrt(3), 0]]) / 2j
-sx = np.array([[0, np.sqrt(3), 0, 0], [np.sqrt(3), 0, 2, 0], [0, 2, 0, np.sqrt(3)], [0, 0, np.sqrt(3), 0]]) / 2
-'''
-t_list = np.exp(np.array(np.linspace(-1, -10, 1000)))
+t_list = np.exp(np.array(np.linspace(-1, -10, 100)))
 heisenberg = -J * np.real(np.kron(sx, sx) + np.kron(sy, sy) + np.kron(sz, sz))
 hij = np.reshape(heisenberg, (p, p, p, p))
 hij_perm = [0, 2, 1, 3]
@@ -81,6 +58,43 @@ hij = np.transpose(hij, hij_perm)
 hij = np.reshape(hij, [p ** 2, p ** 2])
 unitary = [np.reshape(linalg.expm(-t_list[t] * hij), [p, p, p, p]) for t in range(len(t_list))]
 
+'''
+iterations = 1
+energy = []
+save_data = np.zeros((D_max, len(t_list)), dtype=float)
+T0_it_time = np.zeros((len(np.ravel(TT[0])), len(t_list) * iterations))
+k = 0
+for i in range(len(t_list)):
+    for j in range(iterations):
+        print('i, j = ', i, j)
+        TT, LL = su.simple_update(TT, LL, unitary[i], imat, smat, D_max)
+        T0_it_time[:, k] = np.ravel(TT[0])
+        k += 1
+        energy.append(su.energy_per_site(TT, LL, imat, smat, hij_energy_term))
+        save_data[:, i] = LL[0]
+
+
+plt.figure()
+plt.title('lambda0 values')
+for k in range(save_data.shape[0]):
+    plt.plot(range(len(t_list) * iterations), save_data[k, :], 'o')
+plt.grid()
+plt.show()
+
+
+plt.figure()
+plt.title('energy values')
+plt.plot(range(len(t_list) * iterations), energy, 'o')
+plt.grid()
+plt.show()
+
+plt.figure()
+plt.title('tensors entries values')
+for k in range(len(np.ravel(T0))):
+    plt.plot(range(len(t_list) * iterations), T0_it_time[k, :], 'o')
+plt.grid()
+plt.show()
+'''
 
 iterations = 1
 energy = []
@@ -114,7 +128,6 @@ plt.xlabel('t')
 plt.plot(range(len(t_list) * iterations), energy, 'o')
 plt.grid()
 plt.show()
-
 '''
 for k in range(len(TT)):
     plt.figure()

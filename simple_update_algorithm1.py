@@ -44,26 +44,25 @@ def simple_update(TT, LL, Uij, imat, smat, D_max):
         Tj_alldim[0].remove(Ek)
         Tj_alldim[1].remove(smat[tidx[1], Ek])
 
-        # collecting neighboring lamdas
-        Ti_lamdas = [LL[Em] for Em in Ti_alldim[0]]
-        Tj_lamdas = [LL[Em] for Em in Tj_alldim[0]]
-
-
         ## (b) Absorb bond matrices (lambdas) to all Em != Ek of Ti, Tj tensors
-        for Em in range(len(Ti_lamdas)):
+        for k in range(len(Ti_alldim[0])):
+            Em = Ti_alldim[0][k]
+            leg = Ti_alldim[1][k]
             Ti_index = range(len(Ti[0].shape))
             Ti_final_index = range(len(Ti[0].shape))
-            Ti_final_index[Ti_alldim[1][Em]] = len(Ti[0].shape)
-            Ti[0] = np.einsum(Ti[0], Ti_index, np.diag(Ti_lamdas[Em]), [Ti_alldim[1][Em], Ti_final_index[Ti_alldim[1][Em]]], Ti_final_index)
-        for Em in range(len(Tj_lamdas)):
+            Ti_final_index[leg] = len(Ti[0].shape)
+            Ti[0] = np.einsum(Ti[0], Ti_index, np.diag(LL[Em]), [leg, Ti_final_index[leg]], Ti_final_index)
+
+        for k in range(len(Tj_alldim[0])):
+            Em = Tj_alldim[0][k]
+            leg = Tj_alldim[1][k]
             Tj_index = range(len(Tj[0].shape))
             Tj_final_index = range(len(Tj[0].shape))
-            Tj_final_index[Tj_alldim[1][Em]] = len(Tj[0].shape)
-            Tj[0] = np.einsum(Tj[0], Tj_index, np.diag(Tj_lamdas[Em]), [Tj_alldim[1][Em], Tj_final_index[Tj_alldim[1][Em]]], Tj_final_index)
-
+            Tj_final_index[leg] = len(Tj[0].shape)
+            Tj[0] = np.einsum(Tj[0], Tj_index, np.diag(LL[Em]), [leg, Tj_final_index[leg]], Tj_final_index)
 
         # Gauge fix
-        #Ti[0], Tj[0], lamda_k = gauge_fix(TT[tidx[0]], TT[tidx[1]], Ti[0], Tj[0], tdim[0], tdim[1], lamda_k)
+        #Ti[0], Tj[0], lamda_k = gauge_fix1(TT[tidx[0]], TT[tidx[1]], Ti[0], Tj[0], tdim[0], tdim[1], lamda_k)
         #print('lamda diff = ', np.sum(np.abs(LL[Ek] - lamda_k)))
         #print('\n')
 
@@ -81,8 +80,11 @@ def simple_update(TT, LL, Uij, imat, smat, D_max):
         j_prod = np.delete(np.array(Tj[0].shape), [0, Tj[1]])
         i_shape = [Ti[0].shape[0], Ti[0].shape[Ti[1]], np.prod(i_prod)]
         j_shape = [Tj[0].shape[0], Tj[0].shape[Tj[1]], np.prod(j_prod)]
-        Pl, i_revperm, i_revshape = permshape(Ti[0], i_perm, i_shape)
-        Pr, j_revperm, j_revshape = permshape(Tj[0], j_perm, j_shape)
+        Pl = np.reshape(np.transpose(Ti[0], i_perm), i_shape)
+        Pr = np.reshape(np.transpose(Tj[0], j_perm), j_shape)
+        Pl = np.transpose(Pl, [1, 0, 2])
+        Pr = np.transpose(Pr, [1, 0, 2])
+
 
         ## (d) QR/LQ decompose Pl, Pr to obtain Q1, R and L, Q2 sub-tensors, respectively
         Pl = np.transpose(np.reshape(Pl, (i_shape[0] * i_shape[1], i_shape[2])))
@@ -102,76 +104,52 @@ def simple_update(TT, LL, Uij, imat, smat, D_max):
         ## (f) Obtain R', L', lambda'_k tensors by applying an SVD to theta and truncating
         ##     the tensors by keeping the D largest singular values.
         Rtild, lamda_ktild, Ltild = np.linalg.svd(theta)
-        lamda_ktild /= np.sum(lamda_ktild)
         Ltild = np.transpose(Ltild)
-        #print('lambda_k_tilde = ', lamda_ktild)
-
-        # trancating the SVD results up to D_max eigenvalues
-        Rtild = Rtild[:, 0:D_max] if D_max < len(lamda_ktild) else Rtild
-        Ltild = Ltild[:, 0:D_max] if D_max < len(lamda_ktild) else Ltild
-        lamda_ktild = lamda_ktild[0:D_max] if D_max < len(lamda_ktild) else lamda_ktild
+        #lamda_ktild /= np.sum(lamda_ktild)
 
         # reshaping R' and L' to rank(3) tensors
-        i_revshape[1] = Rtild.shape[1]
-        j_revshape[1] = Ltild.shape[1]
         Rtild = np.reshape(Rtild, (Rtild.shape[0] / i_shape[0], i_shape[0], Rtild.shape[1]))
         Ltild = np.reshape(Ltild, (Ltild.shape[0] / j_shape[0], j_shape[0], Ltild.shape[1]))
+
+        # trancating the SVD results up to D_max eigenvalues
+        Rtild = Rtild[:, :, 0:D_max] if D_max < len(lamda_ktild) else Rtild
+        Ltild = Ltild[:, :, 0:D_max] if D_max < len(lamda_ktild) else Ltild
+        lamda_ktild = lamda_ktild[0:D_max] if D_max < len(lamda_ktild) else lamda_ktild
+
 
         ## (g) Glue back the R', L', sub-tensors to Q1, Q2, respectively, to form updated tensors P'l, P'r.
         Pltild = np.einsum('ij,jkl->kli', Q1, Rtild)
         Prtild = np.einsum('ij,jkl->kli', Q2, Ltild)
 
         ## (h) Reshape back the P`l, P`r to the original rank-(z + 1) tensors T'_i, T'_j
-        Titild, _, _ = permshape(Pltild, i_revperm, i_revshape, 'reverse')
-        Tjtild, _, _ = permshape(Prtild, j_revperm, j_revshape, 'reverse')
+        Pltild = np.reshape(Pltild, Ti[0].shape)
+        Prtild = np.reshape(Prtild, Tj[0].shape)
+        Titild = np.transpose(Pltild, i_perm)
+        Tjtild = np.transpose(Prtild, j_perm)
 
         ## (i) Remove bond matrices lambda_m from virtual legs m != Ek to obtain the updated tensors Ti~, Tj~.
-        for Em in range(len(Ti_lamdas)):
+        for k in range(len(Ti_alldim[0])):
+            Em = Ti_alldim[0][k]
+            leg = Ti_alldim[1][k]
             Ti_index = range(len(Ti[0].shape))
             Ti_final_index = range(len(Ti[0].shape))
-            Ti_final_index[Ti_alldim[1][Em]] = len(Ti[0].shape)
-            Titild = np.einsum(Titild, Ti_index, np.diag(Ti_lamdas[Em] ** (-1)), [Ti_alldim[1][Em], Ti_final_index[Ti_alldim[1][Em]]], Ti_final_index)
-        for Em in range(len(Tj_lamdas)):
+            Ti_final_index[leg] = len(Ti[0].shape)
+            Titild = np.einsum(Titild, Ti_index, np.diag(LL[Em] ** (-1)), [leg, Ti_final_index[leg]], Ti_final_index)
+
+        for k in range(len(Tj_alldim[0])):
+            Em = Tj_alldim[0][k]
+            leg = Tj_alldim[1][k]
             Tj_index = range(len(Tj[0].shape))
             Tj_final_index = range(len(Tj[0].shape))
-            Tj_final_index[Tj_alldim[1][Em]] = len(Tj[0].shape)
-            Tjtild = np.einsum(Tjtild, Tj_index, np.diag(Tj_lamdas[Em] ** (-1)), [Tj_alldim[1][Em], Tj_final_index[Tj_alldim[1][Em]]], Tj_final_index)
-        '''    
-        for Em in range(len(Ti_lamdas)):
-            Titild = np.einsum(Titild, range(len(Titild.shape)), Ti_lamdas[Em] ** (-1), [Ti_alldim[1][Em]],
-                              range(len(Titild.shape)))
-        for Em in range(len(Tj_lamdas)):
-            Tjtild = np.einsum(Tjtild, range(len(Tjtild.shape)), Tj_lamdas[Em] ** (-1), [Tj_alldim[1][Em]],
-                              range(len(Tjtild.shape)))
-        '''
+            Tj_final_index[leg] = len(Tj[0].shape)
+            Tjtild = np.einsum(Tjtild, Tj_index, np.diag(LL[Em] ** (-1)), [leg, Tj_final_index[leg]], Tj_final_index)
 
         # Normalize and save new Ti Tj and lambda_k
         TT_new[tidx[0]] = cp.copy(Titild / np.sum(Titild))
         TT_new[tidx[1]] = cp.copy(Tjtild / np.sum(Tjtild))
-
-        #TT_new[tidx[0]] = cp.copy(Titild)
-        #TT_new[tidx[1]] = cp.copy(Tjtild)
         LL_new[Ek] = cp.copy(lamda_ktild / np.sum(lamda_ktild))
-
     return TT_new, LL_new
 
-
-def permshape(T, perm, shp, order=None):
-
-    # permuting and then reshaping a tensor
-
-    if order == None:
-        T = np.transpose(T, perm)
-        old_shape = list(T.shape)
-        T = np.reshape(T, shp)
-        reverse_perm = perm
-        return T, reverse_perm, old_shape
-    if order == 'reverse':
-        T = np.reshape(T, shp)
-        old_shape = list(T.shape)
-        T = np.transpose(T, perm)
-        reverse_perm = perm
-        return T, reverse_perm, old_shape
 
 
 def imaginary_time_evolution(R, L, eigen_k, unitary):
@@ -228,6 +206,7 @@ def energy_per_site(TT, LL, imat, smat, Oij):
     energy_per_site = 0
     n, m = np.shape(imat)
     for Ek in range(m):
+
         ## (a) Find tensors Ti, Tj and their corresponding legs connected along edge Ek.
         tidx = np.nonzero(imat[:, Ek])[0]
         tdim = smat[tidx, Ek]
@@ -247,21 +226,26 @@ def energy_per_site(TT, LL, imat, smat, Oij):
         Tj_alldim[0].remove(Ek)
         Tj_alldim[1].remove(smat[tidx[1], Ek])
 
-        # collecting neighboring lamdas
-        Ti_lamdas = [LL[Em] for Em in Ti_alldim[0]]
-        Tj_lamdas = [LL[Em] for Em in Tj_alldim[0]]
-
         ## (b) Absorb bond matrices (lambdas) to all Em != Ek of Ti, Tj tensors
-        for Em in range(len(Ti_lamdas)):
-            Ti[0] = np.einsum(Ti[0], range(len(Ti[0].shape)), Ti_lamdas[Em], [Ti_alldim[1][Em]],
-                              range(len(Ti[0].shape)))
-            Ti_conj[0] = np.einsum(Ti_conj[0], range(len(Ti_conj[0].shape)), Ti_lamdas[Em], [Ti_alldim[1][Em]],
-                              range(len(Ti_conj[0].shape)))
-        for Em in range(len(Tj_lamdas)):
-            Tj[0] = np.einsum(Tj[0], range(len(Tj[0].shape)), Tj_lamdas[Em], [Tj_alldim[1][Em]],
-                              range(len(Tj[0].shape)))
-            Tj_conj[0] = np.einsum(Tj_conj[0], range(len(Tj_conj[0].shape)), Tj_lamdas[Em], [Tj_alldim[1][Em]],
-                              range(len(Tj_conj[0].shape)))
+        for k in range(len(Ti_alldim[0])):
+            Em = Ti_alldim[0][k]
+            leg = Ti_alldim[1][k]
+            Ti_index = range(len(Ti[0].shape))
+            Ti_final_index = range(len(Ti[0].shape))
+            Ti_final_index[leg] = len(Ti[0].shape)
+            Ti[0] = np.einsum(Ti[0], Ti_index, np.diag(LL[Em]), [leg, Ti_final_index[leg]], Ti_final_index)
+            Ti_conj[0] = np.einsum(Ti_conj[0], Ti_index, np.diag(LL[Em]), [leg, Ti_final_index[leg]], Ti_final_index)
+
+
+        for k in range(len(Tj_alldim[0])):
+            Em = Tj_alldim[0][k]
+            leg = Tj_alldim[1][k]
+            Tj_index = range(len(Tj[0].shape))
+            Tj_final_index = range(len(Tj[0].shape))
+            Tj_final_index[leg] = len(Tj[0].shape)
+            Tj[0] = np.einsum(Tj[0], Tj_index, np.diag(LL[Em]), [leg, Tj_final_index[leg]], Tj_final_index)
+            Tj_conj[0] = np.einsum(Tj_conj[0], Tj_index, np.diag(LL[Em]), [leg, Tj_final_index[leg]], Tj_final_index)
+
 
         ## prepering list of tensors and indices for scon function
         s = 1000
@@ -304,7 +288,7 @@ def energy_per_site(TT, LL, imat, smat, Oij):
         #print('two site norm = ', two_site_norm)
 
         two_site_energy /= two_site_norm
-        #print('two site normalized energy = ', two_site_energy)
+        print('two site normalized energy = ', two_site_energy)
 
         energy_per_site += two_site_energy
     energy_per_site /= n
@@ -334,17 +318,22 @@ def gauge_fix1(TT, LL, imat, smat):
         Tj_alldim[0].remove(Ek)
         Tj_alldim[1].remove(smat[tidx[1], Ek])
 
-        # collecting neighboring lamdas
-        Ti_lamdas = [LL[Em] for Em in Ti_alldim[0]]
-        Tj_lamdas = [LL[Em] for Em in Tj_alldim[0]]
-
         ## (b) Absorb bond matrices (lambdas) to all Em != Ek of Ti, Tj tensors
-        for Em in range(len(Ti_lamdas)):
-            Ti[0] = np.einsum(Ti[0], range(len(Ti[0].shape)), Ti_lamdas[Em], [Ti_alldim[1][Em]],
-                              range(len(Ti[0].shape)))
-        for Em in range(len(Tj_lamdas)):
-            Tj[0] = np.einsum(Tj[0], range(len(Tj[0].shape)), Tj_lamdas[Em], [Tj_alldim[1][Em]],
-                              range(len(Tj[0].shape)))
+        for k in range(len(Ti_alldim[0])):
+            Em = Ti_alldim[0][k]
+            leg = Ti_alldim[1][k]
+            Ti_index = range(len(Ti[0].shape))
+            Ti_final_index = range(len(Ti[0].shape))
+            Ti_final_index[leg] = len(Ti[0].shape)
+            Ti[0] = np.einsum(Ti[0], Ti_index, np.diag(LL[Em]), [leg, Ti_final_index[leg]], Ti_final_index)
+
+        for k in range(len(Tj_alldim[0])):
+            Em = Tj_alldim[0][k]
+            leg = Tj_alldim[1][k]
+            Tj_index = range(len(Tj[0].shape))
+            Tj_final_index = range(len(Tj[0].shape))
+            Tj_final_index[leg] = len(Tj[0].shape)
+            Tj[0] = np.einsum(Tj[0], Tj_index, np.diag(LL[Em]), [leg, Tj_final_index[leg]], Tj_final_index)
 
         ## Gauge fixing
         # i environment
@@ -373,11 +362,11 @@ def gauge_fix1(TT, LL, imat, smat):
 
         # SVD
         wi, lamda_k_tild, wj = np.linalg.svd(lamda_k_prime)
-        lamda_k_tild /= np.sum(lamda_k_tild)
+        #lamda_k_tild /= np.sum(lamda_k_tild)
 
-        # x and y costruction
+        # x and y construction
         x = np.matmul(np.matmul(np.conj(np.transpose(wi)), np.diag(np.sqrt(di))), np.conj(np.transpose(ui)))
-        y = np.matmul(np.matmul(uj, np.diag(np.sqrt(dj))), wj)
+        y = np.matmul(np.matmul(uj, np.diag(np.sqrt(dj))), np.transpose(wj))
 
         # fixing Ti and Tj
         Ti_idx_old = range(len(TT[tidx[0]].shape))
