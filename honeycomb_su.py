@@ -1,6 +1,6 @@
 import numpy as np
 import copy as cp
-import simple_update_algorithm1 as su
+import simple_update_algorithm2 as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
@@ -58,43 +58,7 @@ hij = np.transpose(hij, hij_perm)
 hij = np.reshape(hij, [p ** 2, p ** 2])
 unitary = [np.reshape(linalg.expm(-t_list[t] * hij), [p, p, p, p]) for t in range(len(t_list))]
 
-'''
-iterations = 1
-energy = []
-save_data = np.zeros((D_max, len(t_list)), dtype=float)
-T0_it_time = np.zeros((len(np.ravel(TT[0])), len(t_list) * iterations))
-k = 0
-for i in range(len(t_list)):
-    for j in range(iterations):
-        print('i, j = ', i, j)
-        TT, LL = su.simple_update(TT, LL, unitary[i], imat, smat, D_max)
-        T0_it_time[:, k] = np.ravel(TT[0])
-        k += 1
-        energy.append(su.energy_per_site(TT, LL, imat, smat, hij_energy_term))
-        save_data[:, i] = LL[0]
 
-
-plt.figure()
-plt.title('lambda0 values')
-for k in range(save_data.shape[0]):
-    plt.plot(range(len(t_list) * iterations), save_data[k, :], 'o')
-plt.grid()
-plt.show()
-
-
-plt.figure()
-plt.title('energy values')
-plt.plot(range(len(t_list) * iterations), energy, 'o')
-plt.grid()
-plt.show()
-
-plt.figure()
-plt.title('tensors entries values')
-for k in range(len(np.ravel(T0))):
-    plt.plot(range(len(t_list) * iterations), T0_it_time[k, :], 'o')
-plt.grid()
-plt.show()
-'''
 
 iterations = 1
 energy = []
@@ -112,22 +76,23 @@ for i in range(len(t_list)):
         #TT, LL = su.gauge_fix1(TT, LL, imat, smat)
         energy.append(su.energy_per_site(TT, LL, imat, smat, hij_energy_term))
         counter += 1
-
+'''
 for k in range(len(LL)):
     plt.figure()
-    plt.title('lambda' + str(k) + ' values in time')
+    #plt.title('lambda' + str(k) + ' values in time')
     plt.xlabel('t')
     for s in range(D_max):
         plt.plot(range(len(t_list) * iterations), LL_in_time[k, s, :], 'o')
     plt.grid()
     plt.show()
-
+'''
 plt.figure()
 plt.title('energy values')
 plt.xlabel('t')
 plt.plot(range(len(t_list) * iterations), energy, 'o')
 plt.grid()
 plt.show()
+
 '''
 for k in range(len(TT)):
     plt.figure()

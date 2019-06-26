@@ -1,16 +1,16 @@
 import numpy as np
 import copy as cp
-import simple_update_algorithm1 as su
+import simple_update_algorithm2 as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
-d = 10
+d = 8
 p = 2
 D_max = d
 J = 1
 
 
-"""
+
 T0 = np.random.rand(p, d, d)
 T1 = cp.copy(T0)
 T2 = cp.copy(T0)
@@ -25,7 +25,7 @@ smat = np.array([[2, 0, 0, 1],
                  [1, 2, 0, 0],
                  [0, 1, 2, 0],
                  [0, 0, 1, 2]])
-"""
+
 """
 T0 = np.random.rand(p, d, d)
 T1 = np.random.rand(p, d, d)
@@ -39,18 +39,18 @@ smat = np.array([[2, 0, 1],
                  [1, 2, 0],
                  [0, 1, 2]])
 """
-
-#T0 = np.random.rand(p, d, d)
-#T1 = np.random.rand(p, d, d)
-T0 = np.arange(np.float(p * d * d)).reshape(p, d, d)
-T1 = cp.copy(T0)
+"""
+T0 = np.random.rand(p, d, d)
+T1 = np.random.rand(p, d, d)
+#T0 = np.arange(np.float(p * d * d)).reshape(p, d, d)
+#T1 = cp.copy(T0)
 TT = [T0, T1]
 imat = np.array([[1, 1],
                  [1, 1]])
 
 smat = np.array([[2, 1],
                  [2, 1]])
-
+"""
 LL = []
 for i in range(imat.shape[1]):
     LL.append(np.ones(d, dtype=float) / d)
@@ -72,7 +72,8 @@ sz = np.array([[3. / 2, 0, 0, 0], [0, 1. / 2, 0, 0], [0, 0, -1. / 2, 0], [0, 0, 
 sy = np.array([[0, np.sqrt(3), 0, 0], [-np.sqrt(3), 0, 2, 0], [0, -2, 0, np.sqrt(3)], [0, 0, -np.sqrt(3), 0]]) / 2j
 sx = np.array([[0, np.sqrt(3), 0, 0], [np.sqrt(3), 0, 2, 0], [0, 2, 0, np.sqrt(3)], [0, 0, np.sqrt(3), 0]]) / 2
 '''
-t_list = np.exp(np.array(np.linspace(-1, -10, 1000)))
+t_list = np.ones(500) * 1e-5
+#t_list = np.exp(np.array(np.linspace(-1, -10, 500)))
 heisenberg = -J * np.real(np.kron(sx, sx) + np.kron(sy, sy) + np.kron(sz, sz))
 hij = np.reshape(heisenberg, (p, p, p, p))
 hij_perm = [0, 2, 1, 3]
@@ -91,27 +92,30 @@ for i in range(len(t_list)):
     for j in range(iterations):
         print('t, iters = ', i, j)
         for k in range(len(LL)):
-            LL_in_time[k, :, counter] = LL[k]
+            LL_in_time[k, :, counter] = cp.deepcopy(LL[k])
         for l in range(len(TT)):
-            TT_in_time[l, :, counter] = np.ravel(TT[l])
-        TT, LL = su.simple_update(TT, LL, unitary[i], imat, smat, D_max)
-        #TT, LL = su.gauge_fix1(TT, LL, imat, smat)
+            TT_in_time[l, :, counter] = cp.deepcopy(np.ravel(TT[l]))
+        TT_new, LL_new = su.simple_update(TT, LL, unitary[i], imat, smat, D_max)
         energy.append(su.energy_per_site(TT, LL, imat, smat, hij_energy_term))
         counter += 1
+        if su.check_convergence(LL, LL_new, 1e-6) == 'converged' and np.mod(i, 10) == 0 and i > 0:
+            raise IndexError('system converged')
+        TT = cp.deepcopy(TT_new)
+        LL = cp.deepcopy(LL_new)
 
 for k in range(len(LL)):
     plt.figure()
     plt.title('lambda' + str(k) + ' values in time')
     plt.xlabel('t')
     for s in range(D_max):
-        plt.plot(range(len(t_list) * iterations), LL_in_time[k, s, :], 'o')
+        plt.plot(range(counter), LL_in_time[k, s, :], 'o')
     plt.grid()
     plt.show()
 
 plt.figure()
 plt.title('energy values')
 plt.xlabel('t')
-plt.plot(range(len(t_list) * iterations), energy, 'o')
+plt.plot(range(counter), energy, 'o')
 plt.grid()
 plt.show()
 
