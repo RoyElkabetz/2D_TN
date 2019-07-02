@@ -4,27 +4,82 @@ import simple_update_algorithm2 as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
-d = 8
+
+d = 6
 p = 2
 D_max = d
 J = 1
 
+print('\n')
+print('D_max = ', D_max)
+print('\n')
 
 
+'''
 T0 = np.random.rand(p, d, d)
-T1 = cp.copy(T0)
-T2 = cp.copy(T0)
-T3 = cp.copy(T0)
-TT = [T0, T1, T2, T3]
-imat = np.array([[1, 0, 0, 1],
-                 [1, 1, 0, 0],
-                 [0, 1, 1, 0],
-                 [0, 0, 1, 1]])
+T1 = np.random.rand(p, d, d)
+T2 = np.random.rand(p, d, d)
+T3 = np.random.rand(p, d, d)
+T4 = np.random.rand(p, d, d)
+T5 = np.random.rand(p, d, d)
+T6 = np.random.rand(p, d, d)
+T7 = np.random.rand(p, d, d)
+TT = [T0, T1, T2, T3, T4, T5, T6, T7]
+imat = np.array([[1, 0, 0, 0, 0, 0, 0, 1],
+                 [1, 1, 0, 0, 0, 0, 0, 0],
+                 [0, 1, 1, 0, 0, 0, 0, 0],
+                 [0, 0, 1, 1, 0, 0, 0, 0],
+                 [0, 0, 0, 1, 1, 0, 0, 0],
+                 [0, 0, 0, 0, 1, 1, 0, 0],
+                 [0, 0, 0, 0, 0, 1, 1, 0],
+                 [0, 0, 0, 0, 0, 0, 1, 1]])
 
-smat = np.array([[2, 0, 0, 1],
-                 [1, 2, 0, 0],
-                 [0, 1, 2, 0],
-                 [0, 0, 1, 2]])
+smat = np.array([[2, 0, 0, 0, 0, 0, 0, 1],
+                 [1, 2, 0, 0, 0, 0, 0, 0],
+                 [0, 1, 2, 0, 0, 0, 0, 0],
+                 [0, 0, 1, 2, 0, 0, 0, 0],
+                 [0, 0, 0, 1, 2, 0, 0, 0],
+                 [0, 0, 0, 0, 1, 2, 0, 0],
+                 [0, 0, 0, 0, 0, 1, 2, 0],
+                 [0, 0, 0, 0, 0, 0, 1, 2]])
+'''
+'''
+TT = [np.random.rand(p, d, d) for i in range(16)]
+imat = np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                 [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]])
+
+smat = np.array([[2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                 [1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0],
+                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2]])
+
+'''
 
 """
 T0 = np.random.rand(p, d, d)
@@ -39,22 +94,23 @@ smat = np.array([[2, 0, 1],
                  [1, 2, 0],
                  [0, 1, 2]])
 """
-"""
-T0 = np.random.rand(p, d, d)
-T1 = np.random.rand(p, d, d)
-#T0 = np.arange(np.float(p * d * d)).reshape(p, d, d)
-#T1 = cp.copy(T0)
+
+#T0 = np.random.rand(p, d, d)
+T0 = np.arange(p * d * d).reshape(p, d, d)
+#T1 = np.random.rand(p, d, d)
+T1 = np.arange(p * d * d).reshape(p, d, d)
+
 TT = [T0, T1]
 imat = np.array([[1, 1],
                  [1, 1]])
 
 smat = np.array([[2, 1],
                  [2, 1]])
-"""
+
 LL = []
 for i in range(imat.shape[1]):
-    LL.append(np.ones(d, dtype=float) / d)
-    #LL.append(np.random.rand(d))
+    #LL.append(np.ones(d, dtype=float) / d)
+    LL.append(np.random.rand(d))
 
 pauli_z = np.array([[1, 0], [0, -1]])
 pauli_y = np.array([[0, -1j], [1j, 0]])
@@ -72,10 +128,9 @@ sz = np.array([[3. / 2, 0, 0, 0], [0, 1. / 2, 0, 0], [0, 0, -1. / 2, 0], [0, 0, 
 sy = np.array([[0, np.sqrt(3), 0, 0], [-np.sqrt(3), 0, 2, 0], [0, -2, 0, np.sqrt(3)], [0, 0, -np.sqrt(3), 0]]) / 2j
 sx = np.array([[0, np.sqrt(3), 0, 0], [np.sqrt(3), 0, 2, 0], [0, 2, 0, np.sqrt(3)], [0, 0, np.sqrt(3), 0]]) / 2
 '''
-t_list = np.ones(500) * 1e-5
-#t_list = np.exp(np.array(np.linspace(-1, -10, 500)))
+t_list = np.exp(np.linspace(-2, -8, 50))
 heisenberg = -J * np.real(np.kron(sx, sx) + np.kron(sy, sy) + np.kron(sz, sz))
-hij = np.reshape(heisenberg, (p, p, p, p))
+hij = np.reshape(cp.deepcopy(heisenberg), (p, p, p, p))
 hij_perm = [0, 2, 1, 3]
 hij_energy_term = cp.deepcopy(hij)
 hij = np.transpose(hij, hij_perm)
@@ -98,10 +153,10 @@ for i in range(len(t_list)):
         TT_new, LL_new = su.simple_update(TT, LL, unitary[i], imat, smat, D_max)
         energy.append(su.energy_per_site(TT, LL, imat, smat, hij_energy_term))
         counter += 1
-        if su.check_convergence(LL, LL_new, 1e-6) == 'converged' and np.mod(i, 10) == 0 and i > 0:
-            raise IndexError('system converged')
+
         TT = cp.deepcopy(TT_new)
         LL = cp.deepcopy(LL_new)
+
 
 for k in range(len(LL)):
     plt.figure()
@@ -110,6 +165,7 @@ for k in range(len(LL)):
     for s in range(D_max):
         plt.plot(range(counter), LL_in_time[k, s, :], 'o')
     plt.grid()
+    plt.ylim([0, 1])
     plt.show()
 
 plt.figure()

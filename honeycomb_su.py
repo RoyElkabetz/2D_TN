@@ -4,7 +4,7 @@ import simple_update_algorithm2 as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
-d = 2
+d = 6
 p = 2
 D_max = d
 J = 1.

@@ -24,7 +24,7 @@ def simple_update(TT, LL, Uij, imat, smat, D_max):
     """
     n, m = np.shape(imat)
     for Ek in range(m):
-        lamda_k = cp.copy(LL[Ek])
+        lamda_k = cp.deepcopy(LL[Ek])
 
         ## (a) Find tensors Ti, Tj and their corresponding legs connected along edge Ek.
         Ti, Tj = get_tensors(Ek, TT, smat, imat)
@@ -33,20 +33,42 @@ def simple_update(TT, LL, Uij, imat, smat, D_max):
         i_dim, j_dim = get_edges(Ek, smat, imat)
 
         ## (b) Absorb bond vectors (lambdas) to all Em != Ek of Ti, Tj tensors
-        Ti = absorb_edges(Ti, i_dim, LL)
-        Tj = absorb_edges(Tj, j_dim, LL)
+        Ti = absorb_edges(cp.deepcopy(Ti), i_dim, LL)
+        Tj = absorb_edges(cp.deepcopy(Tj), j_dim, LL)
 
         # permuting the Ek leg of tensors i and j into the 1'st dimension
-        Ti = dim_perm(Ti)
-        Tj = dim_perm(Tj)
+        Ti = dim_perm(cp.deepcopy(Ti))
+        Tj = dim_perm(cp.deepcopy(Tj))
 
         ## (c) Group all virtual legs Em!=Ek to form Pl, Pr MPS tensors
-        Pl = rankN_to_rank3(Ti[0])
-        Pr = rankN_to_rank3(Tj[0])
+        Pl = rankN_to_rank3(cp.deepcopy(Ti[0]))
+        Pr = rankN_to_rank3(cp.deepcopy(Tj[0]))
+
+        '''
+        ##### experimenting with QR instead of SVD
+        Q1, R = np.linalg.qr(np.transpose(np.reshape(Pl, [Pl.shape[0] * Pl.shape[1], np.prod(Pl.shape[2:])])))
+        Q2, L = np.linalg.qr(np.transpose(np.reshape(Pr, [Pr.shape[0] * Pr.shape[1], np.prod(Pr.shape[2:])])))
+        Q1 = np.transpose(Q1)
+        Q2 = np.transpose(Q2)
+        R = np.transpose(R)
+        L = np.transpose(L)
+        '''
 
         ## (d) SVD decomposing of Pl, Pr to obtain Q1, R and Q2, L sub-tensors, respectively
-        R, Q1 = svd(Pl, [0, 1], range(len(Pl.shape))[2:])
-        L, Q2 = svd(Pr, [0, 1], range(len(Pr.shape))[2:])
+        R, sr, Q1 = svd(Pl, [0, 1], [2], keep_s='yes')
+        L, sl, Q2 = svd(Pr, [0, 1], [2], keep_s='yes')
+
+        #R = R.dot(np.diag(sr))
+        #L = L.dot(np.diag(sl))
+
+        #Q1 = np.diag(sr).dot(Q1)
+        #Q2 = np.diag(sl).dot(Q2)
+
+        R = R.dot(np.diag(np.sqrt(sr)))
+        L = L.dot(np.diag(np.sqrt(sl)))
+        Q1 = np.diag(np.sqrt(sr)).dot(Q1)
+        Q2 = np.diag(np.sqrt(sl)).dot(Q2)
+
 
         # reshaping R and L into rank 3 tensors with shape (physical_dim, Ek_dim, Q(1/2).shape[0])
         i_physical_dim = Ti[0].shape[0]
@@ -64,13 +86,13 @@ def simple_update(TT, LL, Uij, imat, smat, D_max):
 
         # reshaping R_tild and L_tild back to rank 3 tensor
         R_tild = rank2_to_rank3(R_tild, i_physical_dim)
-        L_tild = rank2_to_rank3(np.transpose(L_tild), j_physical_dim)
+        L_tild = rank2_to_rank3(np.transpose(cp.deepcopy(L_tild)), j_physical_dim)
 
         # permuting back to shape (physical_dim, Ek_dim, Q(1/2).shape[0])
-        R_tild = np.transpose(R_tild, [0, 2, 1])
-        L_tild = np.transpose(L_tild, [0, 2, 1])
+        R_tild = np.transpose(cp.deepcopy(R_tild), [0, 2, 1])
+        L_tild = np.transpose(cp.deepcopy(L_tild), [0, 2, 1])
 
-         ## (g) Glue back the R', L', sub-tensors to Q1, Q2, respectively, to form updated tensors P'l, P'r.
+        ## (g) Glue back the R', L', sub-tensors to Q1, Q2, respectively, to form updated tensors P'l, P'r.
         Pl_prime = np.einsum('ijk,kl->ijl', R_tild, Q1)
         Pr_prime = np.einsum('ijk,kl->ijl', L_tild, Q2)
 
@@ -79,16 +101,16 @@ def simple_update(TT, LL, Uij, imat, smat, D_max):
         Ti_new_shape[1] = len(lamda_k_tild)
         Tj_new_shape = list(cp.deepcopy(Tj[0].shape))
         Tj_new_shape[1] = len(lamda_k_tild)
-        Ti[0] = rank3_to_rankN(Pl_prime, Ti_new_shape)
-        Tj[0] = rank3_to_rankN(Pr_prime, Tj_new_shape)
+        Ti[0] = rank3_to_rankN(cp.deepcopy(Pl_prime), Ti_new_shape)
+        Tj[0] = rank3_to_rankN(cp.deepcopy(Pr_prime), Tj_new_shape)
 
         # permuting back the legs of Ti and Tj
-        Ti = dim_perm(Ti)
-        Tj = dim_perm(Tj)
+        Ti = dim_perm(cp.deepcopy(Ti))
+        Tj = dim_perm(cp.deepcopy(Tj))
 
         ## (i) Remove bond matrices lambda_m from virtual legs m != Ek to obtain the updated tensors Ti~, Tj~.
-        Ti = remove_edges(Ti, i_dim, LL)
-        Tj = remove_edges(Tj, j_dim, LL)
+        Ti = remove_edges(cp.deepcopy(Ti), i_dim, LL)
+        Tj = remove_edges(cp.deepcopy(Tj), j_dim, LL)
 
         # Normalize and save new Ti Tj and lambda_k
         TT[Ti[1][0]] = cp.deepcopy(Ti[0] / np.sum(Ti[0]))
@@ -189,7 +211,7 @@ def imaginary_time_evolution(left_tensor, right_tensor, bond_vector, unitary_tim
     tensor_list = [left_tensor, right_tensor, bond_matrix, unitary_time_op]
     indices = ([3, 1, -1], [4, 2, -3], [1, 2], [3, -2, 4, -4])
     order = [1, 2, 3, 4]
-    forder = [-1, -2, -3, -4]
+    forder = [-2, -1, -4, -3]  #[-4, -3, -2, -1] #
     theta = ncon.ncon(tensor_list, indices, order, forder)
     return theta
 
@@ -204,90 +226,24 @@ def check_convergence(bond_vectors_old, bond_vectors_new, max_error):
         return 'did not converged'
 
 
-
-def gauge_fix(Ti, Tj, Ti_absorbed_lamdas, Tj_absorbed_lamdas, i_leg, j_leg, lamda_k):
-    # i environment
-    i_idx = range(len(Ti_absorbed_lamdas.shape))
-    i_conj_idx = range(len(Ti_absorbed_lamdas.shape))
-    i_conj_idx[i_leg] = len(Ti_absorbed_lamdas.shape)
-    Mi = np.einsum(Ti_absorbed_lamdas, i_idx, np.conj(Ti_absorbed_lamdas), i_conj_idx, [i_idx[i_leg], i_conj_idx[i_leg]])
-
-    # j environment
-    j_idx = range(len(Tj_absorbed_lamdas.shape))
-    j_conj_idx = range(len(Tj_absorbed_lamdas.shape))
-    j_conj_idx[j_leg] = len(Tj_absorbed_lamdas.shape)
-    Mj = np.einsum(Tj_absorbed_lamdas, j_idx, np.conj(Tj_absorbed_lamdas), j_conj_idx, [j_idx[j_leg], j_conj_idx[j_leg]])
-
-    # Environment diagonalization
-    di, ui = np.linalg.eig(Mi)
-    dj, uj = np.linalg.eig(Mj)
-
-    # contruction
-    lamda_k_prime = np.matmul(np.matmul(np.conj(np.transpose(ui)), np.diag(lamda_k)), uj)
-    lamda_k_prime = np.matmul(np.diag(np.sqrt(di)), np.matmul(lamda_k_prime, np.diag(np.sqrt(dj))))
-
-    # SVD
-    wi, lamda_k_tild, wj = np.linalg.svd(lamda_k_prime)
-    lamda_k_tild /= np.sum(lamda_k_tild)
-
-    # x and y construction
-    x = np.matmul(np.matmul(np.conj(np.transpose(wi)), np.diag(np.sqrt(di))), np.conj(np.transpose(ui)))
-    y = np.matmul(np.matmul(uj, np.diag(np.sqrt(dj))), wj)
-
-    # fixing Ti and Tj
-    Ti_idx_old = range(len(Ti.shape))
-    Ti_idx_new = range(len(Ti.shape))
-    Ti_idx_new[i_leg] = len(Ti_idx_old)
-    Tj_idx_old = range(len(Tj.shape))
-    Tj_idx_new = range(len(Tj.shape))
-    Tj_idx_new[j_leg] = len(Tj_idx_old)
-    Ti = np.einsum(Ti, Ti_idx_old, np.linalg.pinv(x), [Ti_idx_old[i_leg], len(Ti_idx_old)], Ti_idx_new)
-    Tj = np.einsum(Tj, Tj_idx_old, np.linalg.pinv(y), [Tj_idx_old[j_leg], len(Tj_idx_old)], Tj_idx_new)
-    return Ti, Tj, lamda_k_tild
-
 def energy_per_site(TT, LL, imat, smat, Oij):
     energy_per_site = 0
     n, m = np.shape(imat)
     for Ek in range(m):
+        lamda_k = cp.deepcopy(LL[Ek])
 
         ## (a) Find tensors Ti, Tj and their corresponding legs connected along edge Ek.
-        tidx = np.nonzero(imat[:, Ek])[0]
-        tdim = smat[tidx, Ek]
-        Ti = [TT[tidx[0]], tdim[0]]
-        Tj = [TT[tidx[1]], tdim[1]]
-        Ti_conj = [np.conj(TT[tidx[0]]), tdim[0]]
-        Tj_conj = [np.conj(TT[tidx[1]]), tdim[1]]
-        lamda_k = LL[Ek]
+        Ti, Tj = get_tensors(Ek, TT, smat, imat)
+        Ti_conj, Tj_conj = get_tensors(Ek, TT, smat, imat)
 
-        # collecting all neighboring (edges, legs)
-        Ti_alldim = [list(np.nonzero(imat[tidx[0], :])[0]), list(smat[tidx[0], np.nonzero(imat[tidx[0], :])[0]])]
-        Tj_alldim = [list(np.nonzero(imat[tidx[1], :])[0]), list(smat[tidx[1], np.nonzero(imat[tidx[1], :])[0]])]
+        # collecting all neighboring (edges, dimensions) without the Ek (edge, dimension)
+        i_dim, j_dim = get_edges(Ek, smat, imat)
 
-        # removing the Ek edge and leg
-        Ti_alldim[0].remove(Ek)
-        Ti_alldim[1].remove(smat[tidx[0], Ek])
-        Tj_alldim[0].remove(Ek)
-        Tj_alldim[1].remove(smat[tidx[1], Ek])
-
-        ## (b) Absorb bond matrices (lambdas) to all Em != Ek of Ti, Tj tensors
-        for k in range(len(Ti_alldim[0])):
-            Em = Ti_alldim[0][k]
-            leg = Ti_alldim[1][k]
-            Ti_index = range(len(Ti[0].shape))
-            Ti_final_index = range(len(Ti[0].shape))
-            Ti_final_index[leg] = len(Ti[0].shape)
-            Ti[0] = np.einsum(Ti[0], Ti_index, np.diag(LL[Em]), [leg, Ti_final_index[leg]], Ti_final_index)
-            Ti_conj[0] = np.einsum(Ti_conj[0], Ti_index, np.diag(LL[Em]), [leg, Ti_final_index[leg]], Ti_final_index)
-
-
-        for k in range(len(Tj_alldim[0])):
-            Em = Tj_alldim[0][k]
-            leg = Tj_alldim[1][k]
-            Tj_index = range(len(Tj[0].shape))
-            Tj_final_index = range(len(Tj[0].shape))
-            Tj_final_index[leg] = len(Tj[0].shape)
-            Tj[0] = np.einsum(Tj[0], Tj_index, np.diag(LL[Em]), [leg, Tj_final_index[leg]], Tj_final_index)
-            Tj_conj[0] = np.einsum(Tj_conj[0], Tj_index, np.diag(LL[Em]), [leg, Tj_final_index[leg]], Tj_final_index)
+        ## (b) Absorb bond vectors (lambdas) to all Em != Ek of Ti, Tj tensors
+        Ti = absorb_edges(cp.deepcopy(Ti), i_dim, LL)
+        Tj = absorb_edges(cp.deepcopy(Tj), j_dim, LL)
+        Ti_conj = absorb_edges(cp.deepcopy(Ti_conj), i_dim, LL)
+        Tj_conj = absorb_edges(cp.deepcopy(Tj_conj), j_dim, LL)
 
 
         ## prepering list of tensors and indices for scon function
@@ -301,18 +257,18 @@ def energy_per_site(TT, LL, imat, smat, Oij):
         Ti_conj_idx = range(len(Ti_conj[0].shape))
         Ti_idx[0] = Oij_idx[0]
         Ti_conj_idx[0] = Oij_idx[1]
-        Ti_idx[tdim[0]] = lamda_k_idx[0]
-        Ti_conj_idx[tdim[0]] = lamda_k_conj_idx[0]
+        Ti_idx[Ti[2][0]] = lamda_k_idx[0]
+        Ti_conj_idx[Ti_conj[2][0]] = lamda_k_conj_idx[0]
 
         Tj_idx = range(len(Ti[0].shape) + 1, len(Ti[0].shape) + 1 + len(Tj[0].shape))
         Tj_conj_idx = range(len(Ti_conj[0].shape) + 1, len(Ti_conj[0].shape) + 1 + len(Tj_conj[0].shape))
         Tj_idx[0] = Oij_idx[3]
         Tj_conj_idx[0] = Oij_idx[2]
-        Tj_idx[tdim[1]] = lamda_k_idx[1]
-        Tj_conj_idx[tdim[1]] = lamda_k_conj_idx[1]
+        Tj_idx[Tj[2][0]] = lamda_k_idx[1]
+        Tj_conj_idx[Tj_conj[2][0]] = lamda_k_conj_idx[1]
 
         # two site energy calculation
-        tensors = [Ti[0], np.conj(Ti[0]), Tj[0], np.conj(Tj[0]), Oij, np.diag(lamda_k), np.diag(lamda_k)]
+        tensors = [Ti[0], Ti_conj[0], Tj[0], Tj_conj[0], Oij, np.diag(lamda_k), np.diag(lamda_k)]
         indices = [Ti_idx, Ti_conj_idx, Tj_idx, Tj_conj_idx, Oij_idx, lamda_k_idx, lamda_k_conj_idx]
         two_site_energy = tnc.scon(tensors, indices)
 
@@ -323,18 +279,18 @@ def energy_per_site(TT, LL, imat, smat, Oij):
         Tj_idx[0] = l + 1
         Tj_conj_idx[0] = l + 1
 
-        tensors = [Ti[0], np.conj(Ti[0]), Tj[0], np.conj(Tj[0]), np.diag(lamda_k), np.diag(lamda_k)]
+        tensors = [Ti[0], Ti_conj[0], Tj[0], Tj_conj[0], np.diag(lamda_k), np.diag(lamda_k)]
         indices = [Ti_idx, Ti_conj_idx, Tj_idx, Tj_conj_idx, lamda_k_idx, lamda_k_conj_idx]
-        two_site_norm = tnc.scon(tensors, indices)
+        two_site_norm = ncon.ncon(tensors, indices)
         #print('\n')
         #print('two site energy = ', two_site_energy)
         #print('two site norm = ', two_site_norm)
-
         two_site_energy /= two_site_norm
-        print('two site normalized energy = ', two_site_energy)
+        #print('two site normalized energy = ', two_site_energy)
 
         energy_per_site += two_site_energy
-    energy_per_site /= n
+    energy_per_site /= m
+    #print(energy_per_site)
     return energy_per_site
 
 

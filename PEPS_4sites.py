@@ -7,13 +7,13 @@ import matplotlib.pyplot as plt
 
 d = 4
 p = 2
-D_max = 4
+D_max = d
 J = 1.
 
 T0 = np.random.rand(p, d, d, d, d)
-T1 = cp.copy(T0)
-T2 = cp.copy(T0)
-T3 = cp.copy(T0)
+T1 = np.random.rand(p, d, d, d, d)
+T2 = np.random.rand(p, d, d, d, d)
+T3 = np.random.rand(p, d, d, d, d)
 
 TT = [T0, T1, T2, T3]
 '''
@@ -54,9 +54,9 @@ sy = 0.5 * pauli_y
 sx = 0.5 * pauli_x
 
 t_list = np.exp(np.array(np.linspace(-1, -10, 100)))
-heisenberg = J * np.real(np.kron(sx, sx) + np.kron(sy, sy) + np.kron(sz, sz))
+heisenberg = -J * np.real(np.kron(sx, sx) + np.kron(sy, sy) + np.kron(sz, sz))
 hij = np.reshape(heisenberg, (p, p, p, p))
-hij_perm = [0, 1, 2, 3]
+hij_perm = [0, 2, 1, 3]
 hij_energy_term = cp.deepcopy(hij)
 hij = np.transpose(hij, hij_perm)
 hij = np.reshape(hij, [p ** 2, p ** 2])
@@ -79,8 +79,8 @@ for i in range(len(t_list)):
         TT_new, LL_new = su.simple_update(TT, LL, unitary[i], imat, smat, D_max)
         energy.append(su.energy_per_site(TT, LL, imat, smat, hij_energy_term))
         counter += 1
-        if su.check_convergence(LL, LL_new, 1e-6) == 'converged' and np.mod(i, 10) == 0 and i > 0:
-            raise IndexError('system converged')
+        #if su.check_convergence(LL, LL_new, 1e-6) == 'converged' and np.mod(i, 10) == 0 and i > 0:
+        #    raise IndexError('system converged')
         TT = cp.deepcopy(TT_new)
         LL = cp.deepcopy(LL_new)
 
@@ -92,6 +92,7 @@ for k in range(len(LL)):
     for s in range(D_max):
         plt.plot(range(counter), LL_in_time[k, s, :counter], 'o')
     plt.grid()
+    plt.ylim([0, 1])
     plt.show()
 
 plt.figure()
