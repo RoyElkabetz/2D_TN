@@ -1,14 +1,14 @@
 import numpy as np
 import copy as cp
-import simple_update_algorithm2 as su
+import simple_update3 as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
 
-d = 6
+d = 20
 p = 2
 D_max = d
-J = 1
+J = -1
 
 print('\n')
 print('D_max = ', D_max)
@@ -79,8 +79,8 @@ smat = np.array([[2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0],
                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2]])
 
-'''
 
+'''
 """
 T0 = np.random.rand(p, d, d)
 T1 = np.random.rand(p, d, d)
@@ -95,10 +95,10 @@ smat = np.array([[2, 0, 1],
                  [0, 1, 2]])
 """
 
-#T0 = np.random.rand(p, d, d)
-T0 = np.arange(p * d * d).reshape(p, d, d)
-#T1 = np.random.rand(p, d, d)
-T1 = np.arange(p * d * d).reshape(p, d, d)
+T0 = np.random.rand(p, d, d)
+#T0 = np.arange(p * d * d).reshape(p, d, d)
+T1 = np.random.rand(p, d, d)
+#T1 = np.arange(p * d * d).reshape(p, d, d)
 
 TT = [T0, T1]
 imat = np.array([[1, 1],
@@ -109,8 +109,8 @@ smat = np.array([[2, 1],
 
 LL = []
 for i in range(imat.shape[1]):
-    #LL.append(np.ones(d, dtype=float) / d)
-    LL.append(np.random.rand(d))
+    LL.append(np.ones(d, dtype=float) / d)
+    #LL.append(np.random.rand(d))
 
 pauli_z = np.array([[1, 0], [0, -1]])
 pauli_y = np.array([[0, -1j], [1j, 0]])
@@ -128,15 +128,15 @@ sz = np.array([[3. / 2, 0, 0, 0], [0, 1. / 2, 0, 0], [0, 0, -1. / 2, 0], [0, 0, 
 sy = np.array([[0, np.sqrt(3), 0, 0], [-np.sqrt(3), 0, 2, 0], [0, -2, 0, np.sqrt(3)], [0, 0, -np.sqrt(3), 0]]) / 2j
 sx = np.array([[0, np.sqrt(3), 0, 0], [np.sqrt(3), 0, 2, 0], [0, 2, 0, np.sqrt(3)], [0, 0, np.sqrt(3), 0]]) / 2
 '''
-t_list = np.exp(np.linspace(-2, -8, 50))
+t_list = np.exp(np.concatenate((np.linspace(-1, -3, 100), np.linspace(-3, -5, 100))))
 heisenberg = -J * np.real(np.kron(sx, sx) + np.kron(sy, sy) + np.kron(sz, sz))
 hij = np.reshape(cp.deepcopy(heisenberg), (p, p, p, p))
 hij_perm = [0, 2, 1, 3]
 hij_energy_term = cp.deepcopy(hij)
-hij = np.transpose(hij, hij_perm)
+#hij = np.transpose(hij, hij_perm)
 hij = np.reshape(hij, [p ** 2, p ** 2])
 unitary = [np.reshape(linalg.expm(-t_list[t] * hij), [p, p, p, p]) for t in range(len(t_list))]
-
+eye = np.reshape(np.eye(p * p), (p, p, p, p))
 
 iterations = 1
 energy = []

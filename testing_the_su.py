@@ -1,41 +1,55 @@
 import numpy as np
 import simple_update_algorithm2 as su
 import copy as cp
+from scipy import linalg
 
 d = 2
 p = 2
-D_max = d
+D_max = 4
 J = 1.
 
-T0 = np.random.rand(p, d, d, d, d)
-T1 = np.random.rand(p, d, d, d, d)
-T2 = np.random.rand(p, d, d, d, d)
-T3 = np.random.rand(p, d, d, d, d)
+#T0 = np.random.rand(p, d, d)
+T0 = np.arange(p * d * d).reshape(p, d, d)
+#T1 = np.random.rand(p, d, d)
+T1 = np.arange(p * d * d).reshape(p, d, d)
 
-TT = [T0, T1, T2, T3]
+TT = [T0, T1]
+imat = np.array([[1, 1],
+                 [1, 1]])
 
-imat = np.array([[1, 1, 1, 1, 0, 0, 0, 0],
-                 [1, 1, 0, 0, 1, 1, 0, 0],
-                 [0, 0, 1, 1, 0, 0, 1, 1],
-                 [0, 0, 0, 0, 1, 1, 1, 1]])
-
-smat = np.array([[1, 2, 3, 4, 0, 0, 0, 0],
-                 [1, 2, 0, 0, 3, 4, 0, 0],
-                 [0, 0, 1, 2, 0, 0, 3, 4],
-                 [0, 0, 0, 0, 1, 2, 3, 4]])
+smat = np.array([[2, 1],
+                 [2, 1]])
 
 LL = []
-for i in range(8):
+for i in range(imat.shape[1]):
     LL.append(np.ones(d, dtype=float) / d)
+    #LL.append(np.random.rand(d))
 
-Uij = np.reshape(np.eye(4, 4), (2, 2, 2, 2))
+pauli_z = np.array([[1, 0], [0, -1]])
+pauli_y = np.array([[0, -1j], [1j, 0]])
+pauli_x = np.array([[0, 1], [1, 0]])
+
+sz = 0.5 * pauli_z
+sy = 0.5 * pauli_y
+sx = 0.5 * pauli_x
+
+t_list = np.exp(np.concatenate((np.linspace(-1, -3, 20), np.linspace(-3, -5, 20))))
+heisenberg = -J * np.real(np.kron(sx, sx) + np.kron(sy, sy) + np.kron(sz, sz))
+hij = np.reshape(cp.deepcopy(heisenberg), (p, p, p, p))
+hij_perm = [0, 1, 2, 3]
+hij_energy_term = cp.deepcopy(hij)
+hij = np.transpose(hij, hij_perm)
+hij = np.reshape(hij, [p ** 2, p ** 2])
+unitary = [np.reshape(linalg.expm(-t_list[t] * hij), [p, p, p, p]) for t in range(len(t_list))]
+eye = np.eye(4).reshape(2, 2, 2, 2)
+
 n, m = np.shape(imat)
 
 TT_old = cp.deepcopy(TT)
 LL_old = cp.deepcopy(LL)
 
 
-for kk in range(50):
+for t in range(len(t_list)):
     for Ek in range(m):
         lamda_k = cp.deepcopy(LL[Ek])
 
@@ -67,15 +81,16 @@ for kk in range(50):
         R = su.rank2_to_rank3(R, i_physical_dim)
         L = su.rank2_to_rank3(L, j_physical_dim)
 
-        '''
-        ## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         # (e) Contract the ITE gate Uij, with R, L, and lambda_k to form theta tensor.
-        # returning a rank 4 tensor with physical dimensions, i' and j' at [0, i', 2, j']
-        theta = su.imaginary_time_evolution(R, L, lamda_k, np.reshape(np.eye(p ** 2), (p, p, p, p)))
+        A = np.einsum(R, [0, 1, 2], np.diag(lamda_k), [1, 3], [0, 3, 2])
+        A = np.einsum(A, [0, 1, 2], L, [3, 1, 4], [2, 0, 3, 4])  # (Q1 i, j, Q2)
+        theta = np.einsum(A, [0, 1, 2, 3], unitary[t], [1, 2, 4, 5], [0, 4, 5, 3])  # (Q1, i', j', Q2)
+        theta = np.transpose(theta, [1, 0, 2, 3])  # (i', Q1, j', Q2)
 
         ## (f) Obtain R', L', lambda'_k tensors by applying an SVD to theta
         # and trancating R', lamda_k', L' and keeping only D_max eigenvalues and eigenvectors
         R_tild, lamda_k_tild, L_tild = su.svd(theta, [0, 1], [2, 3], keep_s='yes', max_eigen_num=D_max)
+
 
         # reshaping R_tild and L_tild back to rank 3 tensor
         R_tild = su.rank2_to_rank3(R_tild, i_physical_dim)
@@ -84,10 +99,13 @@ for kk in range(50):
         # permuting back to shape (physical_dim, Ek_dim, Q(1/2).shape[0])
         R_tild = np.transpose(R_tild, [0, 2, 1])
         L_tild = np.transpose(L_tild, [0, 2, 1])
-        '''
-        R_tild = R
-        L_tild = L
-        lamda_k_tild = lamda_k
+
+        """
+        R_tild = np.reshape(R_tild, (Q1.shape[0], i_physical_dim, R_tild.shape[1]))
+        R_tild = np.transpose(R_tild, [1, 2, 0])
+        L_tild = np.reshape(L_tild, (L_tild.shape[0], j_physical_dim, Q2.shape[0]))
+        L_tild = np.transpose(L_tild, [1, 0, 2])
+        """
 
         ## (g) Glue back the R', L', sub-tensors to Q1, Q2, respectively, to form updated tensors P'l, P'r.
         Pl_prime = np.einsum('ijk,kl->ijl', R_tild, Q1)
@@ -114,13 +132,13 @@ for kk in range(50):
         TT[Tj[1][0]] = cp.deepcopy(Tj[0] / np.sum(Tj[0]))
         LL[Ek] = cp.deepcopy(lamda_k_tild / np.sum(lamda_k_tild))
 
-        for i in range(len(TT_old)):
-            error_i = np.max(np.abs(TT[i] - TT_old[i]))
-            print('e_i = ', error_i)
-
+        print(su.energy_per_site(TT, LL, imat, smat, hij_energy_term))
+        #error = (su.energy_per_site(TT, LL, imat, smat, hij_energy_term) - su.energy_per_site(TT_old, LL_old, imat, smat, hij_energy_term))
+    #error = np.max(np.abs(TT[0] - TT_old[0]) + np.abs(TT[1] - TT_old[1]))
+    #print(error)
     TT_old = cp.deepcopy(TT)
-    print('LL = ', LL)
-    print('TT = ', TT[1])
+    LL_old = cp.deepcopy(LL)
+
 
 
 
