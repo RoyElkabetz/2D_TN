@@ -112,11 +112,6 @@ def simple_update(TT, LL, Uij, imat, smat, D_max):
         Tj = remove_edges(cp.deepcopy(Tj), j_dim, LL)
 
         # Normalize and save new Ti Tj and lambda_k
-        '''
-        TT[Ti[1][0]] = cp.deepcopy(Ti[0] / np.sum(Ti[0]))
-        TT[Tj[1][0]] = cp.deepcopy(Tj[0] / np.sum(Tj[0]))
-        LL[Ek] = cp.deepcopy(lamda_k_tild / np.sum(lamda_k_tild))
-        '''
         TT[Ti[1][0]] = cp.deepcopy(Ti[0] / np.sum(Ti[0]))
         TT[Tj[1][0]] = cp.deepcopy(Tj[0] / np.sum(Tj[0]))
         LL[Ek] = cp.deepcopy(lamda_k_tild / np.sum(lamda_k_tild))
@@ -226,6 +221,40 @@ def check_convergence(bond_vectors_old, bond_vectors_new, max_error):
         return 'converged'
     else:
         return 'did not converged'
+
+
+def single_tensor_expectation(tensor_idx, tensors_list, lamdas_list, imat, smat, operator):
+    env_edges = np.nonzero(imat[tensor_idx, :])[0]
+    env_legs = smat[tensor_idx, env_edges]
+    T = absorb_edges(tensors_list[tensor_idx], [env_edges, env_legs], lamdas_list)
+    T_conj = absorb_edges(np.conj(tensors_list[tensor_idx]), [env_edges, env_legs], lamdas_list)
+    T_idx = range(len(T.shape))
+    T_conj_idx = range(len(T_conj.shape))
+    T_conj_idx[0] = len(T_conj.shape)
+    operator_idx = [T_idx[0], T_conj_idx[0]]
+    expectation = ncon.ncon([T, T_conj, operator], [T_idx, T_conj_idx, operator_idx])
+    normalization = site_norm(tensor_idx, tensors_list, lamdas_list, imat, smat)
+    return expectation / normalization
+
+def magnetization(tensors_list, lamdas_list, imat, smat, operator):
+    # calculating the average magnetization per site
+    magnetization = 0
+    tensors_indices = range(len(tensors_list))
+    for i in tensors_indices:
+        magnetization += single_tensor_expectation(i, tensors_list, lamdas_list, imat, smat, operator)
+    magnetization /= len(tensors_list)
+    return magnetization
+
+
+def site_norm(tensor_idx, tensors_list, lamdas_list, imat, smat):
+    env_edges = np.nonzero(imat[tensor_idx, :])[0]
+    env_legs = smat[tensor_idx, env_edges]
+    T = absorb_edges(tensors_list[tensor_idx], [env_edges, env_legs], lamdas_list)
+    T_conj = absorb_edges(np.conj(tensors_list[tensor_idx]), [env_edges, env_legs], lamdas_list)
+    T_idx = range(len(T.shape))
+    T_conj_idx = range(len(T_conj.shape))
+    normalization = np.einsum(T, T_idx, T_conj, T_conj_idx)
+    return normalization
 
 
 def energy_per_site(TT, LL, imat, smat, Oij):

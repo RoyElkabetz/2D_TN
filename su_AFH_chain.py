@@ -49,15 +49,12 @@ for ss in range(len(d_vec)):
 
 
     D_max = d_vec[ss]
-    print('\n')
-    print('D_max = ', D_max)
-    print('\n')
 
     counter = 0
     for i in range(len(t_list)):
         for j in range(iterations):
             counter += 1
-            print('ss, i, j = ', ss, i, j)
+            print('D_max, ss, i, j = ',D_max, ss, i, j)
             TT1, LL1 = su.simple_update(cp.deepcopy(TT), cp.deepcopy(LL), unitary[i], imat, smat, D_max)
             TT2, LL2 = su.simple_update(cp.deepcopy(TT1), cp.deepcopy(LL1), unitary[i], imat, smat, D_max)
 
@@ -71,7 +68,7 @@ for ss in range(len(d_vec)):
                 LL = cp.deepcopy(LL2)
     d_and_t[:, ss] = np.array([D_max, counter])
     E.append(su.energy_per_site(TT, LL, imat, smat, hij_energy_term))
-
+    print(E[ss])
 
 dd = np.zeros(len(d_vec))
 for i in range(len(dd)):

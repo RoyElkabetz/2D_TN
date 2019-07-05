@@ -1,14 +1,14 @@
 import numpy as np
 import copy as cp
-import simple_update_algorithm2 as su
+import simple_update3 as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
 
-d = 4
+d = 8
 p = 2
 D_max = d
-J = 1.
+J = -1.
 
 T0 = np.random.rand(p, d, d, d, d)
 T1 = np.random.rand(p, d, d, d, d)
@@ -16,7 +16,7 @@ T2 = np.random.rand(p, d, d, d, d)
 T3 = np.random.rand(p, d, d, d, d)
 
 TT = [T0, T1, T2, T3]
-'''
+
 imat = np.array([[1, 1, 1, 0, 1, 0, 0, 0],
                  [1, 0, 1, 1, 0, 1, 0, 0],
                  [0, 1, 0, 0, 1, 0, 1, 1],
@@ -36,7 +36,7 @@ smat = np.array([[1, 2, 3, 4, 0, 0, 0, 0],
                  [1, 2, 0, 0, 3, 4, 0, 0],
                  [0, 0, 1, 2, 0, 0, 3, 4],
                  [0, 0, 0, 0, 1, 2, 3, 4]])
-
+'''
 LL = []
 for i in range(8):
     LL.append(np.ones(d, dtype=float) / d)
@@ -56,9 +56,7 @@ sx = 0.5 * pauli_x
 t_list = np.exp(np.array(np.linspace(-1, -10, 100)))
 heisenberg = -J * np.real(np.kron(sx, sx) + np.kron(sy, sy) + np.kron(sz, sz))
 hij = np.reshape(heisenberg, (p, p, p, p))
-hij_perm = [0, 2, 1, 3]
 hij_energy_term = cp.deepcopy(hij)
-hij = np.transpose(hij, hij_perm)
 hij = np.reshape(hij, [p ** 2, p ** 2])
 unitary = [np.reshape(linalg.expm(-t_list[t] * hij), [p, p, p, p]) for t in range(len(t_list))]
 
