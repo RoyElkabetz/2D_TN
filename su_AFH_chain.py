@@ -1,10 +1,10 @@
 import numpy as np
 import copy as cp
-import simple_update3 as su
+import gPEPS as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
-d_vec = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]
+d_vec = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20]
 E = []
 d_and_t = np.zeros((2, len(d_vec)))
 
@@ -36,9 +36,7 @@ sy = 0.5 * pauli_y
 sx = 0.5 * pauli_x
 
 t_list = [0.1, 0.01, 0.001, 0.0001, 0.00001]
-iterations = 1000
-#t_list = np.ones((100)) * 1e-1
-#t_list = np.exp(np.concatenate((np.linspace(-1, -2, 100), np.linspace(-3, -8, 100))))
+iterations = 100
 heisenberg = -J * np.real(np.kron(sx, sx) + np.kron(sy, sy) + np.kron(sz, sz))
 hij = np.reshape(heisenberg, (p, p, p, p))
 hij_energy_term = cp.deepcopy(hij)
@@ -52,6 +50,7 @@ for ss in range(len(d_vec)):
 
     counter = 0
     for i in range(len(t_list)):
+        flag = 0
         for j in range(iterations):
             counter += 1
             print('D_max, ss, i, j = ',D_max, ss, i, j)
@@ -61,11 +60,16 @@ for ss in range(len(d_vec)):
             energy1 = su.energy_per_site(TT1, LL1, imat, smat, hij_energy_term)
             energy2 = su.energy_per_site(TT2, LL2, imat, smat, hij_energy_term)
 
-            if np.abs(energy1 - energy2) < 1e-8:
+            if np.abs(energy1 - energy2) < 1e-7:
+                flag = 1
                 break
             else:
                 TT = cp.deepcopy(TT2)
                 LL = cp.deepcopy(LL2)
+
+        if flag:
+            flag = 0
+            break
     d_and_t[:, ss] = np.array([D_max, counter])
     E.append(su.energy_per_site(TT, LL, imat, smat, hij_energy_term))
     print(E[ss])

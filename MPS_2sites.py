@@ -1,6 +1,6 @@
 import numpy as np
 import copy as cp
-import simple_update3 as su
+import gPEPS as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 

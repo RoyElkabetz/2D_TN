@@ -1,11 +1,11 @@
 import numpy as np
 import copy as cp
-import simple_update3 as su
+import gPEPS as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
 
-d = 8
+d = 10
 p = 2
 D_max = d
 J = -1.
@@ -16,7 +16,7 @@ T2 = np.random.rand(p, d, d, d, d)
 T3 = np.random.rand(p, d, d, d, d)
 
 TT = [T0, T1, T2, T3]
-
+'''
 imat = np.array([[1, 1, 1, 0, 1, 0, 0, 0],
                  [1, 0, 1, 1, 0, 1, 0, 0],
                  [0, 1, 0, 0, 1, 0, 1, 1],
@@ -36,7 +36,6 @@ smat = np.array([[1, 2, 3, 4, 0, 0, 0, 0],
                  [1, 2, 0, 0, 3, 4, 0, 0],
                  [0, 0, 1, 2, 0, 0, 3, 4],
                  [0, 0, 0, 0, 1, 2, 3, 4]])
-'''
 LL = []
 for i in range(8):
     LL.append(np.ones(d, dtype=float) / d)
@@ -53,7 +52,7 @@ sz = 0.5 * pauli_z
 sy = 0.5 * pauli_y
 sx = 0.5 * pauli_x
 
-t_list = np.exp(np.array(np.linspace(-1, -10, 100)))
+t_list = np.exp(np.array(np.linspace(-1, -2, 100)))
 heisenberg = -J * np.real(np.kron(sx, sx) + np.kron(sy, sy) + np.kron(sz, sz))
 hij = np.reshape(heisenberg, (p, p, p, p))
 hij_energy_term = cp.deepcopy(hij)
@@ -82,7 +81,7 @@ for i in range(len(t_list)):
         TT = cp.deepcopy(TT_new)
         LL = cp.deepcopy(LL_new)
 
-
+'''
 for k in range(len(LL)):
     plt.figure()
     plt.title('lambda' + str(k) + ' values in time')
@@ -92,7 +91,7 @@ for k in range(len(LL)):
     plt.grid()
     plt.ylim([0, 1])
     plt.show()
-
+'''
 plt.figure()
 plt.title('energy values')
 plt.xlabel('t')

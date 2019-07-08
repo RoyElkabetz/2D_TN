@@ -1,11 +1,12 @@
 import numpy as np
 import copy as cp
-import simple_update3 as su
+import gPEPS as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
-D_max = 2
-h = np.linspace(0., 4., num=100)
+D_max = 4
+h = np.linspace(-10., 10., num=500)
+time_to_converge = np.zeros((len(h)))
 E = []
 mx = []
 mz = []
@@ -50,6 +51,17 @@ iterations = 50
 
 
 for ss in range(h.shape[0]):
+    T0 = np.random.rand(p, d, d, d, d)
+    T1 = np.random.rand(p, d, d, d, d)
+    T2 = np.random.rand(p, d, d, d, d)
+    T3 = np.random.rand(p, d, d, d, d)
+
+    TT = [T0, T1, T2, T3]
+
+    LL = []
+    for i in range(imat.shape[1]):
+        LL.append(np.ones(d, dtype=float) / d)
+
     hij = -J * np.kron(pauli_z, pauli_z) - 0.25 * h[ss] * (np.kron(np.eye(p), pauli_x) + np.kron(pauli_x, np.eye(p)))
     hij_energy_operator = np.reshape(cp.deepcopy(hij), (p, p, p, p))
     hij = np.reshape(hij, [p ** 2, p ** 2])
@@ -59,7 +71,7 @@ for ss in range(h.shape[0]):
     for i in range(len(t_list)):
         flag = 0
         for j in range(iterations):
-            counter += 1
+            counter += 2
             print('h, i, j = ', h[ss], ss, i, j)
             TT1, LL1 = su.simple_update(cp.deepcopy(TT), cp.deepcopy(LL), unitary[i], imat, smat, D_max)
             TT2, LL2 = su.simple_update(cp.deepcopy(TT1), cp.deepcopy(LL1), unitary[i], imat, smat, D_max)
@@ -75,28 +87,41 @@ for ss in range(h.shape[0]):
                 LL = cp.deepcopy(LL2)
         if flag:
             flag = 0
+            time_to_converge[ss] = counter
             break
-    z_magnetization = 0
-    x_magnetization = 0
 
-    for k in range(len(TT)):
-        z_magnetization += su.single_tensor_expectation(k, TT, LL, imat, smat, pauli_z)
-        x_magnetization += su.single_tensor_expectation(k, TT, LL, imat, smat, pauli_x)
-
-    mx.append(x_magnetization / len(TT))
-    mz.append(z_magnetization / len(TT))
+    mx.append(su.magnetization(TT, LL, imat, smat, pauli_x))
+    mz.append(su.magnetization(TT, LL, imat, smat, pauli_z))
     E.append(su.energy_per_site(TT, LL, imat, smat, hij_energy_operator))
     print('E, Mx, Mz: ', E[ss], mx[ss], mz[ss])
 
 
 
 plt.figure()
+plt.title('2D Quantum Ising Model in a transverse field')
+plt.subplot()
+color = 'tab:red'
+plt.xlabel('h')
+plt.ylabel('Energy per site', color=color)
+plt.plot(h, E, color=color)
+plt.grid()
+plt.tick_params(axis='y', labelcolor=color)
+plt.twinx()  # instantiate a second axes that shares the same x-axis
+color = 'tab:blue'
+plt.ylabel('# of iterations for energy convergence', color=color)  # we already handled the x-label with ax1
+plt.plot(h, time_to_converge, color=color)
+plt.tick_params(axis='y', labelcolor=color)
+plt.tight_layout()  # otherwise the right y-label is slightly clipped
+plt.grid()
+plt.show()
+'''
+plt.figure()
 plt.plot(h, E, 'o')
 plt.xlabel('h')
 plt.ylabel('Energy')
 plt.grid()
 plt.show()
-
+'''
 plt.figure()
 plt.plot(h, mx, 'o')
 plt.plot(h, mz, 'o')
