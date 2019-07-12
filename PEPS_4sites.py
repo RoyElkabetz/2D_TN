@@ -5,7 +5,7 @@ from scipy import linalg
 import matplotlib.pyplot as plt
 
 
-d = 10
+d = 2
 p = 2
 D_max = d
 J = -1.
@@ -52,7 +52,7 @@ sz = 0.5 * pauli_z
 sy = 0.5 * pauli_y
 sx = 0.5 * pauli_x
 
-t_list = np.exp(np.array(np.linspace(-1, -2, 100)))
+t_list = np.exp(np.array(np.linspace(-1, -5, 100)))
 heisenberg = -J * np.real(np.kron(sx, sx) + np.kron(sy, sy) + np.kron(sz, sz))
 hij = np.reshape(heisenberg, (p, p, p, p))
 hij_energy_term = cp.deepcopy(hij)
@@ -61,6 +61,7 @@ unitary = [np.reshape(linalg.expm(-t_list[t] * hij), [p, p, p, p]) for t in rang
 
 iterations = 1
 energy = []
+magnetization = []
 LL_in_time = np.zeros((len(LL), D_max, len(t_list) * iterations), dtype=float)
 TT_in_time = np.zeros((len(TT), len(np.ravel(TT[0])), len(t_list) * iterations))
 counter = 0

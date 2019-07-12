@@ -66,7 +66,6 @@ for ss in range(len(d_vec)):
             else:
                 TT = cp.deepcopy(TT2)
                 LL = cp.deepcopy(LL2)
-
         if flag:
             flag = 0
             break

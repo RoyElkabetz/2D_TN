@@ -393,5 +393,90 @@ def gauge_fix(TT, LL, imat, smat):
 
 
 
+def gauge_fix1(TT, LL, imat, smat):
+    n, m = np.shape(imat)
+    TT_new = cp.deepcopy(TT)
+    LL_new = cp.deepcopy(LL)
+    for Ek in range(m):
+
+        ## (a) Find tensors Ti, Tj and their corresponding legs connected along edge Ek.
+        tidx = np.nonzero(imat[:, Ek])[0]
+        tdim = smat[tidx, Ek]
+        Ti = [TT[tidx[0]], tdim[0]]
+        Tj = [TT[tidx[1]], tdim[1]]
+        lamda_k = LL[Ek]
+
+        # collecting all neighboring (edges, legs)
+        Ti_alldim = [list(np.nonzero(imat[tidx[0], :])[0]), list(smat[tidx[0], np.nonzero(imat[tidx[0], :])[0]])]
+        Tj_alldim = [list(np.nonzero(imat[tidx[1], :])[0]), list(smat[tidx[1], np.nonzero(imat[tidx[1], :])[0]])]
+
+        # removing the Ek edge and leg
+        Ti_alldim[0].remove(Ek)
+        Ti_alldim[1].remove(smat[tidx[0], Ek])
+        Tj_alldim[0].remove(Ek)
+        Tj_alldim[1].remove(smat[tidx[1], Ek])
+
+        # collecting neighboring lamdas
+        Ti_lamdas = [LL[Em] for Em in Ti_alldim[0]]
+        Tj_lamdas = [LL[Em] for Em in Tj_alldim[0]]
+
+        ## (b) Absorb bond matrices (lambdas) to all Em != Ek of Ti, Tj tensors
+        for Em in range(len(Ti_lamdas)):
+            Ti[0] = np.einsum(Ti[0], range(len(Ti[0].shape)), Ti_lamdas[Em], [Ti_alldim[1][Em]],
+                              range(len(Ti[0].shape)))
+        for Em in range(len(Tj_lamdas)):
+            Tj[0] = np.einsum(Tj[0], range(len(Tj[0].shape)), Tj_lamdas[Em], [Tj_alldim[1][Em]],
+                              range(len(Tj[0].shape)))
+
+        ## Gauge fixing
+        # i environment
+        i_leg = tdim[0]
+        j_leg = tdim[1]
+        i_idx = range(len(Ti[0].shape))
+        i_conj_idx = range(len(Ti[0].shape))
+        i_conj_idx[i_leg] = len(Ti[0].shape)
+        Mi = np.einsum(Ti[0], i_idx, np.conj(Ti[0]), i_conj_idx,
+                       [i_idx[i_leg], i_conj_idx[i_leg]])
+
+        # j environment
+        j_idx = range(len(Tj[0].shape))
+        j_conj_idx = range(len(Tj[0].shape))
+        j_conj_idx[j_leg] = len(Tj[0].shape)
+        Mj = np.einsum(Tj[0], j_idx, np.conj(Tj[0]), j_conj_idx,
+                       [j_idx[j_leg], j_conj_idx[j_leg]])
+
+        # Environment diagonalization
+        di, ui = np.linalg.eig(Mi)
+        dj, uj = np.linalg.eig(Mj)
+
+        # contruction
+        lamda_k_prime = np.matmul(np.matmul(np.conj(np.transpose(ui)), np.diag(lamda_k)), uj)
+        lamda_k_prime = np.matmul(np.diag(np.sqrt(di)), np.matmul(lamda_k_prime, np.diag(np.sqrt(dj))))
+
+        # SVD
+        wi, lamda_k_tild, wj = np.linalg.svd(lamda_k_prime)
+        lamda_k_tild /= np.sum(lamda_k_tild)
+
+        # x and y costruction
+        x = np.matmul(np.matmul(np.conj(np.transpose(wi)), np.diag(np.sqrt(di))), np.conj(np.transpose(ui)))
+        y = np.matmul(np.matmul(uj, np.diag(np.sqrt(dj))), wj)
+
+        # fixing Ti and Tj
+        Ti_idx_old = range(len(TT[tidx[0]].shape))
+        Ti_idx_new = range(len(TT[tidx[0]].shape))
+        Ti_idx_new[i_leg] = len(Ti_idx_old)
+        Tj_idx_old = range(len(TT[tidx[1]].shape))
+        Tj_idx_new = range(len(TT[tidx[1]].shape))
+        Tj_idx_new[j_leg] = len(Tj_idx_old)
+        Ti_fixed = np.einsum(TT[tidx[0]], Ti_idx_old, np.linalg.pinv(x), [Ti_idx_old[i_leg], len(Ti_idx_old)], Ti_idx_new)
+        Tj_fixed = np.einsum(TT[tidx[1]], Tj_idx_old, np.linalg.pinv(y), [Tj_idx_old[j_leg], len(Tj_idx_old)], Tj_idx_new)
+
+        TT_new[tidx[0]] = cp.copy(Ti_fixed)
+        TT_new[tidx[1]] = cp.copy(Tj_fixed)
+        LL_new[Ek] = cp.copy(lamda_k_tild / np.sum(lamda_k_tild))
+
+    return TT_new, LL_new
+
+
 
 

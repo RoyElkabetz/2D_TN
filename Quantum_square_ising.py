@@ -4,8 +4,8 @@ import gPEPS as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
-D_max = 4
-h = np.linspace(-10., 10., num=500)
+D_max = 7
+h = np.linspace(0., 4., num=500)
 time_to_converge = np.zeros((len(h)))
 E = []
 mx = []
@@ -123,11 +123,11 @@ plt.grid()
 plt.show()
 '''
 plt.figure()
-plt.plot(h, mx, 'o')
-plt.plot(h, mz, 'o')
+plt.plot(h, np.log10(np.array(mx)), 'o')
+#plt.plot(h, mz, 'o')
 plt.xlabel('h')
 plt.ylabel('Magnetization')
-plt.legend(['mx', 'mz'])
+#plt.legend(['mx', 'mz'])
 plt.grid()
 plt.show()
 
