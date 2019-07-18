@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="39f4aadf-3039-4826-aca9-4bd799d9af66" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/PEPS_4sites.py" beforeDir="false" afterPath="$PROJECT_DIR$/PEPS_4sites.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Quantum_square_ising.py" beforeDir="false" afterPath="$PROJECT_DIR$/Quantum_square_ising.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gPEPS.py" beforeDir="false" afterPath="$PROJECT_DIR$/gPEPS.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/su_AFH_chain.py" beforeDir="false" afterPath="$PROJECT_DIR$/su_AFH_chain.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/PEPS_25spins.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -39,7 +37,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/gPEPS.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1871">
+            <state relative-caret-position="405">
               <caret line="480" selection-start-line="480" selection-end-line="480" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
@@ -48,11 +46,23 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PEPS_4sites.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1071">
-              <caret line="19" column="42" lean-forward="true" selection-start-line="19" selection-start-column="42" selection-end-line="19" selection-end-column="42" />
+            <state relative-caret-position="150">
+              <caret line="10" column="7" lean-forward="true" selection-start-line="10" selection-start-column="7" selection-end-line="10" selection-end-column="7" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/PEPS_25spins.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="240">
+              <caret line="16" selection-start-line="16" selection-end-line="16" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -63,7 +73,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/MPS_2sites.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3344">
+            <state relative-caret-position="405">
               <caret line="152" column="60" selection-start-line="152" selection-start-column="50" selection-end-line="152" selection-end-column="60" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
@@ -72,11 +82,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/su_AFH_chain.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="70">
-              <caret line="47" lean-forward="true" selection-start-line="47" selection-end-line="47" />
+            <state relative-caret-position="156">
+              <caret line="34" column="18" lean-forward="true" selection-start-line="34" selection-start-column="18" selection-end-line="34" selection-end-column="18" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -87,8 +97,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="12" column="24" lean-forward="true" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
+            <state relative-caret-position="165">
+              <caret line="12" column="24" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -99,8 +109,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Quantum_square_ising.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="613">
-              <caret line="126" column="21" lean-forward="true" selection-start-line="126" selection-start-column="21" selection-end-line="126" selection-end-column="21" />
+            <state relative-caret-position="1830">
+              <caret line="126" column="21" selection-start-line="126" selection-start-column="21" selection-end-line="126" selection-end-column="21" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -153,13 +163,14 @@
         <option value="$PROJECT_DIR$/su_AFH_chain.py" />
         <option value="$PROJECT_DIR$/Quantum_square_ising.py" />
         <option value="$PROJECT_DIR$/PEPS_4sites.py" />
+        <option value="$PROJECT_DIR$/PEPS_25spins.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="23" />
-    <option name="width" value="1920" />
-    <option name="height" value="971" />
+    <option name="width" value="831" />
+    <option name="height" value="791" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -211,18 +222,18 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.PEPS_4sites">
-    <configuration name="MPS_2sites" type="PythonConfigurationType" factoryName="Python" temporary="true">
+  <component name="RunManager" selected="Python.PEPS_25spins">
+    <configuration name="PEPS_25spins" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="2D_TN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="$USER_HOME$/anaconda2/bin/python" />
+      <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="false" />
+      <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/MPS_2sites.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PEPS_25spins.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -235,6 +246,9 @@
       <module name="2D_TN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -254,6 +268,9 @@
       <module name="2D_TN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -273,6 +290,9 @@
       <module name="2D_TN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -292,6 +312,9 @@
       <module name="2D_TN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -308,19 +331,19 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.MPS_2sites" />
       <item itemvalue="Python.su_AFH_chain" />
       <item itemvalue="Python.data" />
       <item itemvalue="Python.PEPS_4sites" />
       <item itemvalue="Python.Quantum_square_ising" />
+      <item itemvalue="Python.PEPS_25spins" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.PEPS_25spins" />
         <item itemvalue="Python.PEPS_4sites" />
         <item itemvalue="Python.su_AFH_chain" />
         <item itemvalue="Python.Quantum_square_ising" />
         <item itemvalue="Python.data" />
-        <item itemvalue="Python.MPS_2sites" />
       </list>
     </recent_temporary>
   </component>
@@ -336,12 +359,13 @@
       <updated>1556536485844</updated>
       <workItem from="1561378174831" duration="5308000" />
       <workItem from="1561464071628" duration="1514000" />
-      <workItem from="1561468792679" duration="113327000" />
+      <workItem from="1561468792679" duration="113378000" />
+      <workItem from="1563426344920" duration="5179000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="120149000" />
+    <option name="totallyTimeSpent" value="125379000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -356,12 +380,12 @@
     <frame x="0" y="23" width="1440" height="791" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.3204578" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.32474965" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32992035" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.34243459" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.34191704" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.59726965" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -371,12 +395,12 @@
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.3265074" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.3265074" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="12" visible="true" weight="0.37911302" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="12" visible="true" weight="0.30615166" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Database" order="3" weight="0.328541" />
-      <window_info anchor="right" id="SciView" order="4" weight="0.73801917" />
+      <window_info anchor="right" id="SciView" order="4" weight="0.73748213" />
       <window_info anchor="right" x="0" y="0" width="310" height="595" id="Documentation" order="5" side_tool="true" weight="0.32960597" />
     </layout>
   </component>
@@ -410,6 +434,7 @@
     <SUITE FILE_PATH="coverage/2D_TN$data.coverage" NAME="data Coverage Results" MODIFIED="1562215334019" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$trivial_ITE.coverage" NAME="trivial_ITE Coverage Results" MODIFIED="1562149552361" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$Quantum_square_ising.coverage" NAME="Quantum_square_ising Coverage Results" MODIFIED="1562358910043" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/2D_TN$PEPS_25spins.coverage" NAME="PEPS_25spins Coverage Results" MODIFIED="1563478755611" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$PEPS_4sites.coverage" NAME="PEPS_4sites Coverage Results" MODIFIED="1562216645341" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$honeycomb_su.coverage" NAME="honeycomb_su Coverage Results" MODIFIED="1562073891824" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$temp.coverage" NAME="temp Coverage Results" MODIFIED="1561550517608" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -583,26 +608,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/data.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" column="24" lean-forward="true" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MPS_2sites.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3344">
-          <caret line="152" column="60" selection-start-line="152" selection-start-column="50" selection-end-line="152" selection-end-column="60" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/simple_update_algorithm2.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="474">
@@ -623,20 +628,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/gPEPS.py">
+    <entry file="file://$PROJECT_DIR$/data.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1871">
-          <caret line="480" selection-start-line="480" selection-end-line="480" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/su_AFH_chain.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="70">
-          <caret line="47" lean-forward="true" selection-start-line="47" selection-end-line="47" />
+        <state relative-caret-position="165">
+          <caret line="12" column="24" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -645,8 +640,25 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Quantum_square_ising.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="613">
-          <caret line="126" column="21" lean-forward="true" selection-start-line="126" selection-start-column="21" selection-end-line="126" selection-end-column="21" />
+        <state relative-caret-position="1830">
+          <caret line="126" column="21" selection-start-line="126" selection-start-column="21" selection-end-line="126" selection-end-column="21" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Library/Caches/PyCharm2019.1/python_stubs/182664975/numpy/core/umath.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-601">
+          <caret line="3587" column="4" selection-start-line="3587" selection-start-column="4" selection-end-line="3587" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gPEPS.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="480" selection-start-line="480" selection-end-line="480" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -655,8 +667,38 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/PEPS_4sites.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1071">
-          <caret line="19" column="42" lean-forward="true" selection-start-line="19" selection-start-column="42" selection-end-line="19" selection-end-column="42" />
+        <state relative-caret-position="150">
+          <caret line="10" column="7" lean-forward="true" selection-start-line="10" selection-start-column="7" selection-end-line="10" selection-end-column="7" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PEPS_25spins.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" selection-start-line="16" selection-end-line="16" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MPS_2sites.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="152" column="60" selection-start-line="152" selection-start-column="50" selection-end-line="152" selection-end-column="60" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/su_AFH_chain.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="156">
+          <caret line="34" column="18" lean-forward="true" selection-start-line="34" selection-start-column="18" selection-end-line="34" selection-end-column="18" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
