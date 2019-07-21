@@ -46,7 +46,7 @@ def simple_update(TT, LL, Uij, imat, smat, D_max):
         Pl = rankN_to_rank3(cp.deepcopy(Ti[0]))
         Pr = rankN_to_rank3(cp.deepcopy(Tj[0]))
 
-
+        '''
         # experimenting with QR instead of SVD
         Q1, R = np.linalg.qr(np.transpose(np.reshape(Pl, [Pl.shape[0] * Pl.shape[1], np.prod(Pl.shape[2:])])))
         Q2, L = np.linalg.qr(np.transpose(np.reshape(Pr, [Pr.shape[0] * Pr.shape[1], np.prod(Pr.shape[2:])])))
@@ -57,11 +57,11 @@ def simple_update(TT, LL, Uij, imat, smat, D_max):
 
         '''
         ## (d) SVD decomposing of Pl, Pr to obtain Q1, R and Q2, L sub-tensors, respectively
-        #R, sr, Q1 = svd(Pl, [0, 1], [2], keep_s='yes')
-        #L, sl, Q2 = svd(Pr, [0, 1], [2], keep_s='yes')
-        #R = R.dot(np.diag(sr))
-        #L = L.dot(np.diag(sl))
-        '''
+        R, sr, Q1 = svd(Pl, [0, 1], [2], keep_s='yes')
+        L, sl, Q2 = svd(Pr, [0, 1], [2], keep_s='yes')
+        R = R.dot(np.diag(sr))
+        L = L.dot(np.diag(sl))
+
         # reshaping R and L into rank 3 tensors with shape (physical_dim, Ek_dim, Q(1/2).shape[0])
         i_physical_dim = Ti[0].shape[0]
         j_physical_dim = Tj[0].shape[0]
@@ -104,9 +104,6 @@ def simple_update(TT, LL, Uij, imat, smat, D_max):
         Tj = remove_edges(Tj, j_dim, LL)
 
         # Normalize and save new Ti Tj and lambda_k
-        #TT[Ti[1][0]] = cp.deepcopy(Ti[0] / np.sum(Ti[0]))
-        #TT[Tj[1][0]] = cp.deepcopy(Tj[0] / np.sum(Tj[0]))
-        #LL[Ek] = cp.deepcopy(lamda_k_tild / np.sum(lamda_k_tild))
         TT[Ti[1][0]] = cp.deepcopy(Ti[0] / tensor_normalization(Ti[0]))
         TT[Tj[1][0]] = cp.deepcopy(Tj[0] / tensor_normalization(Tj[0]))
         LL[Ek] = cp.deepcopy(lamda_k_tild / np.sum(lamda_k_tild))
@@ -221,20 +218,24 @@ def tensor_normalization(T):
     T_conj = np.conj(cp.deepcopy(T))
     idx = range(len(T.shape))
     norm = np.einsum(T, idx, T_conj, idx)
-    return norm
+    return np.sqrt(norm)
 
 
 def single_tensor_expectation(tensor_idx, TT, LL, imat, smat, Oi):
     env_edges = np.nonzero(imat[tensor_idx, :])[0]
     env_legs = smat[tensor_idx, env_edges]
-    T = absorb_edges(cp.deepcopy(TT[tensor_idx]), [env_edges, env_legs], LL)
-    T_conj = absorb_edges(cp.deepcopy(np.conj(TT[tensor_idx])), [env_edges, env_legs], LL)
+    #T = absorb_edges(cp.deepcopy(TT[tensor_idx]), [env_edges, env_legs], LL)
+    #T_conj = absorb_edges(cp.deepcopy(np.conj(TT[tensor_idx])), [env_edges, env_legs], LL)
+    T = cp.deepcopy(TT[tensor_idx])
+    T_conj = cp.deepcopy(np.conj(TT[tensor_idx]))
     T_idx = range(len(T.shape))
     T_conj_idx = range(len(T_conj.shape))
     T_conj_idx[0] = len(T_conj.shape)
     operator_idx = [T_conj_idx[0], T_idx[0]]
     expectation = ncon.ncon([T, T_conj, Oi], [T_idx, T_conj_idx, operator_idx])
     normalization = site_norm(tensor_idx, TT, LL, imat, smat)
+    #print('e = ', expectation)
+    #print('n = ', normalization)
     return expectation / normalization
 
 
@@ -251,8 +252,10 @@ def magnetization(TT, LL, imat, smat, Oi):
 def site_norm(tensor_idx, tensors_list, lamdas_list, imat, smat):
     env_edges = np.nonzero(imat[tensor_idx, :])[0]
     env_legs = smat[tensor_idx, env_edges]
-    T = absorb_edges(tensors_list[tensor_idx], [env_edges, env_legs], lamdas_list)
-    T_conj = absorb_edges(np.conj(tensors_list[tensor_idx]), [env_edges, env_legs], lamdas_list)
+    #T = absorb_edges(tensors_list[tensor_idx], [env_edges, env_legs], lamdas_list)
+    #T_conj = absorb_edges(np.conj(tensors_list[tensor_idx]), [env_edges, env_legs], lamdas_list)
+    T = cp.deepcopy(tensors_list[tensor_idx])
+    T_conj = cp.deepcopy(np.conj(tensors_list[tensor_idx]))
     T_idx = range(len(T.shape))
     T_conj_idx = range(len(T_conj.shape))
     normalization = np.einsum(T, T_idx, T_conj, T_conj_idx)
@@ -309,6 +312,8 @@ def two_site_expectation(Ek, TT, LL, imat, smat, Oij):
     tensors = [Ti[0], Ti_conj[0], Tj[0], Tj_conj[0], eye, np.diag(lamda_k), np.diag(lamda_k)]
     indices = [Ti_idx, Ti_conj_idx, Tj_idx, Tj_conj_idx, eye_idx, lamda_k_idx, lamda_k_conj_idx]
     two_site_norm = ncon.ncon(tensors, indices)
+    #print('2 sites norm = ', two_site_norm)
+    #print('2 sites energy = ', two_site_expec)
     two_site_expec /= two_site_norm
     return two_site_expec
 

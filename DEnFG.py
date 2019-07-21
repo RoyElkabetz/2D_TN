@@ -70,7 +70,7 @@ class Graph:
         super_tensor = np.einsum(tensor, tensor_idx1, np.conj(tensor), tensor_idx2, super_tensor_idx_shape)
         return super_tensor
 
-    def sum_product(self, t_max, epsilon):
+    def sum_product(self, t_max, epsilon=None):
         factors = self.factors
         nodes = self.nodes
         node2factor = {}
@@ -89,6 +89,7 @@ class Graph:
         self.init_save_messages()
 
         for t in range(t_max):
+            print('t = ', t)
             old_messages_f2n = factor2node
             old_messages_n2f = node2factor
             for n in nodes.keys():

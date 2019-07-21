@@ -4,15 +4,18 @@ import gPEPS as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
-D_max = 7
-h = np.linspace(0., 4., num=500)
+
+h = np.linspace(0., 4., num=50)
 time_to_converge = np.zeros((len(h)))
+mz_matrix_TN = np.zeros((2, 2, len(h)))
+
 E = []
 mx = []
 mz = []
 
-d = 2
+d = 3
 p = 2
+D_max = d
 J = 1
 
 
@@ -46,7 +49,7 @@ sy = 0.5 * pauli_y
 sx = 0.5 * pauli_x
 
 t_list = [0.1, 0.01, 0.001, 0.0001]
-iterations = 50
+iterations = 100
 
 
 
@@ -87,18 +90,24 @@ for ss in range(h.shape[0]):
                 LL = cp.deepcopy(LL2)
         if flag:
             flag = 0
-            time_to_converge[ss] = counter
             break
-
+    time_to_converge[ss] = counter
     mx.append(su.magnetization(TT, LL, imat, smat, pauli_x))
     mz.append(su.magnetization(TT, LL, imat, smat, pauli_z))
     E.append(su.energy_per_site(TT, LL, imat, smat, hij_energy_operator))
     print('E, Mx, Mz: ', E[ss], mx[ss], mz[ss])
 
+    # Magnetization matrix vs h
+    #kk = 0
+    #for ii in range(2):
+    #    for jj in range(2):
+    #        mz_matrix_TN[ii, jj, ss] = su.single_tensor_expectation(np.int(2 * ii + jj), TT, LL, imat, smat, pauli_z)
+    #        kk += 1
+
 
 
 plt.figure()
-plt.title('2D Quantum Ising Model in a transverse field')
+plt.title('2D Quantum Ising Model in a transverse field at Dmax = ' + str(D_max))
 plt.subplot()
 color = 'tab:red'
 plt.xlabel('h')
@@ -123,11 +132,19 @@ plt.grid()
 plt.show()
 '''
 plt.figure()
-plt.plot(h, np.log10(np.array(mx)), 'o')
-#plt.plot(h, mz, 'o')
+plt.plot(h, mx, 'o')
+plt.plot(h, mz, 'o')
+plt.title('magnetization vs h at Dmax = ' + str(D_max))
 plt.xlabel('h')
 plt.ylabel('Magnetization')
-#plt.legend(['mx', 'mz'])
+plt.legend(['mx', 'mz'])
 plt.grid()
 plt.show()
 
+'''
+for i in range(len(h)):
+    plt.figure()
+    plt.matshow(mz_matrix_TN[:, :, i])
+    plt.title('mz magnetizations at each site for h = ' + str(h[i]))
+    plt.show()
+'''
