@@ -26,6 +26,7 @@ def simple_update(TT, LL, Uij, imat, smat, D_max):
     """
     n, m = np.shape(imat)
     for Ek in range(m):
+
         lamda_k = LL[Ek]
 
         ## (a) Find tensors Ti, Tj and their corresponding legs connected along edge Ek.
@@ -142,12 +143,14 @@ def get_edges(edge, structure_matrix, incidence_matrix):
 def absorb_edges(tensor, edges_dim, bond_vectors):
     for i in range(len(edges_dim[0])):
         tensor[0] = np.einsum(tensor[0], range(len(tensor[0].shape)), bond_vectors[edges_dim[0][i]], [edges_dim[1][i]], range(len(tensor[0].shape)))
+    #print(tensor_normalization(tensor[0]))
     return tensor
 
 
 def remove_edges(tensor, edges_dim, bond_vectors):
     for i in range(len(edges_dim[0])):
         tensor[0] = np.einsum(tensor[0], range(len(tensor[0].shape)), bond_vectors[edges_dim[0][i]] ** (-1), [edges_dim[1][i]], range(len(tensor[0].shape)))
+    #print(tensor_normalization(tensor[0]))
     return tensor
 
 
@@ -224,10 +227,22 @@ def tensor_normalization(T):
 def single_tensor_expectation(tensor_idx, TT, LL, imat, smat, Oi):
     env_edges = np.nonzero(imat[tensor_idx, :])[0]
     env_legs = smat[tensor_idx, env_edges]
+
+    ## Absorbing the environment
     #T = absorb_edges(cp.deepcopy(TT[tensor_idx]), [env_edges, env_legs], LL)
     #T_conj = absorb_edges(cp.deepcopy(np.conj(TT[tensor_idx])), [env_edges, env_legs], LL)
+
     T = cp.deepcopy(TT[tensor_idx])
     T_conj = cp.deepcopy(np.conj(TT[tensor_idx]))
+
+    ## absorb its environment
+    for j in range(len(env_edges)):
+        T = np.einsum(T, range(len(T.shape)), LL[env_edges[j]], [env_legs[j]], range(len(T.shape)))
+        T_conj = np.einsum(T_conj, range(len(T_conj.shape)), LL[env_edges[j]], [env_legs[j]], range(len(T_conj.shape)))
+
+    #T /= T.max()
+    #T_conj /= T_conj.max()
+
     T_idx = range(len(T.shape))
     T_conj_idx = range(len(T_conj.shape))
     T_conj_idx[0] = len(T_conj.shape)
@@ -252,10 +267,22 @@ def magnetization(TT, LL, imat, smat, Oi):
 def site_norm(tensor_idx, tensors_list, lamdas_list, imat, smat):
     env_edges = np.nonzero(imat[tensor_idx, :])[0]
     env_legs = smat[tensor_idx, env_edges]
-    #T = absorb_edges(tensors_list[tensor_idx], [env_edges, env_legs], lamdas_list)
-    #T_conj = absorb_edges(np.conj(tensors_list[tensor_idx]), [env_edges, env_legs], lamdas_list)
+
+    ## Absorbing the environment
+    #T = absorb_edges(cp.deepcopy(tensors_list[tensor_idx]), [env_edges, env_legs], lamdas_list)
+    #T_conj = absorb_edges(cp.deepcopy(np.conj(tensors_list[tensor_idx])), [env_edges, env_legs], lamdas_list)
+
     T = cp.deepcopy(tensors_list[tensor_idx])
     T_conj = cp.deepcopy(np.conj(tensors_list[tensor_idx]))
+
+    ## absorb its environment
+    for j in range(len(env_edges)):
+        T = np.einsum(T, range(len(T.shape)), lamdas_list[env_edges[j]], [env_legs[j]], range(len(T.shape)))
+        T_conj = np.einsum(T_conj, range(len(T_conj.shape)), lamdas_list[env_edges[j]], [env_legs[j]], range(len(T_conj.shape)))
+
+    #T /= T.max()
+    #T_conj /= T_conj.max()
+
     T_idx = range(len(T.shape))
     T_conj_idx = range(len(T_conj.shape))
     normalization = np.einsum(T, T_idx, T_conj, T_conj_idx)
@@ -271,6 +298,7 @@ def two_site_expectation(Ek, TT, LL, imat, smat, Oij):
 
     # collecting all neighboring (edges, dimensions) without the Ek (edge, dimension)
     i_dim, j_dim = get_edges(Ek, smat, imat)
+
 
     ## (b) Absorb bond vectors (lambdas) to all Em != Ek of Ti, Tj tensors
     Ti = absorb_edges(Ti, i_dim, LL)

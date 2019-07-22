@@ -4,7 +4,7 @@ import gPEPS as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
-d_vec = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20]
+d_vec = [2, 3, 4, 5, 6, 8, 10, 15, 20, 30]
 E = []
 d_and_t = np.zeros((2, len(d_vec)))
 
@@ -60,7 +60,7 @@ for ss in range(len(d_vec)):
             energy1 = su.energy_per_site(TT1, LL1, imat, smat, hij_energy_term)
             energy2 = su.energy_per_site(TT2, LL2, imat, smat, hij_energy_term)
 
-            if np.abs(energy1 - energy2) < 1e-7:
+            if np.abs(energy1 - energy2) < 1e-10:
                 flag = 1
                 break
             else:

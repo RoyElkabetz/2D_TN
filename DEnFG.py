@@ -53,11 +53,6 @@ class Graph:
 
     def pd_mat_init(self, alphabet):
         eigenval = np.eye(alphabet) / alphabet
-        #for i in range(alphabet):
-        #    eigenval[i, i] = np.random.rand()
-        #eigenval /= np.trace(eigenval)
-        #unitary = unitary_group.rvs(alphabet)
-        #pd = np.matmul(np.transpose(np.conj(unitary)), np.matmul(eigenval, unitary))
         return eigenval
 
     def make_super_tensor(self, tensor):
@@ -70,7 +65,7 @@ class Graph:
         super_tensor = np.einsum(tensor, tensor_idx1, np.conj(tensor), tensor_idx2, super_tensor_idx_shape)
         return super_tensor
 
-    def sum_product(self, t_max, epsilon=None):
+    def sum_product(self, t_max, epsilon):
         factors = self.factors
         nodes = self.nodes
         node2factor = {}
@@ -90,8 +85,8 @@ class Graph:
 
         for t in range(t_max):
             print('t = ', t)
-            old_messages_f2n = factor2node
-            old_messages_n2f = node2factor
+            old_messages_f2n = cp.deepcopy(factor2node)
+            old_messages_n2f = cp.deepcopy(node2factor)
             for n in nodes.keys():
                 alphabet = nodes[n][0]
                 for f in nodes[n][1]:
@@ -119,12 +114,15 @@ class Graph:
                     factor2node[f][n] = np.einsum(super_tensor, range(len(super_tensor.shape)), message_idx)
                     factor2node[f][n] /= np.trace(factor2node[f][n])
                     '''
-            self.save_messages(node2factor, factor2node)
-        self.messages_n2f = node2factor
-        self.messages_f2n = factor2node
+            #self.save_messages(node2factor, factor2node)
+            self.messages_n2f = node2factor
+            self.messages_f2n = factor2node
+            if self.check_converge(old_messages_n2f, old_messages_f2n, epsilon):
+                break
 
-    def check_converge(self, n2f_old, f2n_old, n2f_new, f2n_new, epsilon):
+    def check_converge(self, n2f_old, f2n_old, epsilon):
         diff = 0
+        n2f_new, f2n_new = self.messages_n2f, self.messages_f2n
         for n in n2f_old:
             for f in n2f_old[n]:
                 diff += np.sum(np.abs(n2f_old[n][f] - n2f_new[n][f]))
