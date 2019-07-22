@@ -8,16 +8,16 @@ import ncon
 import DEnFG as fg
 
 #---------------------- Tensor Network paramas ------------------
-N = 4 # number of spins
+N = 16 # number of spins
 L = np.int(np.sqrt(N))
 
 
-d = 6  # virtual bond dimension
+d = 2  # virtual bond dimension
 p = 2  # physical bond dimension
 D_max = d  # maximal virtual bond dimension
 J = 1  # Hamiltonian: interaction coeff
 
-h = np.linspace(0., 4., num=50)  # Hamiltonian: magnetic field coeff
+h = np.linspace(0., 5., num=100)  # Hamiltonian: magnetic field coeff
 time_to_converge = np.zeros((len(h)))
 mz_matrix_TN = np.zeros((p, p, len(h)))
 
@@ -46,7 +46,7 @@ sy = 0.5 * pauli_y
 sx = 0.5 * pauli_x
 
 t_list = [0.1, 0.01, 0.001, 0.0001]
-iterations = 100
+iterations = 200
 
 
 #------------- generating the finite PEPS structure matrix------------------
@@ -93,6 +93,8 @@ for ss in range(h.shape[0]):
             energy2 = su.energy_per_site(cp.deepcopy(TT2), cp.deepcopy(LL2), imat, smat, hij_energy_operator)
             if np.abs(energy1 - energy2) < 1e-8:
                 flag = 1
+                TT = cp.deepcopy(TT2)
+                LL = cp.deepcopy(LL2)
                 break
             else:
                 TT = cp.deepcopy(TT2)
@@ -135,7 +137,7 @@ for ss in range(h.shape[0]):
         graph.add_factor(neighbor_nodes, cp.deepcopy(factor))
 
     #----------------------------------- run Belief Propagation over DEnFG----------------------------
-    t_max = 200
+    t_max = 10000
     epsilon = 1e-15
     graph.sum_product(t_max, epsilon)
     graph.calc_node_belief()
@@ -191,12 +193,12 @@ plt.grid()
 plt.show()
 
 plt.figure()
-plt.plot(h, mx, 'o')
-plt.plot(h, np.abs(np.array(mz)), 'o')
-plt.plot(h, mx_exact, 'o')
-plt.plot(h, np.abs(np.array(mz_exact)), 'o')
-plt.plot(h, mx_graph, 'o')
-plt.plot(h, np.abs(np.array(mz_graph)), 'o')
+plt.plot(h, mx, 'go')
+plt.plot(h, np.abs(np.array(mz)), 'bo')
+plt.plot(h, mx_exact, 'r-')
+plt.plot(h, np.abs(np.array(mz_exact)), 'y-')
+plt.plot(h, mx_graph, 'cv')
+plt.plot(h, np.abs(np.array(mz_graph)), 'mv')
 plt.title('magnetization vs h at Dmax = ' + str(D_max))
 plt.xlabel('h')
 plt.ylabel('Magnetization')

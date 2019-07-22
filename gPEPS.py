@@ -35,9 +35,24 @@ def simple_update(TT, LL, Uij, imat, smat, D_max):
         # collecting all neighboring (edges, dimensions) without the Ek (edge, dimension)
         i_dim, j_dim = get_edges(Ek, smat, imat)
 
+        iedges = list(np.nonzero(smat[Ti[1][0], :])[0])
+        ilegs = list(smat[Ti[1][0], iedges])
+        jedges = list(np.nonzero(smat[Tj[1][0], :])[0])
+        jlegs = list(smat[Tj[1][0], jedges])
+        iedges.remove(Ek)
+        ilegs.remove(smat[Ti[1][0], Ek])
+        jedges.remove(Ek)
+        jlegs.remove(smat[Tj[1][0], Ek])
+
+        for ii in range(len(iedges)):
+            Ti[0] = np.einsum(Ti[0], range(len(Ti[0].shape)), LL[iedges[ii]], [ilegs[ii]], range(len(Ti[0].shape)))
+            Tj[0] = np.einsum(Tj[0], range(len(Tj[0].shape)), LL[jedges[ii]], [jlegs[ii]], range(len(Tj[0].shape)))
+
+
+
         ## (b) Absorb bond vectors (lambdas) to all Em != Ek of Ti, Tj tensors
-        Ti = absorb_edges(Ti, i_dim, LL)
-        Tj = absorb_edges(Tj, j_dim, LL)
+        #Ti = absorb_edges(Ti, i_dim, LL)
+        #Tj = absorb_edges(Tj, j_dim, LL)
 
         # permuting the Ek leg of tensors i and j into the 1'st dimension
         Ti = dim_perm(Ti)
@@ -101,8 +116,12 @@ def simple_update(TT, LL, Uij, imat, smat, D_max):
         Tj = dim_perm(Tj)
 
         ## (i) Remove bond matrices lambda_m from virtual legs m != Ek to obtain the updated tensors Ti~, Tj~.
-        Ti = remove_edges(Ti, i_dim, LL)
-        Tj = remove_edges(Tj, j_dim, LL)
+        #Ti = remove_edges(Ti, i_dim, LL)
+        #Tj = remove_edges(Tj, j_dim, LL)
+        for ii in range(len(iedges)):
+            Ti[0] = np.einsum(Ti[0], range(len(Ti[0].shape)), LL[iedges[ii]] ** (-1), [ilegs[ii]], range(len(Ti[0].shape)))
+            Tj[0] = np.einsum(Tj[0], range(len(Tj[0].shape)), LL[jedges[ii]] ** (-1), [jlegs[ii]], range(len(Tj[0].shape)))
+
 
         # Normalize and save new Ti Tj and lambda_k
         TT[Ti[1][0]] = cp.deepcopy(Ti[0] / tensor_normalization(Ti[0]))

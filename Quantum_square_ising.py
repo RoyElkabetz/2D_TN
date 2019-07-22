@@ -18,7 +18,7 @@ mz = []
 mx_exact = []
 mz_exact = []
 
-d = 3
+d = 8
 p = 2
 D_max = d
 J = 1

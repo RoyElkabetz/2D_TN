@@ -2,14 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="39f4aadf-3039-4826-aca9-4bd799d9af66" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/ncon_lists_generator.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/temp1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DEnFG.py" beforeDir="false" afterPath="$PROJECT_DIR$/DEnFG.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PEPS_25spins.py" beforeDir="false" afterPath="$PROJECT_DIR$/PEPS_25spins.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Quantum_square_ising.py" beforeDir="false" afterPath="$PROJECT_DIR$/Quantum_square_ising.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gPEPS.py" beforeDir="false" afterPath="$PROJECT_DIR$/gPEPS.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/su_AFH_chain.py" beforeDir="false" afterPath="$PROJECT_DIR$/su_AFH_chain.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp1.py" beforeDir="false" afterPath="$PROJECT_DIR$/temp1.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -43,8 +38,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/gPEPS.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="35" column="48" lean-forward="true" selection-start-line="35" selection-start-column="48" selection-end-line="35" selection-end-column="48" />
+            <state relative-caret-position="1830">
+              <caret line="122" column="87" selection-start-line="122" selection-start-column="87" selection-end-line="122" selection-end-column="87" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -52,11 +47,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ncon_lists_generator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="17" column="41" lean-forward="true" selection-start-line="17" selection-start-column="41" selection-end-line="17" selection-end-column="41" />
+            <state relative-caret-position="-100">
+              <caret line="16" column="29" lean-forward="true" selection-start-line="16" selection-start-column="29" selection-end-line="16" selection-end-column="29" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -67,8 +62,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Quantum_square_ising.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="208">
-              <caret line="42" lean-forward="true" selection-end-line="173" selection-end-column="3" />
+            <state relative-caret-position="167">
+              <caret line="20" column="5" selection-start-line="20" selection-start-column="5" selection-end-line="20" selection-end-column="5" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -76,11 +71,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/temp1.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="14" column="5" selection-start-line="14" selection-start-column="5" selection-end-line="14" selection-end-column="5" />
+            <state relative-caret-position="223">
+              <caret line="15" column="32" lean-forward="true" selection-start-line="15" selection-start-column="32" selection-end-line="15" selection-end-column="32" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -140,11 +135,11 @@
         <option value="$PROJECT_DIR$/PEPS_4sites.py" />
         <option value="$PROJECT_DIR$/su_AFH_chain.py" />
         <option value="$PROJECT_DIR$/ncon_lists_generator_PEPS.py" />
-        <option value="$PROJECT_DIR$/Quantum_square_ising.py" />
         <option value="$PROJECT_DIR$/ncon_lists_generator.py" />
         <option value="$PROJECT_DIR$/PEPS_25spins.py" />
         <option value="$PROJECT_DIR$/DEnFG.py" />
         <option value="$PROJECT_DIR$/gPEPS.py" />
+        <option value="$PROJECT_DIR$/Quantum_square_ising.py" />
         <option value="$PROJECT_DIR$/temp1.py" />
       </list>
     </option>
@@ -333,12 +328,12 @@
       <workItem from="1561378174831" duration="5308000" />
       <workItem from="1561464071628" duration="1514000" />
       <workItem from="1561468792679" duration="113378000" />
-      <workItem from="1563426344920" duration="64666000" />
+      <workItem from="1563426344920" duration="69359000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="184866000" />
+    <option name="totallyTimeSpent" value="189559000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -368,12 +363,12 @@
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32618025" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.32536975" />
-      <window_info anchor="bottom" id="Python Console" order="12" visible="true" weight="0.33762518" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="12" visible="true" weight="0.33762518" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Database" order="3" weight="0.32747602" />
-      <window_info active="true" anchor="right" id="SciView" order="4" visible="true" weight="0.5422031" />
+      <window_info anchor="right" id="Database" order="3" weight="0.32689556" />
+      <window_info anchor="right" id="SciView" order="4" weight="0.5422031" />
       <window_info anchor="right" x="0" y="0" width="310" height="595" id="Documentation" order="5" side_tool="true" weight="0.32960597" />
     </layout>
   </component>
@@ -667,20 +662,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Quantum_square_ising.py">
+    <entry file="file://$PROJECT_DIR$/gPEPS.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="42" lean-forward="true" selection-end-line="173" selection-end-column="3" />
+        <state relative-caret-position="1830">
+          <caret line="122" column="87" selection-start-line="122" selection-start-column="87" selection-end-line="122" selection-end-column="87" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/gPEPS.py">
+    <entry file="file://$PROJECT_DIR$/Quantum_square_ising.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="35" column="48" lean-forward="true" selection-start-line="35" selection-start-column="48" selection-end-line="35" selection-end-column="48" />
+        <state relative-caret-position="167">
+          <caret line="20" column="5" selection-start-line="20" selection-start-column="5" selection-end-line="20" selection-end-column="5" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ncon_lists_generator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-100">
+          <caret line="16" column="29" lean-forward="true" selection-start-line="16" selection-start-column="29" selection-end-line="16" selection-end-column="29" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -696,18 +701,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/temp1.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="14" column="5" selection-start-line="14" selection-start-column="5" selection-end-line="14" selection-end-column="5" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ncon_lists_generator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="41" lean-forward="true" selection-start-line="17" selection-start-column="41" selection-end-line="17" selection-end-column="41" />
+        <state relative-caret-position="223">
+          <caret line="15" column="32" lean-forward="true" selection-start-line="15" selection-start-column="32" selection-end-line="15" selection-end-column="32" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
