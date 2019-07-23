@@ -175,7 +175,7 @@ for ss in range(h.shape[0]):
 
 # ------------------------------------- plotting results ----------------------------------------------
 plt.figure()
-plt.title('2D Quantum Ising Model in a transverse field at Dmax = ' + str(D_max))
+plt.title('16 spins 2D Quantum Ising Model with a transverse field \n with maximal virtual bond dimension Dmax = ' + str(D_max))
 plt.subplot()
 color = 'tab:red'
 plt.xlabel('h')
@@ -185,24 +185,38 @@ plt.grid()
 plt.tick_params(axis='y', labelcolor=color)
 plt.twinx()  # instantiate a second axes that shares the same x-axis
 color = 'tab:blue'
-plt.ylabel('# of iterations for energy convergence', color=color)  # we already handled the x-label with ax1
+plt.ylabel('# of gPEPS iterations until convergence', color=color)  # we already handled the x-label with ax1
 plt.plot(h, time_to_converge, color=color)
 plt.tick_params(axis='y', labelcolor=color)
 plt.tight_layout()  # otherwise the right y-label is slightly clipped
 plt.grid()
+plt.savefig("energy.pdf", bbox_inches='tight')
 plt.show()
 
 plt.figure()
-plt.plot(h, mx, 'go')
-plt.plot(h, np.abs(np.array(mz)), 'bo')
-plt.plot(h, mx_exact, 'r-')
-plt.plot(h, np.abs(np.array(mz_exact)), 'y-')
-plt.plot(h, mx_graph, 'cv')
-plt.plot(h, np.abs(np.array(mz_graph)), 'mv')
-plt.title('magnetization vs h at Dmax = ' + str(D_max))
+plt.plot(h, mx, 'go', markersize=3)
+plt.plot(h, np.abs(np.array(mz)), 'bo', markersize=3)
+plt.plot(h, mx_exact, 'r-', linewidth=2)
+plt.plot(h, np.abs(np.array(mz_exact)), 'y-', linewidth=2)
+plt.plot(h, mx_graph, 'cv', markersize=5)
+plt.plot(h, np.abs(np.array(mz_graph)), 'mv', markersize=5)
+plt.title('Averaged magnetization vs h at Dmax = ' + str(D_max))
 plt.xlabel('h')
 plt.ylabel('Magnetization')
 plt.legend(['mx', '|mz|', 'mx exact', '|mz| exact', 'mx DEnFG', '|mz| DEnFG'])
+plt.grid()
+plt.savefig("magnetization.pdf", bbox_inches='tight')
+plt.show()
+
+plt.figure()
+plt.plot(h[60:], mx[60:], 'go', markersize=3)
+plt.plot(h[60:], mx_exact[60:], 'r-', linewidth=2)
+plt.plot(h[60:], mx_graph[60:], 'cv', markersize=5)
+plt.title('Averaged magnetization vs h at Dmax = ' + str(D_max))
+plt.xlabel('h')
+plt.ylabel('Magnetization')
+plt.legend(['mx', 'mx exact', 'mx DEnFG'])
+plt.savefig("magnetization_zoomed_with_legend.pdf", bbox_inches='tight')
 plt.grid()
 plt.show()
 
