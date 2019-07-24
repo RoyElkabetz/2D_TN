@@ -1,6 +1,6 @@
 import numpy as np
 import copy as cp
-import gPEPS as su
+import glassy_gPEPS as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 import ncon_lists_generator as nlg
@@ -8,7 +8,7 @@ import ncon
 import DEnFG as fg
 
 #---------------------- Tensor Network paramas ------------------
-N = 4 # number of spins
+N = 16 # number of spins
 L = np.int(np.sqrt(N))
 
 
@@ -16,7 +16,14 @@ d = 2  # virtual bond dimension
 p = 2  # physical bond dimension
 D_max = d  # maximal virtual bond dimension
 J = 1  # Hamiltonian: interaction coeff
-h = np.linspace(-5., 5., num=50)  # Hamiltonian: magnetic field coeff
+h = np.linspace(0.1, 5., num=100)  # Hamiltonian: magnetic field coeff
+
+mu = 1
+sigma = 1
+Jk = np.random.normal(mu, sigma, (2 * N))
+#Jk = np.ones((2 * N))
+print('Jk = ', Jk)
+
 
 time_to_converge = np.zeros((len(h)))
 mz_matrix_TN = np.zeros((p, p, len(h)))
@@ -28,6 +35,11 @@ mx_exact = []
 mz_exact = []
 mx_graph = []
 mz_graph = []
+trace_distance_exact_graph = []
+trace_distance_exact_gPEPS = []
+trace_distance_gPEPS_graph = []
+
+spin_idx_for_trace_distance = 3
 
 mx_mat = np.zeros((len(h), L, L))
 mz_mat = np.zeros((len(h), L, L))
@@ -46,8 +58,11 @@ sy = 0.5 * pauli_y
 sx = 0.5 * pauli_x
 
 t_list = [0.1, 0.01, 0.001, 0.0001]
-iterations = 200
+iterations = 100
 
+Opi = pauli_z
+Opj = pauli_z
+Op_field = pauli_x
 
 #------------- generating the finite PEPS structure matrix------------------
 imat = np.zeros((N, 2 * N), dtype=int)
@@ -75,22 +90,18 @@ for ss in range(h.shape[0]):
     for i in range(imat.shape[1]):
         LL.append(np.ones(d, dtype=float) / d)
 
-    hij = -J * np.kron(pauli_z, pauli_z) - 0.25 * h[ss] * (np.kron(np.eye(p), pauli_x) + np.kron(pauli_x, np.eye(p)))
-    hij_energy_operator = np.reshape(cp.deepcopy(hij), (p, p, p, p))
-    hij = np.reshape(hij, [p ** 2, p ** 2])
-    unitary = [np.reshape(linalg.expm(-t_list[t] * hij), [p, p, p, p]) for t in range(len(t_list))]
     counter = 0
 
     # --------------------------------- iterating the gPEPS algorithm -------------------------------------
-    for i in range(len(t_list)):
+    for dt in t_list:
         flag = 0
         for j in range(iterations):
             counter += 2
-            print('h, i, j = ', h[ss], ss, i, j)
-            TT1, LL1 = su.simple_update(cp.deepcopy(TT), cp.deepcopy(LL), unitary[i], imat, smat, D_max)
-            TT2, LL2 = su.simple_update(cp.deepcopy(TT1), cp.deepcopy(LL1), unitary[i], imat, smat, D_max)
-            energy1 = su.energy_per_site(cp.deepcopy(TT1), cp.deepcopy(LL1), imat, smat, hij_energy_operator)
-            energy2 = su.energy_per_site(cp.deepcopy(TT2), cp.deepcopy(LL2), imat, smat, hij_energy_operator)
+            print('h, h_idx, t, j = ', h[ss], ss, dt, j)
+            TT1, LL1 = su.simple_update(cp.deepcopy(TT), cp.deepcopy(LL), dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max)
+            TT2, LL2 = su.simple_update(cp.deepcopy(TT1), cp.deepcopy(LL1), dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max)
+            energy1 = su.energy_per_site(cp.deepcopy(TT1), cp.deepcopy(LL1), imat, smat, Jk, h[ss], Opi, Opj, Op_field)
+            energy2 = su.energy_per_site(cp.deepcopy(TT2), cp.deepcopy(LL2), imat, smat, Jk, h[ss], Opi, Opj, Op_field)
             if np.abs(energy1 - energy2) < 1e-8:
                 flag = 1
                 TT = cp.deepcopy(TT2)
@@ -137,7 +148,7 @@ for ss in range(h.shape[0]):
         graph.add_factor(neighbor_nodes, cp.deepcopy(factor))
 
     #----------------------------------- run Belief Propagation over DEnFG----------------------------
-    t_max = 400
+    t_max = 1000
     epsilon = 1e-15
     graph.sum_product(t_max, epsilon)
     graph.calc_node_belief()
@@ -145,14 +156,13 @@ for ss in range(h.shape[0]):
     # --------------------------------- calculating magnetization matrices-------------------------------
     for l in range(L):
         for ll in range(L):
-            print('l, ll = ', l, ll)
 
-            #T_list_n, idx_list_n = nlg.ncon_list_generator(TT, LL, smat, np.eye(p), np.int(L * l + ll))
-            #T_listz, idx_listz = nlg.ncon_list_generator(TT, LL, smat, pauli_z, np.int(L * l + ll))
-            #mz_mat_exact[ss, l, ll] = ncon.ncon(T_listz, idx_listz) / ncon.ncon(T_list_n, idx_list_n)
+            T_list_n, idx_list_n = nlg.ncon_list_generator(TT, LL, smat, np.eye(p), np.int(L * l + ll))
+            T_listz, idx_listz = nlg.ncon_list_generator(TT, LL, smat, pauli_z, np.int(L * l + ll))
+            mz_mat_exact[ss, l, ll] = ncon.ncon(T_listz, idx_listz) / ncon.ncon(T_list_n, idx_list_n)
 
-            #T_listx, idx_listx = nlg.ncon_list_generator(TT, LL, smat, pauli_x, np.int(L * l + ll))
-            #mx_mat_exact[ss, l, ll] = ncon.ncon(T_listx, idx_listx) / ncon.ncon(T_list_n, idx_list_n)
+            T_listx, idx_listx = nlg.ncon_list_generator(TT, LL, smat, pauli_x, np.int(L * l + ll))
+            mx_mat_exact[ss, l, ll] = ncon.ncon(T_listx, idx_listx) / ncon.ncon(T_list_n, idx_list_n)
 
             mz_mat[ss, l, ll] = su.single_tensor_expectation(np.int(2 * l + ll), TT, LL, imat, smat, pauli_z)
             mx_mat[ss, l, ll] = su.single_tensor_expectation(np.int(2 * l + ll), TT, LL, imat, smat, pauli_x)
@@ -163,21 +173,38 @@ for ss in range(h.shape[0]):
     # ------------------ calculating total magnetization, energy and time to converge -------------------
     mz.append(np.sum(mz_mat[ss, :, :]) / n)
     mx.append(np.sum(mx_mat[ss, :, :]) / n)
-    #mz_exact.append(np.sum(mz_mat_exact[ss, :, :]) / n)
-    #mx_exact.append(np.sum(mx_mat_exact[ss, :, :]) / n)
+    mz_exact.append(np.sum(mz_mat_exact[ss, :, :]) / n)
+    mx_exact.append(np.sum(mx_mat_exact[ss, :, :]) / n)
     mz_graph.append(np.sum(mz_mat_graph[ss, :, :]) / n)
     mx_graph.append(np.sum(mx_mat_graph[ss, :, :]) / n)
     time_to_converge[ss] = counter
-    E.append(su.energy_per_site(cp.deepcopy(TT), cp.deepcopy(LL), imat, smat, hij_energy_operator))
+    E.append(su.energy_per_site(cp.deepcopy(TT), cp.deepcopy(LL), imat, smat, Jk, h[ss], Opi, Opj, Op_field))
     print('Mx_graph, Mz_graph', mx_graph[ss], mz_graph[ss])
-    #print('Mx_exact, Mz_exact', mx_exact[ss], mz_exact[ss])
+    print('Mx_exact, Mz_exact', mx_exact[ss], mz_exact[ss])
     print('E, Mx, Mz: ', E[ss], mx[ss], mz[ss])
 
+    # ------------------------ Trace distances of spin # reduced density matrix results ---------------
+    reduced_dm_gPEPS = su.tensor_reduced_dm(spin_idx_for_trace_distance, TT, LL, smat, imat)
+    reduced_dm_graph = graph.node_belief['n' + str(virtual_nodes_counter + spin_idx_for_trace_distance)]
+    tensors_reduced_dm_list, indices_reduced_dm_list = nlg.ncon_list_generator_reduced_dm(TT, LL, smat, spin_idx_for_trace_distance)
+    tensors_reduced_dm_listn, indices_reduced_dm_listn = nlg.ncon_list_generator(TT, LL, smat, np.eye(p), spin_idx_for_trace_distance)
+    reduced_dm_exact = ncon.ncon(tensors_reduced_dm_list, indices_reduced_dm_list) / ncon.ncon(tensors_reduced_dm_listn, indices_reduced_dm_listn)
+
+    trace_distance_exact_gPEPS.append(su.trace_distance(reduced_dm_exact, reduced_dm_gPEPS))
+    trace_distance_exact_graph.append(su.trace_distance(reduced_dm_exact, reduced_dm_graph))
+    trace_distance_gPEPS_graph.append(su.trace_distance(reduced_dm_gPEPS, reduced_dm_graph))
+    #print('rho_gPEPS = ', reduced_dm_gPEPS)
+    #print('rho_DEnFG = ', reduced_dm_graph)
+    #print('rho_exact = ', reduced_dm_exact)
+    print('d(exact, DEnFG) = ', trace_distance_exact_graph[ss])
+    print('d(exact, gPEPS) = ', trace_distance_exact_gPEPS[ss])
+    print('d(gPEPS, DEnFG) = ', trace_distance_gPEPS_graph[ss])
+
 # ------------------------------------- plotting results ----------------------------------------------
-file_name = 'PEPS' + str(N) + '.pdf'
+file_name = '_glassy_PEPS' + str(N) + '.pdf'
 
 plt.figure()
-plt.title(str(N) + 'spins 2D Quantum Ising Model with a transverse field \n with maximal virtual bond dimension Dmax = ' + str(D_max))
+plt.title(str(N) + ' spins 2D glassy (J = normal(1, 1)) Quantum Ising Model with \n a transverse field  with maximal virtual bond dimension Dmax = ' + str(D_max))
 plt.subplot()
 color = 'tab:red'
 plt.xlabel('h')
@@ -188,7 +215,7 @@ plt.tick_params(axis='y', labelcolor=color)
 plt.twinx()  # instantiate a second axes that shares the same x-axis
 color = 'tab:blue'
 plt.ylabel('# of gPEPS iterations until convergence', color=color)  # we already handled the x-label with ax1
-plt.plot(h, time_to_converge, color=color)
+plt.plot(h, time_to_converge,color=color)
 plt.tick_params(axis='y', labelcolor=color)
 plt.tight_layout()  # otherwise the right y-label is slightly clipped
 plt.grid()
@@ -198,17 +225,29 @@ plt.show()
 plt.figure()
 plt.plot(h, mx, 'go', markersize=3)
 plt.plot(h, np.abs(np.array(mz)), 'bo', markersize=3)
-#plt.plot(h, mx_exact, 'r-', linewidth=2)
-#plt.plot(h, np.abs(np.array(mz_exact)), 'y-', linewidth=2)
+plt.plot(h, mx_exact, 'r-', linewidth=2)
+plt.plot(h, np.abs(np.array(mz_exact)), 'y-', linewidth=2)
 plt.plot(h, mx_graph, 'cv', markersize=5)
 plt.plot(h, np.abs(np.array(mz_graph)), 'mv', markersize=5)
 plt.title('Averaged magnetization vs h at Dmax = ' + str(D_max))
 plt.xlabel('h')
 plt.ylabel('Magnetization')
-#plt.legend(['mx', '|mz|', 'mx exact', '|mz| exact', 'mx DEnFG', '|mz| DEnFG'])
-plt.legend(['mx', '|mz|', 'mx DEnFG', '|mz| DEnFG'])
+plt.legend(['mx', '|mz|', 'mx exact', '|mz| exact', 'mx DEnFG', '|mz| DEnFG'])
 plt.grid()
 plt.savefig("magnetization" + file_name, bbox_inches='tight')
+plt.show()
+
+plt.figure()
+plt.plot(h, trace_distance_exact_graph, 'o')
+plt.plot(h, trace_distance_exact_gPEPS, 'v')
+#plt.plot(h, trace_distance_gPEPS_graph, 'o')
+plt.title('Trace distance comparison of single particle rdm in a 4x4 PEPS')
+plt.xlabel('h')
+plt.ylabel('Trace distance')
+#plt.legend(['d(exact, DEnFG)', 'd(exact, gPEPS)', 'd(gPEPS, DEnFG)'])
+plt.legend(['D(exact, BP)', 'D(exact, simple-update)'])
+plt.grid()
+plt.savefig("trace_distances_" + file_name, bbox_inches='tight')
 plt.show()
 
 '''

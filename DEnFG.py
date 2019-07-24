@@ -66,6 +66,7 @@ class Graph:
         return super_tensor
 
     def sum_product(self, t_max, epsilon):
+        print('run BP')
         factors = self.factors
         nodes = self.nodes
         node2factor = {}
@@ -84,7 +85,7 @@ class Graph:
         self.init_save_messages()
 
         for t in range(t_max):
-            print('t = ', t)
+
             old_messages_f2n = cp.deepcopy(factor2node)
             old_messages_n2f = cp.deepcopy(node2factor)
             for n in nodes.keys():
@@ -119,6 +120,8 @@ class Graph:
             self.messages_f2n = factor2node
             if self.check_converge(old_messages_n2f, old_messages_f2n, epsilon):
                 break
+        print('t_final = ', t)
+        print('\n')
 
     def check_converge(self, n2f_old, f2n_old, epsilon):
         diff = 0
