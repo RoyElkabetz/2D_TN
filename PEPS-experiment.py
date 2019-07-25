@@ -8,15 +8,15 @@ import ncon
 import DEnFG as fg
 
 #---------------------- Tensor Network paramas ------------------
-N = 4 # number of spins
+N = 9 # number of spins
 L = np.int(np.sqrt(N))
 
 
 d = 2  # virtual bond dimension
 p = 2  # physical bond dimension
 D_max = d  # maximal virtual bond dimension
-J = 1  # Hamiltonian: interaction coeff
-h = np.linspace(-5., 5., num=50)  # Hamiltonian: magnetic field coeff
+J = -1  # Hamiltonian: interaction coeff
+h = np.linspace(0.1, 5., num=50)  # Hamiltonian: magnetic field coeff
 
 time_to_converge = np.zeros((len(h)))
 mz_matrix_TN = np.zeros((p, p, len(h)))

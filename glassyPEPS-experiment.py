@@ -8,7 +8,7 @@ import ncon
 import DEnFG as fg
 
 #---------------------- Tensor Network paramas ------------------
-N = 16 # number of spins
+N = 9 # number of spins
 L = np.int(np.sqrt(N))
 
 
@@ -18,7 +18,7 @@ D_max = d  # maximal virtual bond dimension
 J = 1  # Hamiltonian: interaction coeff
 h = np.linspace(0.1, 5., num=100)  # Hamiltonian: magnetic field coeff
 
-mu = 1
+mu = 0
 sigma = 1
 Jk = np.random.normal(mu, sigma, (2 * N))
 #Jk = np.ones((2 * N))
@@ -219,7 +219,7 @@ plt.plot(h, time_to_converge,color=color)
 plt.tick_params(axis='y', labelcolor=color)
 plt.tight_layout()  # otherwise the right y-label is slightly clipped
 plt.grid()
-plt.savefig("energy" + file_name, bbox_inches='tight')
+#plt.savefig("energy" + file_name, bbox_inches='tight')
 plt.show()
 
 plt.figure()
@@ -234,7 +234,7 @@ plt.xlabel('h')
 plt.ylabel('Magnetization')
 plt.legend(['mx', '|mz|', 'mx exact', '|mz| exact', 'mx DEnFG', '|mz| DEnFG'])
 plt.grid()
-plt.savefig("magnetization" + file_name, bbox_inches='tight')
+#plt.savefig("magnetization" + file_name, bbox_inches='tight')
 plt.show()
 
 plt.figure()
@@ -247,7 +247,7 @@ plt.ylabel('Trace distance')
 #plt.legend(['d(exact, DEnFG)', 'd(exact, gPEPS)', 'd(gPEPS, DEnFG)'])
 plt.legend(['D(exact, BP)', 'D(exact, simple-update)'])
 plt.grid()
-plt.savefig("trace_distances_" + file_name, bbox_inches='tight')
+#plt.savefig("trace_distances_" + file_name, bbox_inches='tight')
 plt.show()
 
 '''

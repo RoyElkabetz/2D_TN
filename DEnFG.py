@@ -184,7 +184,7 @@ class Graph:
         neighbors, tensor, index = cp.deepcopy(self.factors[f])
         conj_tensor = cp.copy(np.conj(tensor))
         l = cp.copy(len(tensor.shape))
-        tensor_idx = range(l)
+        tensor_idx = list(range(l))
         for item in neighbors:
             if item == n:
                 continue
