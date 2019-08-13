@@ -8,7 +8,7 @@ import ncon
 import DEnFG as fg
 
 date = '2019.08.13_'
-experiment_num = '_1_'
+experiment_num = '_2_'
 
 #---------------------- Tensor Network paramas ------------------
 
@@ -51,14 +51,10 @@ trace_distance_exact_gPEPS = np.zeros((len(h), L, L))
 trace_distance_gPEPS_graph = np.zeros((len(h), L, L))
 
 
-spin_idx_for_trace_distance = 3
-
-mx_mat = np.zeros((len(h), L, L))
-mz_mat = np.zeros((len(h), L, L))
-mx_mat_exact = np.zeros((len(h), L, L))
-mz_mat_exact = np.zeros((len(h), L, L))
-mz_mat_graph = np.zeros((len(h), L, L))
-mx_mat_graph = np.zeros((len(h), L, L))
+mx_mat = np.zeros((len(h), L, L), dtype=complex)
+mz_mat = np.zeros((len(h), L, L), dtype=complex)
+mx_mat_exact = np.zeros((len(h), L, L), dtype=complex)
+mz_mat_exact = np.zeros((len(h), L, L), dtype=complex)
 
 
 pauli_z = np.array([[1, 0], [0, -1]])

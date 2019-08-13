@@ -82,7 +82,7 @@ class Graph:
             for n in factors[f][0]:
                 alphabet = nodes[n][0]
                 factor2node[f][n] = self.pd_mat_init(alphabet)
-        self.init_save_messages()
+        #self.init_save_messages()
 
         for t in range(t_max):
 

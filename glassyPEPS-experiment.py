@@ -7,12 +7,12 @@ import ncon_lists_generator as nlg
 import ncon
 import DEnFG as fg
 
-date = '2019.08.05_'
-experiment_num = '_3_'
+date = '2019.08.13_'
+experiment_num = '_1_'
 
 #---------------------- Tensor Network paramas ------------------
 
-N = 16 # number of spins
+N = 4 # number of spins
 L = np.int(np.sqrt(N))
 
 
@@ -23,8 +23,8 @@ D_max = d  # maximal virtual bond dimension
 J = 1  # Hamiltonian: interaction coeff
 h = np.linspace(0.1, 5., num=100)  # Hamiltonian: magnetic field coeff
 
-mu = -1
-sigma = 1
+mu = 1
+sigma = 0
 Jk = np.random.normal(mu, sigma, (2 * N))
 #Jk = np.ones((2 * N))
 print('Jk = ', Jk)
@@ -160,7 +160,8 @@ for ss in range(h.shape[0]):
     #----------------------------------- run Belief Propagation over DEnFG ----------------------------
     t_max = 1000
     epsilon = 1e-15
-    graph.sum_product(t_max, epsilon)
+    dumping = 0.1
+    graph.sum_product(t_max, epsilon, dumping)
     graph.calc_node_belief()
 
     # --------------------------------- calculating magnetization matrices -------------------------------

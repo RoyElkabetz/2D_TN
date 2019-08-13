@@ -568,31 +568,27 @@ def BPupdate(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax):
     graph.sum_product(t_max, epsilon, dumping)
     for Ek in range(len(LL)):
         P = find_P(graph, Ek, smat, Dmax)
-        TT, LL = smart_truncation(TT, LL, P, Ek, smat, imat)
-    BPerror = BPupdate_error(TT, LL, TT_old, LL_old, smat)
-    print('BP_error = ', BPerror)
+        TT, LL = smart_truncation(TT, LL, P, Ek, smat, imat, Dmax)
+    #BPerror = BPupdate_error(TT, LL, TT_old, LL_old, smat)
+    #print('BP_error = ', BPerror)
     return TT, LL
 
 
 def PEPStoDEnFG_transform(graph, TT, LL, smat):
     factors_list = absorb_all_bond_vectors(TT, LL, smat)
-
     # Adding virtual nodes
     n, m = np.shape(smat)
     for i in range(m):
         graph.add_node(len(LL[i]), 'n' + str(graph.node_count))
-
     # Adding factors
     for i in range(n):
         # Adding physical node
         graph.add_node(factors_list[i].shape[0], 'n' + str(graph.node_count))
-
         # generating the neighboring nodes of the i'th factor
         neighbor_nodes = {}
         edges = np.nonzero(smat[i, :])[0]
         legs = smat[i, edges]
         neighbor_nodes['n' + str(graph.node_count - 1)] = 0
-
         for j in range(len(edges)):
             neighbor_nodes['n' + str(edges[j])] = legs[j]
         graph.add_factor(neighbor_nodes, cp.deepcopy(factors_list[i]))
@@ -620,14 +616,15 @@ def find_P(graph, edge, smat, Dmax):
     P2 /= np.sum(new_s_env)
 
     ##  Calculating P = A^(-1/2) * U^(dagger) * P2 * V * B^(-1/2)
-    P = np.matmul(np.linalg.inv(A_sqrt), np.matmul(np.transpose(np.conj(u_env)), np.matmul(P2, np.matmul(
-        np.transpose(np.conj(vh_env)), np.linalg.inv(B_sqrt)))))
+    P = np.matmul(np.linalg.inv(A_sqrt), np.matmul(np.transpose(np.conj(vh_env)), np.matmul(P2, np.matmul(np.transpose(np.conj(u_env)), np.linalg.inv(B_sqrt)))))
+
+    #overlap = np.trace(np.matmul(A, np.matmul(P, B)))
+    #print('overlap = ', overlap)
     return P
 
-def smart_truncation(TT, LL, P, edge, smat, imat):
+def smart_truncation(TT, LL, P, edge, smat, imat, Dmax):
     ##  P svd calculation and Ek bond vector trancation
-    U, S, V = svd(P, [0], [1], keep_s='yes')
-
+    U, S, V = svd(P, [0], [1], keep_s='yes', max_eigen_num=Dmax)
     Ti, Tj = get_tensors(edge, TT, smat, imat)
 
     ##  Absorb U, and V to Ti and Tj respectively and lambda_k = S
@@ -658,7 +655,10 @@ def BPupdate_error(TT, LL, TT_old, LL_old, smat):
     phipsi = ncon.ncon(phipsi_T_list, phipsi_idx_list)
     phiphi = ncon.ncon(phiphi_T_list, phiphi_idx_list)
 
-    error = psipsi + phiphi - psiphi -phipsi
+    psi_norm = np.sqrt(psipsi)
+    phi_norm = np.sqrt(phiphi)
+    #print('overlap_exact = ', psiphi / psi_norm / phi_norm)
+    error = 2 - psiphi / psi_norm / phi_norm - phipsi / psi_norm / phi_norm
     return error
 
 
