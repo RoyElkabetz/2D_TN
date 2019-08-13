@@ -529,6 +529,13 @@ def gauge_fix1(TT, LL, imat, smat):
 
     return TT_new, LL_new
 
-
+def absorb_all_bond_vectors(TT, LL, smat):
+    n = len(TT)
+    for i in range(n):
+        edges = np.nonzero(smat[i, :])[0]
+        legs = smat[i, edges]
+        for j in range(len(edges)):
+            TT[i] = np.einsum(TT[i], range(len(TT[i].shape)), np.sqrt(LL[edges[j]]), [legs[j]], range(len(TT[i].shape)))
+    return TT
 
 

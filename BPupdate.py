@@ -2,28 +2,25 @@ import numpy as np
 import ncon as ncon
 import copy as cp
 from scipy import linalg
+import DEnFG as denfg
+import  ncon_lists_generator as nlg
 
 
 """
-    A module for the function gPEPS which preform the simple update algorithm over a given Tensor Network 
-    as specified in the paper https://arxiv.org/abs/1808.00680 by Roman Orus et al.
+    A module for the function PEPS_BPupdate which preform the BPupdate algorithm over a given PEPS Tensor Network 
+    
 """
 
 
-def simple_update(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
+def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
 
     """
     :param TT: list of tensors in the tensor network TT = [T1, T2, T3, ..., Tp]
     :param LL: list of lists of the lambdas LL = [L1, L2, ..., Ls]
-    :param Uij: The unitary matrix for the Imaginary Time Evolution (ITE)
     :param imat: The incidence matrix which indicates which tensor connect to which edge (as indicated in the paper)
     :param smat: The structure matrix which indicates which leg of every tensor is connected to which edge
     :param D_max: maximal virtual dimension
-    :return: updated tensors list TT and updated lambda tuple of lists LL
 
-    The SU preformed here is following step by step after the algorithm specified in the paper above. The only change I
-    made is using a SVD decomposition and not QR decomposition in step (d) although I am living a commented QR
-    decomposition code just in case.
     """
     n, m = np.shape(imat)
     for Ek in range(m):
@@ -50,11 +47,6 @@ def simple_update(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
             Tj[0] = np.einsum(Tj[0], range(len(Tj[0].shape)), LL[jedges[ii]], [jlegs[ii]], range(len(Tj[0].shape)))
 
 
-
-        ## (b) Absorb bond vectors (lambdas) to all Em != Ek of Ti, Tj tensors
-        #Ti = absorb_edges(Ti, i_dim, LL)
-        #Tj = absorb_edges(Tj, j_dim, LL)
-
         # permuting the Ek leg of tensors i and j into the 1'st dimension
         Ti = dim_perm(Ti)
         Tj = dim_perm(Tj)
@@ -63,16 +55,7 @@ def simple_update(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
         Pl = rankN_to_rank3(cp.deepcopy(Ti[0]))
         Pr = rankN_to_rank3(cp.deepcopy(Tj[0]))
 
-        '''
-        # experimenting with QR instead of SVD
-        Q1, R = np.linalg.qr(np.transpose(np.reshape(Pl, [Pl.shape[0] * Pl.shape[1], np.prod(Pl.shape[2:])])))
-        Q2, L = np.linalg.qr(np.transpose(np.reshape(Pr, [Pr.shape[0] * Pr.shape[1], np.prod(Pr.shape[2:])])))
-        Q1 = np.transpose(Q1)
-        Q2 = np.transpose(Q2)
-        R = np.transpose(R)
-        L = np.transpose(L)
 
-        '''
         ## (d) SVD decomposing of Pl, Pr to obtain Q1, R and Q2, L sub-tensors, respectively
         R, sr, Q1 = svd(Pl, [0, 1], [2], keep_s='yes')
         L, sl, Q2 = svd(Pr, [0, 1], [2], keep_s='yes')
@@ -89,15 +72,14 @@ def simple_update(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
         theta = imaginary_time_evolution(R, L, lamda_k, Ek, dt, Jk, h, Opi, Opj, Op_field)  # (Q1, i', j', Q2)
 
         ## (f) Obtain R', L', lambda'_k tensors by applying an SVD to theta
-        # and trancating R', lamda_k', L' while keeping only D_max eigenvalues and eigenvectors
-        R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes', max_eigen_num=D_max)
-        # (Q1 * i', D_max) # (D_max, D_max) # (D_max, j' * Q2)
+        R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes')
+        # (Q1 * i', D') # (D', D') # (D', j' * Q2)
 
         # reshaping R_tild and L_tild back to rank 3 tensor
-        R_tild = np.reshape(R_tild, (Q1.shape[0], i_physical_dim, R_tild.shape[1]))  # (Q1, i', D_max)
-        R_tild = np.transpose(R_tild, [1, 2, 0])  # (i', D_max, Q1)
-        L_tild = np.reshape(L_tild, (L_tild.shape[0], j_physical_dim, Q2.shape[0]))  # (D_max, j', Q2)
-        L_tild = np.transpose(L_tild, [1, 0, 2])  # (j', D_max, Q2)
+        R_tild = np.reshape(R_tild, (Q1.shape[0], i_physical_dim, R_tild.shape[1]))  # (Q1, i', D')
+        R_tild = np.transpose(R_tild, [1, 2, 0])  # (i', D', Q1)
+        L_tild = np.reshape(L_tild, (L_tild.shape[0], j_physical_dim, Q2.shape[0]))  # (D', j', Q2)
+        L_tild = np.transpose(L_tild, [1, 0, 2])  # (j', D', Q2)
 
 
         ## (g) Glue back the R', L', sub-tensors to Q1, Q2, respectively, to form updated tensors P'l, P'r.
@@ -117,12 +99,9 @@ def simple_update(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
         Tj = dim_perm(Tj)
 
         ## (i) Remove bond matrices lambda_m from virtual legs m != Ek to obtain the updated tensors Ti~, Tj~.
-        #Ti = remove_edges(Ti, i_dim, LL)
-        #Tj = remove_edges(Tj, j_dim, LL)
         for ii in range(len(iedges)):
             Ti[0] = np.einsum(Ti[0], range(len(Ti[0].shape)), LL[iedges[ii]] ** (-1), [ilegs[ii]], range(len(Ti[0].shape)))
             Tj[0] = np.einsum(Tj[0], range(len(Tj[0].shape)), LL[jedges[ii]] ** (-1), [jlegs[ii]], range(len(Tj[0].shape)))
-
 
         # Normalize and save new Ti Tj and lambda_k
         TT[Ti[1][0]] = cp.deepcopy(Ti[0] / tensor_normalization(Ti[0]))
@@ -572,3 +551,114 @@ def absorb_all_bond_vectors(TT, LL, smat):
         for j in range(len(edges)):
             TT[i] = np.einsum(TT[i], range(len(TT[i].shape)), np.sqrt(LL[edges[j]]), [legs[j]], range(len(TT[i].shape)))
     return TT
+
+# ---------------------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------------------------
+
+
+def BPupdate(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax):
+    TT_old = cp.deepcopy(TT)
+    LL_old = cp.deepcopy(LL)
+    graph = denfg.Graph()
+    graph = PEPStoDEnFG_transform(graph, TT, LL, smat)
+    graph.sum_product(t_max, epsilon, dumping)
+    for Ek in range(len(LL)):
+        P = find_P(graph, Ek, smat, Dmax)
+        TT, LL = smart_truncation(TT, LL, P, Ek, smat, imat)
+    BPerror = BPupdate_error(TT, LL, TT_old, LL_old, smat)
+    print('BP_error = ', BPerror)
+    return TT, LL
+
+
+def PEPStoDEnFG_transform(graph, TT, LL, smat):
+    factors_list = absorb_all_bond_vectors(TT, LL, smat)
+
+    # Adding virtual nodes
+    n, m = np.shape(smat)
+    for i in range(m):
+        graph.add_node(len(LL[i]), 'n' + str(graph.node_count))
+
+    # Adding factors
+    for i in range(n):
+        # Adding physical node
+        graph.add_node(factors_list[i].shape[0], 'n' + str(graph.node_count))
+
+        # generating the neighboring nodes of the i'th factor
+        neighbor_nodes = {}
+        edges = np.nonzero(smat[i, :])[0]
+        legs = smat[i, edges]
+        neighbor_nodes['n' + str(graph.node_count - 1)] = 0
+
+        for j in range(len(edges)):
+            neighbor_nodes['n' + str(edges[j])] = legs[j]
+        graph.add_factor(neighbor_nodes, cp.deepcopy(factors_list[i]))
+    return graph
+
+
+def find_P(graph, edge, smat, Dmax):
+    ##  Extract the A,B matrices from the messages entering the virtual node n_Ek
+    the_node = 'n' + str(edge)
+    neighboring_factors = np.nonzero(smat[:, edge])[0]
+    A = graph.messages_f2n['f' + str(neighboring_factors[0])][the_node]
+    B = graph.messages_f2n['f' + str(neighboring_factors[1])][the_node]
+    A_sqrt = linalg.sqrtm(A)
+    B_sqrt = linalg.sqrtm(B)
+
+    ##  Calculate the environment matrix C and its SVD
+    C = np.matmul(B_sqrt, A_sqrt)
+    u_env, s_env, vh_env = np.linalg.svd(C, full_matrices=False)
+
+    ##  Define P2
+    new_s_env = cp.copy(s_env)
+    new_s_env[Dmax:] = 0
+    P2 = np.zeros((len(s_env), len(s_env)))
+    np.fill_diagonal(P2, new_s_env)
+    P2 /= np.sum(new_s_env)
+
+    ##  Calculating P = A^(-1/2) * U^(dagger) * P2 * V * B^(-1/2)
+    P = np.matmul(np.linalg.inv(A_sqrt), np.matmul(np.transpose(np.conj(u_env)), np.matmul(P2, np.matmul(
+        np.transpose(np.conj(vh_env)), np.linalg.inv(B_sqrt)))))
+    return P
+
+def smart_truncation(TT, LL, P, edge, smat, imat):
+    ##  P svd calculation and Ek bond vector trancation
+    U, S, V = svd(P, [0], [1], keep_s='yes')
+
+    Ti, Tj = get_tensors(edge, TT, smat, imat)
+
+    ##  Absorb U, and V to Ti and Tj respectively and lambda_k = S
+    i_idx = Ti[1][0]
+    j_idx = Tj[1][0]
+    U_shape = [Ti[2][0], len(TT[i_idx].shape)]
+    i_final_shape = range(len(TT[i_idx].shape))
+    i_final_shape[Ti[2][0]] = len(TT[i_idx].shape)
+    V_shape = [len(TT[j_idx].shape), Tj[2][0]]
+    j_final_shape = range(len(TT[j_idx].shape))
+    j_final_shape[Tj[2][0]] = len(TT[j_idx].shape)
+    TT[i_idx] = np.einsum(TT[i_idx], range(len(TT[i_idx].shape)), U, U_shape, i_final_shape)
+    TT[j_idx] = np.einsum(TT[j_idx], range(len(TT[j_idx].shape)), V, V_shape, j_final_shape)
+    TT[i_idx] /= tensor_normalization(TT[i_idx])
+    TT[j_idx] /= tensor_normalization(TT[j_idx])
+    LL[edge] = cp.deepcopy(S / np.sum(S))
+
+    return TT, LL
+
+def BPupdate_error(TT, LL, TT_old, LL_old, smat):
+    psipsi_T_list, psipsi_idx_list = nlg.ncon_list_generator_for_BPerror(cp.deepcopy(TT), cp.deepcopy(LL), cp.deepcopy(TT), cp.deepcopy(LL), smat)
+    psiphi_T_list, psiphi_idx_list = nlg.ncon_list_generator_for_BPerror(cp.deepcopy(TT), cp.deepcopy(LL), cp.deepcopy(TT_old), cp.deepcopy(LL_old), smat)
+    phiphi_T_list, phiphi_idx_list = nlg.ncon_list_generator_for_BPerror(cp.deepcopy(TT_old), cp.deepcopy(LL_old), cp.deepcopy(TT_old), cp.deepcopy(LL_old), smat)
+    phipsi_T_list, phipsi_idx_list = nlg.ncon_list_generator_for_BPerror(cp.deepcopy(TT_old), cp.deepcopy(LL_old), cp.deepcopy(TT), cp.deepcopy(LL), smat)
+
+    psipsi = ncon.ncon(psipsi_T_list, psipsi_idx_list)
+    psiphi = ncon.ncon(psiphi_T_list, psiphi_idx_list)
+    phipsi = ncon.ncon(phipsi_T_list, phipsi_idx_list)
+    phiphi = ncon.ncon(phiphi_T_list, phiphi_idx_list)
+
+    error = psipsi + phiphi - psiphi -phipsi
+    return error
+
+

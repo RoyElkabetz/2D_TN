@@ -86,3 +86,33 @@ def ncon_list_generator_reduced_dm(TT, LL, smat, spin):
         idx_list.append(cp.copy(Tstaridx))
 
     return T_list, idx_list
+
+
+def ncon_list_generator_for_BPerror(TT1, LL1, TT2, LL2, smat):
+    T_list = []
+    idx_list = []
+    n, m = smat.shape
+    spins_idx = range(2 * m + 1, 2 * m + 1 + n)
+    for i in range(n):
+
+        ## pick a tensor T, T*
+        T = cp.copy(TT1[i])
+        Tstar = np.conj(cp.copy(TT2[i]))
+        edges = np.nonzero(smat[i, :])[0]
+        legs = smat[i, edges]
+        Tidx = [spins_idx[i]]
+        Tstaridx = [spins_idx[i]]
+
+        ## absorb its environment
+        for j in range(len(edges)):
+            T = np.einsum(T, range(len(T.shape)), np.sqrt(LL1[edges[j]]), [legs[j]], range(len(T.shape)))
+            Tstar = np.einsum(Tstar, range(len(Tstar.shape)), np.sqrt(LL2[edges[j]]), [legs[j]], range(len(Tstar.shape)))
+            Tidx.append(edges[j] + 1)
+            Tstaridx.append(edges[j] + 1 + m)
+
+        ## add to lists
+        T_list.append(cp.copy(T))
+        idx_list.append(cp.copy(Tidx))
+        T_list.append(cp.copy(Tstar))
+        idx_list.append(cp.copy(Tstaridx))
+    return T_list, idx_list
