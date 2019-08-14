@@ -569,8 +569,8 @@ def BPupdate(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax):
     for Ek in range(len(LL)):
         P = find_P(graph, Ek, smat, Dmax)
         TT, LL = smart_truncation(TT, LL, P, Ek, smat, imat, Dmax)
-    #BPerror = BPupdate_error(TT, LL, TT_old, LL_old, smat)
-    #print('BP_error = ', BPerror)
+        BPerror = BPupdate_error(TT, LL, TT_old, LL_old, smat)
+        print('BP_error = ', BPerror)
     return TT, LL
 
 
@@ -618,8 +618,8 @@ def find_P(graph, edge, smat, Dmax):
     ##  Calculating P = A^(-1/2) * U^(dagger) * P2 * V * B^(-1/2)
     P = np.matmul(np.linalg.inv(A_sqrt), np.matmul(np.transpose(np.conj(vh_env)), np.matmul(P2, np.matmul(np.transpose(np.conj(u_env)), np.linalg.inv(B_sqrt)))))
 
-    #overlap = np.trace(np.matmul(A, np.matmul(P, B)))
-    #print('overlap = ', overlap)
+    overlap = np.trace(np.matmul(A, np.matmul(P, B)))
+    print('overlap = ', overlap)
     return P
 
 def smart_truncation(TT, LL, P, edge, smat, imat, Dmax):
@@ -657,7 +657,7 @@ def BPupdate_error(TT, LL, TT_old, LL_old, smat):
 
     psi_norm = np.sqrt(psipsi)
     phi_norm = np.sqrt(phiphi)
-    #print('overlap_exact = ', psiphi / psi_norm / phi_norm)
+    print('overlap_exact = ', psiphi / psi_norm / phi_norm)
     error = 2 - psiphi / psi_norm / phi_norm - phipsi / psi_norm / phi_norm
     return error
 

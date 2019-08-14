@@ -17,21 +17,23 @@ def ncon_list_generator(TT, LL, smat, O, spin):
         Tstar = np.conj(cp.copy(TT[i]))
         edges = np.nonzero(smat[i, :])[0]
         legs = smat[i, edges]
+        Tidx = np.zeros((len(T.shape)), dtype=int)
+        Tstaridx = np.zeros((len(Tstar.shape)), dtype=int)
 
         ## creat T, T* indices
         if i == spin:
-            Tidx = [Oidx[0]]
-            Tstaridx = [Oidx[1]]
+            Tidx[0] = Oidx[0]
+            Tstaridx[0] = Oidx[1]
         else:
-            Tidx = [spins_idx[i]]
-            Tstaridx = [spins_idx[i]]
+            Tidx[0] = spins_idx[i]
+            Tstaridx[0] = spins_idx[i]
 
         ## absorb its environment
         for j in range(len(edges)):
             T = np.einsum(T, range(len(T.shape)), np.sqrt(LL[edges[j]]), [legs[j]], range(len(T.shape)))
             Tstar = np.einsum(Tstar, range(len(Tstar.shape)), np.sqrt(LL[edges[j]]), [legs[j]], range(len(Tstar.shape)))
-            Tidx.append(edges[j] + 1)
-            Tstaridx.append(edges[j] + 1 + m)
+            Tidx[legs[j]] = edges[j] + 1
+            Tstaridx[legs[j]] = edges[j] + 1 + m
 
         ## add to lists
         T_list.append(cp.copy(T))
@@ -63,21 +65,24 @@ def ncon_list_generator_reduced_dm(TT, LL, smat, spin):
         Tstar = np.conj(cp.copy(TT[i]))
         edges = np.nonzero(smat[i, :])[0]
         legs = smat[i, edges]
+        Tidx = np.zeros((len(T.shape)), dtype=int)
+        Tstaridx = np.zeros((len(Tstar.shape)), dtype=int)
+
 
         ## creat T, T* indices
         if i == spin:
-            Tidx = [-1]
-            Tstaridx = [-2]
+            Tidx[0] = -1
+            Tstaridx[0] = -2
         else:
-            Tidx = [spins_idx[i]]
-            Tstaridx = [spins_idx[i]]
+            Tidx[0] = spins_idx[i]
+            Tstaridx[0] = spins_idx[i]
 
         ## absorb its environment
         for j in range(len(edges)):
             T = np.einsum(T, range(len(T.shape)), np.sqrt(LL[edges[j]]), [legs[j]], range(len(T.shape)))
             Tstar = np.einsum(Tstar, range(len(Tstar.shape)), np.sqrt(LL[edges[j]]), [legs[j]], range(len(Tstar.shape)))
-            Tidx.append(edges[j] + 1)
-            Tstaridx.append(edges[j] + 1 + m)
+            Tidx[legs[j]] = edges[j] + 1
+            Tstaridx[legs[j]] = edges[j] + 1 + m
 
         ## add to lists
         T_list.append(cp.copy(T))
@@ -100,15 +105,18 @@ def ncon_list_generator_for_BPerror(TT1, LL1, TT2, LL2, smat):
         Tstar = np.conj(cp.copy(TT2[i]))
         edges = np.nonzero(smat[i, :])[0]
         legs = smat[i, edges]
-        Tidx = [spins_idx[i]]
-        Tstaridx = [spins_idx[i]]
+        Tidx = np.zeros((len(T.shape)), dtype=int)
+        Tstaridx = np.zeros((len(Tstar.shape)), dtype=int)
+        Tidx[0] = spins_idx[i]
+        Tstaridx[0] = spins_idx[i]
 
         ## absorb its environment
         for j in range(len(edges)):
             T = np.einsum(T, range(len(T.shape)), np.sqrt(LL1[edges[j]]), [legs[j]], range(len(T.shape)))
             Tstar = np.einsum(Tstar, range(len(Tstar.shape)), np.sqrt(LL2[edges[j]]), [legs[j]], range(len(Tstar.shape)))
-            Tidx.append(edges[j] + 1)
-            Tstaridx.append(edges[j] + 1 + m)
+            Tidx[legs[j]] = edges[j] + 1
+            Tstaridx[legs[j]] = edges[j] + 1 + m
+
 
         ## add to lists
         T_list.append(cp.copy(T))

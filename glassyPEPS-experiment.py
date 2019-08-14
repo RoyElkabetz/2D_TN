@@ -7,7 +7,7 @@ import ncon_lists_generator as nlg
 import ncon
 import DEnFG as fg
 
-date = '2019.08.13_'
+date = '2019.08.14_'
 experiment_num = '_1_'
 
 #---------------------- Tensor Network paramas ------------------
