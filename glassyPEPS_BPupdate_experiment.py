@@ -7,16 +7,16 @@ import ncon_lists_generator as nlg
 import ncon
 import DEnFG as fg
 
-date = '2019.08.13_'
-experiment_num = '_2_'
+date = '2019.08.14_'
+experiment_num = '_1_'
 
 #---------------------- Tensor Network paramas ------------------
 
 N = 4 # number of spins
 L = np.int(np.sqrt(N))
 
-t_max = 100
-epsilon = 1e-4
+t_max = 1000
+epsilon = 1e-15
 dumping = 0.1
 
 d = 2  # virtual bond dimension
@@ -107,9 +107,9 @@ for ss in range(h.shape[0]):
             counter += 2
             print('h, h_idx, t, j = ', h[ss], ss, dt, j)
             TT1, LL1 = su.PEPS_BPupdate(cp.deepcopy(TT), cp.deepcopy(LL), dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max)
-            TT1, LL1 = su.BPupdate(TT1, LL1, smat, imat, t_max, epsilon, dumping, D_max)
+            #TT1, LL1 = su.BPupdate(TT1, LL1, smat, imat, t_max, epsilon, dumping, D_max)
             TT2, LL2 = su.PEPS_BPupdate(cp.deepcopy(TT1), cp.deepcopy(LL1), dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max)
-            TT2, LL2 = su.BPupdate(TT2, LL2, smat, imat, t_max, epsilon, dumping, D_max)
+            #TT2, LL2 = su.BPupdate(TT2, LL2, smat, imat, t_max, epsilon, dumping, D_max)
             energy1 = su.energy_per_site(cp.deepcopy(TT1), cp.deepcopy(LL1), imat, smat, Jk, h[ss], Opi, Opj, Op_field)
             energy2 = su.energy_per_site(cp.deepcopy(TT2), cp.deepcopy(LL2), imat, smat, Jk, h[ss], Opi, Opj, Op_field)
             if np.abs(energy1 - energy2) < 1e-8:

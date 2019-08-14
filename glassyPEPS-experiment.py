@@ -8,11 +8,11 @@ import ncon
 import DEnFG as fg
 
 date = '2019.08.14_'
-experiment_num = '_1_'
+experiment_num = '_3_'
 
 #---------------------- Tensor Network paramas ------------------
 
-N = 4 # number of spins
+N = 16 # number of spins
 L = np.int(np.sqrt(N))
 
 
@@ -21,7 +21,7 @@ d = 2  # virtual bond dimension
 p = 2  # physical bond dimension
 D_max = d  # maximal virtual bond dimension
 J = 1  # Hamiltonian: interaction coeff
-h = np.linspace(0.1, 5., num=100)  # Hamiltonian: magnetic field coeff
+h = np.linspace(0.1, 5., num=50)  # Hamiltonian: magnetic field coeff
 
 mu = 1
 sigma = 0

@@ -53,6 +53,9 @@ class Graph:
 
     def pd_mat_init(self, alphabet):
         eigenval = np.eye(alphabet) / alphabet
+        #a = np.abs(np.random.rand(alphabet))
+        #eigenval = np.zeros((alphabet, alphabet))
+        #np.fill_diagonal(eigenval, a / np.sum(a))
         return eigenval
 
     def make_super_tensor(self, tensor):

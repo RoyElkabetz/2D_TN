@@ -3,6 +3,7 @@ import ncon as ncon
 import copy as cp
 from scipy import linalg
 import DEnFG as denfg
+import time
 import  ncon_lists_generator as nlg
 
 
@@ -72,6 +73,7 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
         theta = imaginary_time_evolution(R, L, lamda_k, Ek, dt, Jk, h, Opi, Opj, Op_field)  # (Q1, i', j', Q2)
 
         ## (f) Obtain R', L', lambda'_k tensors by applying an SVD to theta
+        #R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes', max_eigen_num=D_max)
         R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes')
         # (Q1 * i', D') # (D', D') # (D', j' * Q2)
 
@@ -107,6 +109,12 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
         TT[Ti[1][0]] = cp.deepcopy(Ti[0] / tensor_normalization(Ti[0]))
         TT[Tj[1][0]] = cp.deepcopy(Tj[0] / tensor_normalization(Tj[0]))
         LL[Ek] = cp.deepcopy(lamda_k_tild / np.sum(lamda_k_tild))
+
+        #  single edge BP update
+        t_max = 1000
+        epsilon = 1e-10
+        dumping = 0.1
+        TT, LL = BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, D_max, Ek)
 
     return cp.deepcopy(TT), cp.deepcopy(LL)
 
@@ -569,8 +577,21 @@ def BPupdate(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax):
     for Ek in range(len(LL)):
         P = find_P(graph, Ek, smat, Dmax)
         TT, LL = smart_truncation(TT, LL, P, Ek, smat, imat, Dmax)
-        BPerror = BPupdate_error(TT, LL, TT_old, LL_old, smat)
-        print('BP_error = ', BPerror)
+        #BPerror = BPupdate_error(TT, LL, TT_old, LL_old, smat)
+        #print('BP_error = ', BPerror)
+    return TT, LL
+
+
+def BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax, Ek):
+    TT_old = cp.deepcopy(TT)
+    LL_old = cp.deepcopy(LL)
+    graph = denfg.Graph()
+    graph = PEPStoDEnFG_transform(graph, TT, LL, smat)
+    graph.sum_product(t_max, epsilon, dumping)
+    P = find_P(graph, Ek, smat, Dmax)
+    TT, LL = smart_truncation(TT, LL, P, Ek, smat, imat, Dmax)
+    #BPerror = BPupdate_error(TT, LL, TT_old, LL_old, smat)
+    #print('BP_error = ', BPerror)
     return TT, LL
 
 
@@ -619,7 +640,7 @@ def find_P(graph, edge, smat, Dmax):
     P = np.matmul(np.linalg.inv(A_sqrt), np.matmul(np.transpose(np.conj(vh_env)), np.matmul(P2, np.matmul(np.transpose(np.conj(u_env)), np.linalg.inv(B_sqrt)))))
 
     overlap = np.trace(np.matmul(A, np.matmul(P, B)))
-    print('overlap = ', overlap)
+    #print('overlap = ', overlap)
     return P
 
 def smart_truncation(TT, LL, P, edge, smat, imat, Dmax):
@@ -657,7 +678,7 @@ def BPupdate_error(TT, LL, TT_old, LL_old, smat):
 
     psi_norm = np.sqrt(psipsi)
     phi_norm = np.sqrt(phiphi)
-    print('overlap_exact = ', psiphi / psi_norm / phi_norm)
+    #print('overlap_exact = ', psiphi / psi_norm / phi_norm)
     error = 2 - psiphi / psi_norm / phi_norm - phipsi / psi_norm / phi_norm
     return error
 
