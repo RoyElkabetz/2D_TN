@@ -57,20 +57,22 @@ plt.ylim([0, 1])
 plt.grid()
 plt.show()
 '''
-
+'''
 # ---------------------------------- 1D DEnFG Open BC-----------------------------------
 # parameters
-fac1 = np.array([[0.5, 0], [0, 0.5]])
-fac2 = np.array([[0.5, 0, 0, 0.5], [0.5, 0, 0, 0.5]])
+fac1 = np.array([[1, 0, 0, 0], [0, 1, 0, 0]])
+fac2 = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
 n = 3
-alphabet = 2
+alphabet = 4
 d = 2
 t_max = 20
 epsilon = 1e-5
 dumping = 0.2
 
 # saving data
-node_marginals = np.zeros((alphabet, n, t_max))
+node_marginals = np.zeros((alphabet ** 2, n, t_max))
+exact_node_marginals = np.zeros((alphabet ** 2, n, t_max))
+
 
 # generate the graph
 g = fg.Graph()
@@ -84,7 +86,7 @@ for i in range(n):
     g.add_node(d, 'n' + str(g.node_count))
 
 neighbors_left = {'n0': 0, 'n' + str(n): 1}
-g.add_factor(neighbors_left, cp.copy(fac1))
+g.add_factor(neighbors_left, cp.copy(np.transpose(fac1)))
 
 # add factors
 for i in range(1, n - 1):
@@ -96,30 +98,98 @@ for i in range(1, n - 1):
 neighbors_rigth = {'n' + str(n - 1): 1, 'n' + str(2 * n - 2): 0}
 g.add_factor(neighbors_rigth, cp.copy(fac1))
 
+# exact joint probability
+p, p_dic, p_order = g.exact_joint_probability()
+
 # run BP
+
 for t in range(1, t_max):
     g.sum_product(t, epsilon, dumping)
     g.calc_node_belief()
     for i in range(n):
-        node_marginals[:, i, t] = np.linalg.eigvals(g.node_belief['n' + str(i)])
+        node = 'n' + str(i)
+        node_marginals[:, i, t] = np.ravel(g.node_belief[node])
+        exact_node_marginals[:, i, t] = np.ravel(g.ni_ni_star_marginal(p, p_dic, p_order, node, node + '*'))
 
-p, p_dic, p_order = g.exact_joint_probability()
-n0_marginal = g.ni_ni_star_marginal(p, p_dic, p_order, 'n0', 'n0*')
-n2_marginal = g.ni_ni_star_marginal(p, p_dic, p_order, 'n2', 'n2*')
 
 plt.figure()
+#for i in range(n):
+i = 1
+plt.plot(range(t_max), node_marginals[0, i, :], 'o')
+plt.plot(range(t_max), node_marginals[1, i, :], 'o')
+plt.plot(range(t_max), node_marginals[2, i, :], 'o')
+plt.plot(range(t_max), node_marginals[3, i, :], 'o')
+plt.plot(range(t_max), exact_node_marginals[0, i, :], 'v')
+plt.plot(range(t_max), exact_node_marginals[1, i, :], 'v')
+plt.plot(range(t_max), exact_node_marginals[2, i, :], 'v')
+plt.plot(range(t_max), exact_node_marginals[3, i, :], 'v')
 
-plt.plot(list(range(t_max)), node_marginals[0, 0, :], 'o')
-plt.plot(list(range(t_max)), node_marginals[1, 0, :], 'v')
-plt.plot(list(range(t_max)), node_marginals[0, 2, :], 'o')
-plt.plot(list(range(t_max)), node_marginals[1, 2, :], 'v')
-
-plt.ylim([0, 1])
-plt.legend(['n0[0]', 'n0[1]', 'n2[0]', 'n2[1]'])
+#plt.ylim([0, 1])
+#plt.legend(['n0[0]', 'n0[1]', 'n2[0]', 'n2[1]'])
 plt.grid()
 plt.show()
+'''
+
+# ---------------------------------- 1D DEnFG 2 sites Open BC-----------------------------------
+# parameters
+fac1 = np.exp(np.array([[1, -1], [-1, 1]]))
+n = 2
+alphabet = 2
+d = 2
+t_max = 20
+epsilon = 1e-5
+dumping = 0.2
+
+# saving data
+node_marginals = np.zeros((alphabet ** 2, n, t_max))
+exact_node_marginals = np.zeros((alphabet ** 2, n, t_max))
 
 
+# generate the graph
+g = fg.Graph()
+
+# add physical nodes
+g.add_node(alphabet, 'n0')
+g.add_node(alphabet, 'n1')
+
+# add virtual nodes
+g.add_node(d, 'n2')
+
+neighbors_left = {'n0': 0, 'n2': 1}
+g.add_factor(neighbors_left, cp.copy(np.transpose(fac1)))
+neighbors_right = {'n1': 0, 'n2': 1}
+g.add_factor(neighbors_right, cp.copy(fac1))
+
+# exact joint probability
+p, p_dic, p_order = g.exact_joint_probability()
+
+# run BP
+
+for t in range(1, t_max):
+    g.sum_product(t, epsilon, dumping)
+    g.calc_node_belief()
+    for i in range(n):
+        node = 'n' + str(i)
+        node_marginals[:, i, t] = np.ravel(g.node_belief[node])
+        exact_node_marginals[:, i, t] = np.ravel(g.ni_ni_star_marginal(p, p_dic, p_order, node, node + '*'))
+
+
+plt.figure()
+#for i in range(n):
+i = 1
+plt.plot(range(t_max), node_marginals[0, i, :], 'o')
+plt.plot(range(t_max), node_marginals[1, i, :], 'o')
+plt.plot(range(t_max), node_marginals[2, i, :], 'o')
+plt.plot(range(t_max), node_marginals[3, i, :], 'o')
+plt.plot(range(t_max), exact_node_marginals[0, i, :], 'v')
+plt.plot(range(t_max), exact_node_marginals[1, i, :], 'v')
+plt.plot(range(t_max), exact_node_marginals[2, i, :], 'v')
+plt.plot(range(t_max), exact_node_marginals[3, i, :], 'v')
+
+#plt.ylim([0, 1])
+#plt.legend(['n0[0]', 'n0[1]', 'n2[0]', 'n2[1]'])
+plt.grid()
+plt.show()
 
 
 '''
