@@ -8,7 +8,7 @@ import ncon
 import DEnFG as fg
 
 date = '2019.08.21_'
-experiment_num = '_4_'
+experiment_num = '_6_'
 
 #---------------------- Tensor Network paramas ------------------
 
@@ -67,7 +67,7 @@ sy = 0.5 * pauli_y
 sx = 0.5 * pauli_x
 
 t_list = [0.1, 0.01, 0.001]
-iterations = 100
+iterations = 10
 
 Opi = pauli_z
 Opj = pauli_z
@@ -89,33 +89,35 @@ for i in range(n):
     smat[i, 2 * np.mod(i + L, N) + 1] = 4
 
 
-for ss in range(h.shape[0]):
-    # ------------- generating tensors and bond vectors for each magnetic field ---------------------------
+# ------------- generating tensors and bond vectors for each magnetic field ---------------------------
 
-    TT = []
-    for ii in range(n):
-        TT.append(np.random.rand(p, d, d, d, d))
-    LL = []
-    for i in range(imat.shape[1]):
-        LL.append(np.ones(d, dtype=float) / d)
+TT = []
+for ii in range(n):
+    TT.append(np.random.rand(p, d, d, d, d))
+LL = []
+for i in range(imat.shape[1]):
+    LL.append(np.ones(d, dtype=float) / d)
+
+for ss in range(h.shape[0]):
 
     counter = 0
 
     # --------------------------------- iterating the gPEPS algorithm -------------------------------------
     for dt in t_list:
         flag = 0
+
         for j in range(iterations):
             counter += 2
             print('h, h_idx, t, j = ', h[ss], ss, dt, j)
             TT1, LL1 = su.PEPS_BPupdate(TT, LL, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max)
             #print(su.exact_energy_per_site(TT1, LL1, smat, Jk, h[ss], Opi, Opj, Op_field))
-            #TT1, LL1 = su.BPupdate(TT1, LL1, smat, imat, t_max, epsilon, dumping, D_max)
+            TT1, LL1 = su.BPupdate(TT1, LL1, smat, imat, t_max, epsilon, dumping, D_max)
             #print(su.exact_energy_per_site(TT1, LL1, smat, Jk, h[ss], Opi, Opj, Op_field))
 
             TT2, LL2 = su.PEPS_BPupdate(TT1, LL1, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max)
             #print(su.exact_energy_per_site(TT2, LL2, smat, Jk, h[ss], Opi, Opj, Op_field))
 
-            #TT2, LL2 = su.BPupdate(TT2, LL2, smat, imat, t_max, epsilon, dumping, D_max)
+            TT2, LL2 = su.BPupdate(TT2, LL2, smat, imat, t_max, epsilon, dumping, D_max)
             #print(su.exact_energy_per_site(TT2, LL2, smat, Jk, h[ss], Opi, Opj, Op_field))
             energy1 = su.exact_energy_per_site(TT1, LL1, smat, Jk, h[ss], Opi, Opj, Op_field)
             energy2 = su.exact_energy_per_site(TT2, LL2, smat, Jk, h[ss], Opi, Opj, Op_field)
@@ -187,6 +189,7 @@ plt.plot(h, E, color=color)
 plt.plot(h, E_exact, 'o', color=color)
 plt.grid()
 plt.tick_params(axis='y', labelcolor=color)
+plt.legend(['gPEPS', 'Exact'])
 plt.twinx()  # instantiate a second axes that shares the same x-axis
 color = 'tab:blue'
 plt.ylabel('# of gPEPS iterations until convergence', color=color)  # we already handled the x-label with ax1

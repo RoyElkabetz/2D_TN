@@ -114,11 +114,10 @@ class Graph:
             self.messages_f2n = factor2node
             if self.check_converge(old_messages_n2f, old_messages_f2n, epsilon):
                 break
-        #print('t_final = ', t)
+        print('t_final = ', t)
         #print('\n')
 
     def check_converge(self, n2f_old, f2n_old, epsilon):
-
         counter = 0
         num_of_messages = 0
         n2f_new, f2n_new = self.messages_n2f, self.messages_f2n
@@ -198,6 +197,48 @@ class Graph:
         message = np.einsum(tensor, tensor_idx, conj_tensor, conj_tensor_idx, message_final_idx)
         message /= np.trace(message)
         return message
+
+    def exact_joint_probability(self):
+        factors = cp.deepcopy(self.factors)
+        p_dim = []
+        p_order = []
+        p_dic = {}
+        counter = 0
+        for i in range(self.node_count):
+            p_dic[self.nodes_order[i]] = counter
+            p_dic[self.nodes_order[i] + '*'] = counter + 1
+            p_order.append(self.nodes_order[i])
+            p_order.append(self.nodes_order[i] + '*')
+            p_dim.append(self.nodes[self.nodes_order[i]][0])
+            p_dim.append(self.nodes[self.nodes_order[i]][0])
+            counter += 2
+        p = np.ones(p_dim)
+        for item in factors.keys():
+            f = self.make_super_tensor(factors[item][1])
+            broadcasting_idx = [0] * len(f.shape)
+            for object in factors[item][0]:
+                broadcasting_idx[2 * factors[item][0][object]] = p_dic[object]
+                broadcasting_idx[2 * factors[item][0][object] + 1] = p_dic[object + '*']
+            p *= self.tensor_broadcasting(f, broadcasting_idx, p)
+        p /= np.sum(p)
+        return p, p_dic, p_order
+
+    def ni_ni_star_marginal(self, p, p_dic, p_order, ni, ni_star):
+        marginal = cp.deepcopy(p)
+        marginal_dim = range(len(marginal.shape))
+        marginal_dim[0] = p_dic[ni]
+        marginal_dim[p_dic[ni]] = 0
+        marginal_dim[1] = p_dic[ni_star]
+        marginal_dim[p_dic[ni_star]] = 1
+
+        marginal = np.transpose(marginal, marginal_dim)
+        sum_axis = len(marginal.shape) - 1
+        for i in range(2, len(marginal.shape)):
+            marginal = np.sum(marginal, axis=sum_axis)
+            marginal_dim.pop()
+            sum_axis -= 1
+        return marginal
+
 
 
 

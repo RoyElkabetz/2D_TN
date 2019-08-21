@@ -65,7 +65,7 @@ fac2 = np.array([[0.5, 0, 0, 0.5], [0.5, 0, 0, 0.5]])
 n = 3
 alphabet = 2
 d = 2
-t_max = 100
+t_max = 20
 epsilon = 1e-5
 dumping = 0.2
 
@@ -83,14 +83,16 @@ for i in range(n):
 for i in range(n):
     g.add_node(d, 'n' + str(g.node_count))
 
+neighbors_left = {'n0': 0, 'n' + str(n): 1}
+g.add_factor(neighbors_left, cp.copy(fac1))
+
 # add factors
 for i in range(1, n - 1):
     neighbors = {'n' + str(n + i - 1): 0, 'n' + str(i): 1, 'n' + str(n + i): 2}
     g.add_factor(neighbors, np.reshape(cp.copy(fac2), (d, alphabet, d)))
 
 # OBC
-neighbors_left = {'n0': 0, 'n' + str(n): 1}
-g.add_factor(neighbors_left, cp.copy(fac1))
+
 neighbors_rigth = {'n' + str(n - 1): 1, 'n' + str(2 * n - 2): 0}
 g.add_factor(neighbors_rigth, cp.copy(fac1))
 
@@ -101,12 +103,19 @@ for t in range(1, t_max):
     for i in range(n):
         node_marginals[:, i, t] = np.linalg.eigvals(g.node_belief['n' + str(i)])
 
+p, p_dic, p_order = g.exact_joint_probability()
+n0_marginal = g.ni_ni_star_marginal(p, p_dic, p_order, 'n0', 'n0*')
+n2_marginal = g.ni_ni_star_marginal(p, p_dic, p_order, 'n2', 'n2*')
+
 plt.figure()
-for i in range(n):
-    plt.plot(list(range(t_max)), node_marginals[0, i, :], 'o')
-    plt.plot(list(range(t_max)), node_marginals[1, i, :], 'v')
+
+plt.plot(list(range(t_max)), node_marginals[0, 0, :], 'o')
+plt.plot(list(range(t_max)), node_marginals[1, 0, :], 'v')
+plt.plot(list(range(t_max)), node_marginals[0, 2, :], 'o')
+plt.plot(list(range(t_max)), node_marginals[1, 2, :], 'v')
 
 plt.ylim([0, 1])
+plt.legend(['n0[0]', 'n0[1]', 'n2[0]', 'n2[1]'])
 plt.grid()
 plt.show()
 
