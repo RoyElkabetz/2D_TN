@@ -23,6 +23,9 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
     :param D_max: maximal virtual dimension
 
     """
+    TT = cp.deepcopy(TT)
+    LL = cp.deepcopy(LL)
+
     n, m = np.shape(imat)
     for Ek in range(m):
 
@@ -30,9 +33,6 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
 
         ## (a) Find tensors Ti, Tj and their corresponding legs connected along edge Ek.
         Ti, Tj = get_tensors(Ek, TT, smat, imat)
-
-        # collecting all neighboring (edges, dimensions) without the Ek (edge, dimension)
-        i_dim, j_dim = get_edges(Ek, smat, imat)
 
         iedges = list(np.nonzero(smat[Ti[1][0], :])[0])
         ilegs = list(smat[Ti[1][0], iedges])
@@ -52,9 +52,10 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
         Ti = dim_perm(Ti)
         Tj = dim_perm(Tj)
 
+
         ## (c) Group all virtual legs Em!=Ek to form Pl, Pr MPS tensors
-        Pl = rankN_to_rank3(cp.deepcopy(Ti[0]))
-        Pr = rankN_to_rank3(cp.deepcopy(Tj[0]))
+        Pl = rankN_to_rank3(Ti[0])
+        Pr = rankN_to_rank3(Tj[0])
 
 
         ## (d) SVD decomposing of Pl, Pr to obtain Q1, R and Q2, L sub-tensors, respectively
@@ -73,8 +74,8 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
         theta = imaginary_time_evolution(R, L, lamda_k, Ek, dt, Jk, h, Opi, Opj, Op_field)  # (Q1, i', j', Q2)
 
         ## (f) Obtain R', L', lambda'_k tensors by applying an SVD to theta
-        #R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes', max_eigen_num=D_max)
-        R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes')
+        R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes', max_eigen_num=D_max)
+        #R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes')
         # (Q1 * i', D') # (D', D') # (D', j' * Q2)
 
         # reshaping R_tild and L_tild back to rank 3 tensor
@@ -106,24 +107,24 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
             Tj[0] = np.einsum(Tj[0], range(len(Tj[0].shape)), LL[jedges[ii]] ** (-1), [jlegs[ii]], range(len(Tj[0].shape)))
 
         # Normalize and save new Ti Tj and lambda_k
-        TT[Ti[1][0]] = cp.deepcopy(Ti[0] / tensor_normalization(Ti[0]))
-        TT[Tj[1][0]] = cp.deepcopy(Tj[0] / tensor_normalization(Tj[0]))
-        LL[Ek] = cp.deepcopy(lamda_k_tild / np.sum(lamda_k_tild))
+        TT[Ti[1][0]] = Ti[0] / tensor_normalization(Ti[0])
+        TT[Tj[1][0]] = Tj[0] / tensor_normalization(Tj[0])
+        LL[Ek] = lamda_k_tild / np.sum(lamda_k_tild)
 
-        #  single edge BP update
-        t_max = 1000
-        epsilon = 1e-10
-        dumping = 0.1
-        TT, LL = BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, D_max, Ek)
+        ##  single edge BP update
+        #t_max = 100
+        #epsilon = 1e-5
+        #dumping = 0.1
+        #TT, LL = BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, D_max, Ek)
 
-    return cp.deepcopy(TT), cp.deepcopy(LL)
+    return TT, LL
 
 
 def get_tensors(edge, tensors, structure_matrix, incidence_matrix):
     tidx = np.nonzero(incidence_matrix[:, edge])[0]
     tdim = structure_matrix[tidx, edge]
-    Ti = [cp.deepcopy(tensors[tidx[0]]), [tidx[0], 'tensor_number'], [tdim[0], 'tensor_Ek_leg']]
-    Tj = [cp.deepcopy(tensors[tidx[1]]), [tidx[1], 'tensor_number'], [tdim[1], 'tensor_Ek_leg']]
+    Ti = [tensors[tidx[0]], [tidx[0], 'tensor_number'], [tdim[0], 'tensor_Ek_leg']]
+    Tj = [tensors[tidx[1]], [tidx[1], 'tensor_number'], [tdim[1], 'tensor_Ek_leg']]
     return Ti, Tj
 
 
@@ -176,8 +177,8 @@ def rankN_to_rank3(tensor):
         raise IndexError('expecting tensor rank N>=3. instead got tensor of rank = ' + str(rank))
     shape = np.array(cp.copy(tensor.shape))
     new_shape = [shape[0], shape[1], np.prod(shape[2:])]
-    tensor = tensor.reshape(new_shape)
-    return tensor
+    Pi = np.reshape(tensor, new_shape)
+    return Pi
 
 
 def rank2_to_rank3(tensor, physical_dim):
@@ -194,7 +195,7 @@ def rank3_to_rankN(tensor, old_shape):
 
 
 def svd(tensor, left_legs, right_legs, keep_s=None, max_eigen_num=None):
-    shape = np.array(cp.copy(tensor.shape))
+    shape = np.array(tensor.shape)
     left_dim = np.prod(shape[[left_legs]])
     right_dim = np.prod(shape[[right_legs]])
     if keep_s == 'yes':
@@ -235,32 +236,25 @@ def tensor_normalization(T):
 
 
 def single_tensor_expectation(tensor_idx, TT, LL, imat, smat, Oi):
+    TT = cp.deepcopy(TT)
+    LL = cp.deepcopy(LL)
+    normalization = site_norm(tensor_idx, TT, LL, imat, smat)
+
     env_edges = np.nonzero(imat[tensor_idx, :])[0]
     env_legs = smat[tensor_idx, env_edges]
-
-    ## Absorbing the environment
-    #T = absorb_edges(cp.deepcopy(TT[tensor_idx]), [env_edges, env_legs], LL)
-    #T_conj = absorb_edges(cp.deepcopy(np.conj(TT[tensor_idx])), [env_edges, env_legs], LL)
-
-    T = cp.deepcopy(TT[tensor_idx])
-    T_conj = cp.deepcopy(np.conj(TT[tensor_idx]))
+    T = TT[tensor_idx]
+    T_conj = np.conj(TT[tensor_idx])
 
     ## absorb its environment
     for j in range(len(env_edges)):
         T = np.einsum(T, range(len(T.shape)), LL[env_edges[j]], [env_legs[j]], range(len(T.shape)))
         T_conj = np.einsum(T_conj, range(len(T_conj.shape)), LL[env_edges[j]], [env_legs[j]], range(len(T_conj.shape)))
 
-    #T /= T.max()
-    #T_conj /= T_conj.max()
-
     T_idx = range(len(T.shape))
     T_conj_idx = range(len(T_conj.shape))
     T_conj_idx[0] = len(T_conj.shape)
     operator_idx = [T_conj_idx[0], T_idx[0]]
     expectation = ncon.ncon([T, T_conj, Oi], [T_idx, T_conj_idx, operator_idx])
-    normalization = site_norm(tensor_idx, TT, LL, imat, smat)
-    #print('e = ', expectation)
-    #print('n = ', normalization)
     return expectation / normalization
 
 
@@ -274,24 +268,18 @@ def magnetization(TT, LL, imat, smat, Oi):
     return magnetization
 
 
-def site_norm(tensor_idx, tensors_list, lamdas_list, imat, smat):
+def site_norm(tensor_idx, TT, LL, imat, smat):
+    TT = cp.deepcopy(TT)
+    LL = cp.deepcopy(LL)
     env_edges = np.nonzero(imat[tensor_idx, :])[0]
     env_legs = smat[tensor_idx, env_edges]
-
-    ## Absorbing the environment
-    #T = absorb_edges(cp.deepcopy(tensors_list[tensor_idx]), [env_edges, env_legs], lamdas_list)
-    #T_conj = absorb_edges(cp.deepcopy(np.conj(tensors_list[tensor_idx])), [env_edges, env_legs], lamdas_list)
-
-    T = cp.deepcopy(tensors_list[tensor_idx])
-    T_conj = cp.deepcopy(np.conj(tensors_list[tensor_idx]))
+    T = TT[tensor_idx]
+    T_conj = np.conj(TT[tensor_idx])
 
     ## absorb its environment
     for j in range(len(env_edges)):
-        T = np.einsum(T, range(len(T.shape)), lamdas_list[env_edges[j]], [env_legs[j]], range(len(T.shape)))
-        T_conj = np.einsum(T_conj, range(len(T_conj.shape)), lamdas_list[env_edges[j]], [env_legs[j]], range(len(T_conj.shape)))
-
-    #T /= T.max()
-    #T_conj /= T_conj.max()
+        T = np.einsum(T, range(len(T.shape)), LL[env_edges[j]], [env_legs[j]], range(len(T.shape)))
+        T_conj = np.einsum(T_conj, range(len(T_conj.shape)), LL[env_edges[j]], [env_legs[j]], range(len(T_conj.shape)))
 
     T_idx = range(len(T.shape))
     T_conj_idx = range(len(T_conj.shape))
@@ -299,8 +287,11 @@ def site_norm(tensor_idx, tensors_list, lamdas_list, imat, smat):
     return normalization
 
 def two_site_expectation(Ek, TT, LL, imat, smat, Oij):
+    TT = cp.deepcopy(TT)
+    LL = cp.deepcopy(LL)
+
     # calculating the two site normalized expectation given a mutual edge Ek of those two sites (tensors) and the operator Oij
-    lamda_k = cp.deepcopy(LL[Ek])
+    lamda_k = cp.copy(LL[Ek])
 
     ## (a) Find tensors Ti, Tj and their corresponding legs connected along edge Ek.
     Ti, Tj = get_tensors(Ek, TT, smat, imat)
@@ -350,13 +341,30 @@ def two_site_expectation(Ek, TT, LL, imat, smat, Oij):
     tensors = [Ti[0], Ti_conj[0], Tj[0], Tj_conj[0], eye, np.diag(lamda_k), np.diag(lamda_k)]
     indices = [Ti_idx, Ti_conj_idx, Tj_idx, Tj_conj_idx, eye_idx, lamda_k_idx, lamda_k_conj_idx]
     two_site_norm = ncon.ncon(tensors, indices)
-    #print('2 sites norm = ', two_site_norm)
-    #print('2 sites energy = ', two_site_expec)
     two_site_expec /= two_site_norm
     return two_site_expec
 
 
+def two_site_exact_expectation(TT, LL, smat, edge, operator):
+    TTstar = conjTN(TT)
+    TT_tilde = absorb_all_bond_vectors(TT, LL, smat)
+    TTstar_tilde = absorb_all_bond_vectors(TTstar, LL, smat)
+    T_list, idx_list = nlg.ncon_list_generator_two_site_exact_expectation(TT_tilde, TTstar_tilde, smat, edge, operator)
+    T_list_norm, idx_list_norm = nlg.ncon_list_generator_braket(TT_tilde, TTstar_tilde, smat)
+    exact_expectation = ncon.ncon(T_list, idx_list) / ncon.ncon(T_list_norm, idx_list_norm)
+    return exact_expectation
+
+
+def conjTN(TT):
+    TTconj = []
+    for i in range(len(TT)):
+        TTconj.append(np.conj(TT[i]))
+    return TTconj
+
+
 def energy_per_site(TT, LL, imat, smat, Jk, h, Opi, Opj, Op_field):
+    TT = cp.deepcopy(TT)
+    LL = cp.deepcopy(LL)
     # calculating the normalized energy per site(tensor)
     p = Op_field.shape[0]
     energy = 0
@@ -368,159 +376,19 @@ def energy_per_site(TT, LL, imat, smat, Jk, h, Opi, Opj, Op_field):
     return energy
 
 
-def gauge_fix(TT, LL, imat, smat):
-    n, m = np.shape(imat)
+def exact_energy_per_site(TT, LL, smat, Jk, h, Opi, Opj, Op_field):
+    # calculating the normalized exact energy per site(tensor)
+    TT = cp.deepcopy(TT)
+    LL = cp.deepcopy(LL)
+    p = Op_field.shape[0]
+    energy = 0
+    n, m = np.shape(smat)
     for Ek in range(m):
+        Oij = np.reshape(-Jk[Ek] * np.kron(Opi, Opj) - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p))), (p, p, p, p))
+        energy += two_site_exact_expectation(TT, LL, smat, Ek, Oij)
+    energy /= n
+    return energy
 
-        lamda_k = LL[Ek]
-
-        ## (a) Find tensors Ti, Tj and their corresponding legs connected along edge Ek.
-        Ti, Tj = get_tensors(Ek, TT, smat, imat)
-        Ti_conj, Tj_conj = get_conjugate_tensors(Ek, TT, smat, imat)
-
-        # collecting all neighboring (edges, dimensions) without the Ek (edge, dimension)
-        i_dim, j_dim = get_edges(Ek, smat, imat)
-
-        ## (b) Absorb bond vectors (lambdas) to all Em != Ek of Ti, Tj tensors
-        Ti = absorb_edges(Ti, i_dim, LL)
-        Tj = absorb_edges(Tj, j_dim, LL)
-        Ti_conj = absorb_edges(Ti_conj, i_dim, LL)
-        Tj_conj = absorb_edges(Tj_conj, j_dim, LL)
-
-
-        ## Gauge fixing
-        # i environment
-        i_idx = range(len(Ti[0].shape))
-        i_conj_idx = range(len(Ti[0].shape))
-        i_conj_idx[Ti_conj[2][0]] = len(Ti[0].shape)
-        Mi = np.einsum(Ti[0], i_idx, Ti_conj[0], i_conj_idx,
-                       [i_idx[Ti_conj[2][0]], i_conj_idx[Ti_conj[2][0]]])  # (Ek, Ek*)
-
-        # j environment
-        j_idx = range(len(Tj[0].shape))
-        j_conj_idx = range(len(Tj[0].shape))
-        j_conj_idx[Tj_conj[2][0]] = len(Tj[0].shape)
-        Mj = np.einsum(Tj[0], j_idx, Tj_conj[0], j_conj_idx,
-                       [j_idx[Tj_conj[2][0]], j_conj_idx[Tj_conj[2][0]]])  # (Ek, Ek*)
-
-        # Environment diagonalization
-        di, ui = np.linalg.eig(Mi)
-        dj, uj = np.linalg.eig(Mj)
-
-        # contruction
-        lamda_k_prime = np.matmul(np.matmul(np.conj(np.transpose(ui)), np.diag(lamda_k)), uj)
-        lamda_k_prime = np.matmul(np.diag(np.sqrt(di)), np.matmul(lamda_k_prime, np.diag(np.sqrt(dj))))
-
-        # SVD
-        wi, lamda_k_tild, wj = np.linalg.svd(lamda_k_prime)
-        # lamda_k_tild /= np.sum(lamda_k_tild)
-
-        # x and y construction
-        x = np.matmul(np.matmul(np.conj(np.transpose(wi)), np.diag(np.sqrt(di))), np.conj(np.transpose(ui)))
-        y = np.matmul(np.matmul(uj, np.diag(np.sqrt(dj))), np.transpose(wj))
-
-        # fixing Ti and Tj
-        Ti_idx_old = range(len(Ti[0].shape))
-        Ti_idx_new = range(len(Ti[0].shape))
-        Ti_idx_new[Ti[2][0]] = len(Ti_idx_old)
-        Tj_idx_old = range(len(Tj[0].shape))
-        Tj_idx_new = range(len(Tj[0].shape))
-        Tj_idx_new[Tj[2][0]] = len(Tj_idx_old)
-        Ti_fixed = np.einsum(Ti[0], Ti_idx_old, np.linalg.pinv(x), [Ti_idx_old[Ti[2][0]], len(Ti_idx_old)],
-                             Ti_idx_new)
-        Tj_fixed = np.einsum(Tj[0], Tj_idx_old, np.linalg.pinv(y), [Tj_idx_old[Tj[2][0]], len(Tj_idx_old)],
-                             Tj_idx_new)
-
-        TT[Ti[1][0]] = cp.deepcopy(Ti_fixed)
-        TT[Tj[1][0]] = cp.deepcopy(Tj_fixed)
-        LL[Ek] = cp.deepcopy(lamda_k_tild / np.sum(lamda_k_tild))
-    return TT, LL
-
-
-
-def gauge_fix1(TT, LL, imat, smat):
-    n, m = np.shape(imat)
-    TT_new = cp.deepcopy(TT)
-    LL_new = cp.deepcopy(LL)
-    for Ek in range(m):
-
-        ## (a) Find tensors Ti, Tj and their corresponding legs connected along edge Ek.
-        tidx = np.nonzero(imat[:, Ek])[0]
-        tdim = smat[tidx, Ek]
-        Ti = [TT[tidx[0]], tdim[0]]
-        Tj = [TT[tidx[1]], tdim[1]]
-        lamda_k = LL[Ek]
-
-        # collecting all neighboring (edges, legs)
-        Ti_alldim = [list(np.nonzero(imat[tidx[0], :])[0]), list(smat[tidx[0], np.nonzero(imat[tidx[0], :])[0]])]
-        Tj_alldim = [list(np.nonzero(imat[tidx[1], :])[0]), list(smat[tidx[1], np.nonzero(imat[tidx[1], :])[0]])]
-
-        # removing the Ek edge and leg
-        Ti_alldim[0].remove(Ek)
-        Ti_alldim[1].remove(smat[tidx[0], Ek])
-        Tj_alldim[0].remove(Ek)
-        Tj_alldim[1].remove(smat[tidx[1], Ek])
-
-        # collecting neighboring lamdas
-        Ti_lamdas = [LL[Em] for Em in Ti_alldim[0]]
-        Tj_lamdas = [LL[Em] for Em in Tj_alldim[0]]
-
-        ## (b) Absorb bond matrices (lambdas) to all Em != Ek of Ti, Tj tensors
-        for Em in range(len(Ti_lamdas)):
-            Ti[0] = np.einsum(Ti[0], range(len(Ti[0].shape)), Ti_lamdas[Em], [Ti_alldim[1][Em]],
-                              range(len(Ti[0].shape)))
-        for Em in range(len(Tj_lamdas)):
-            Tj[0] = np.einsum(Tj[0], range(len(Tj[0].shape)), Tj_lamdas[Em], [Tj_alldim[1][Em]],
-                              range(len(Tj[0].shape)))
-
-        ## Gauge fixing
-        # i environment
-        i_leg = tdim[0]
-        j_leg = tdim[1]
-        i_idx = range(len(Ti[0].shape))
-        i_conj_idx = range(len(Ti[0].shape))
-        i_conj_idx[i_leg] = len(Ti[0].shape)
-        Mi = np.einsum(Ti[0], i_idx, np.conj(Ti[0]), i_conj_idx,
-                       [i_idx[i_leg], i_conj_idx[i_leg]])
-
-        # j environment
-        j_idx = range(len(Tj[0].shape))
-        j_conj_idx = range(len(Tj[0].shape))
-        j_conj_idx[j_leg] = len(Tj[0].shape)
-        Mj = np.einsum(Tj[0], j_idx, np.conj(Tj[0]), j_conj_idx,
-                       [j_idx[j_leg], j_conj_idx[j_leg]])
-
-        # Environment diagonalization
-        di, ui = np.linalg.eig(Mi)
-        dj, uj = np.linalg.eig(Mj)
-
-        # contruction
-        lamda_k_prime = np.matmul(np.matmul(np.conj(np.transpose(ui)), np.diag(lamda_k)), uj)
-        lamda_k_prime = np.matmul(np.diag(np.sqrt(di)), np.matmul(lamda_k_prime, np.diag(np.sqrt(dj))))
-
-        # SVD
-        wi, lamda_k_tild, wj = np.linalg.svd(lamda_k_prime)
-        lamda_k_tild /= np.sum(lamda_k_tild)
-
-        # x and y costruction
-        x = np.matmul(np.matmul(np.conj(np.transpose(wi)), np.diag(np.sqrt(di))), np.conj(np.transpose(ui)))
-        y = np.matmul(np.matmul(uj, np.diag(np.sqrt(dj))), wj)
-
-        # fixing Ti and Tj
-        Ti_idx_old = range(len(TT[tidx[0]].shape))
-        Ti_idx_new = range(len(TT[tidx[0]].shape))
-        Ti_idx_new[i_leg] = len(Ti_idx_old)
-        Tj_idx_old = range(len(TT[tidx[1]].shape))
-        Tj_idx_new = range(len(TT[tidx[1]].shape))
-        Tj_idx_new[j_leg] = len(Tj_idx_old)
-        Ti_fixed = np.einsum(TT[tidx[0]], Ti_idx_old, np.linalg.pinv(x), [Ti_idx_old[i_leg], len(Ti_idx_old)], Ti_idx_new)
-        Tj_fixed = np.einsum(TT[tidx[1]], Tj_idx_old, np.linalg.pinv(y), [Tj_idx_old[j_leg], len(Tj_idx_old)], Tj_idx_new)
-
-        TT_new[tidx[0]] = cp.copy(Ti_fixed)
-        TT_new[tidx[1]] = cp.copy(Tj_fixed)
-        LL_new[Ek] = cp.copy(lamda_k_tild / np.sum(lamda_k_tild))
-
-    return TT_new, LL_new
 
 def trace_distance(a, b):
     # returns the trace distance between the two density matrices a & b
@@ -531,9 +399,11 @@ def trace_distance(a, b):
 
 
 def tensor_reduced_dm(tensor_idx, TT, LL, smat, imat):
+    TT = cp.deepcopy(TT)
+    LL = cp.deepcopy(LL)
+    normalization = site_norm(tensor_idx, TT, LL, imat, smat)
     env_edges = np.nonzero(smat[tensor_idx, :])[0]
     env_legs = smat[tensor_idx, env_edges]
-
     T = cp.deepcopy(TT[tensor_idx])
     T_conj = cp.deepcopy(np.conj(TT[tensor_idx]))
 
@@ -547,11 +417,12 @@ def tensor_reduced_dm(tensor_idx, TT, LL, smat, imat):
     T_conj_idx = range(len(T_conj.shape))
     T_conj_idx[0] = -2
     reduced_dm = ncon.ncon([T, T_conj], [T_idx, T_conj_idx])
-    normalization = site_norm(tensor_idx, TT, LL, imat, smat)
 
     return reduced_dm / normalization
 
 def absorb_all_bond_vectors(TT, LL, smat):
+    TT = cp.deepcopy(TT)
+    LL = cp.deepcopy(LL)
     n = len(TT)
     for i in range(n):
         edges = np.nonzero(smat[i, :])[0]
@@ -571,6 +442,9 @@ def absorb_all_bond_vectors(TT, LL, smat):
 def BPupdate(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax):
     TT_old = cp.deepcopy(TT)
     LL_old = cp.deepcopy(LL)
+    TT = cp.deepcopy(TT)
+    LL = cp.deepcopy(LL)
+
     graph = denfg.Graph()
     graph = PEPStoDEnFG_transform(graph, TT, LL, smat)
     graph.sum_product(t_max, epsilon, dumping)
@@ -585,6 +459,9 @@ def BPupdate(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax):
 def BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax, Ek):
     TT_old = cp.deepcopy(TT)
     LL_old = cp.deepcopy(LL)
+    TT = cp.deepcopy(TT)
+    LL = cp.deepcopy(LL)
+
     graph = denfg.Graph()
     graph = PEPStoDEnFG_transform(graph, TT, LL, smat)
     graph.sum_product(t_max, epsilon, dumping)
@@ -597,6 +474,7 @@ def BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax, Ek):
 
 def PEPStoDEnFG_transform(graph, TT, LL, smat):
     factors_list = absorb_all_bond_vectors(TT, LL, smat)
+
     # Adding virtual nodes
     n, m = np.shape(smat)
     for i in range(m):
@@ -612,7 +490,7 @@ def PEPStoDEnFG_transform(graph, TT, LL, smat):
         neighbor_nodes['n' + str(graph.node_count - 1)] = 0
         for j in range(len(edges)):
             neighbor_nodes['n' + str(edges[j])] = legs[j]
-        graph.add_factor(neighbor_nodes, cp.deepcopy(factors_list[i]))
+        graph.add_factor(neighbor_nodes, factors_list[i])
     return graph
 
 
@@ -638,8 +516,7 @@ def find_P(graph, edge, smat, Dmax):
 
     ##  Calculating P = A^(-1/2) * U^(dagger) * P2 * V * B^(-1/2)
     P = np.matmul(np.linalg.inv(A_sqrt), np.matmul(np.transpose(np.conj(vh_env)), np.matmul(P2, np.matmul(np.transpose(np.conj(u_env)), np.linalg.inv(B_sqrt)))))
-
-    overlap = np.trace(np.matmul(A, np.matmul(P, B)))
+    #overlap = np.trace(np.matmul(A, np.matmul(P, B)))
     #print('overlap = ', overlap)
     return P
 
@@ -657,8 +534,13 @@ def smart_truncation(TT, LL, P, edge, smat, imat, Dmax):
     V_shape = [len(TT[j_idx].shape), Tj[2][0]]
     j_final_shape = range(len(TT[j_idx].shape))
     j_final_shape[Tj[2][0]] = len(TT[j_idx].shape)
+
+    #TT[i_idx] = np.einsum(TT[i_idx], range(len(TT[i_idx].shape)), np.sqrt(LL[edge]) ** (-1), [Ti[2][0]], range(len(TT[i_idx].shape)))
+    #TT[j_idx] = np.einsum(TT[j_idx], range(len(TT[j_idx].shape)), np.sqrt(LL[edge]) ** (-1), [Tj[2][0]], range(len(TT[j_idx].shape)))
+
     TT[i_idx] = np.einsum(TT[i_idx], range(len(TT[i_idx].shape)), U, U_shape, i_final_shape)
     TT[j_idx] = np.einsum(TT[j_idx], range(len(TT[j_idx].shape)), V, V_shape, j_final_shape)
+
     TT[i_idx] /= tensor_normalization(TT[i_idx])
     TT[j_idx] /= tensor_normalization(TT[j_idx])
     LL[edge] = cp.deepcopy(S / np.sum(S))

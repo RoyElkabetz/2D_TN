@@ -7,15 +7,15 @@ import ncon_lists_generator as nlg
 import ncon
 import DEnFG as fg
 
-date = '2019.08.14_'
-experiment_num = '_1_'
+date = '2019.08.21_'
+experiment_num = '_4_'
 
 #---------------------- Tensor Network paramas ------------------
 
 N = 4 # number of spins
 L = np.int(np.sqrt(N))
 
-t_max = 1000
+t_max = 500
 epsilon = 1e-15
 dumping = 0.1
 
@@ -23,7 +23,7 @@ d = 2  # virtual bond dimension
 p = 2  # physical bond dimension
 D_max = 2  # maximal virtual bond dimension
 J = 1  # Hamiltonian: interaction coeff
-h = np.linspace(0.1, 5., num=50)  # Hamiltonian: magnetic field coeff
+h = np.linspace(0.1, 5., num=10)  # Hamiltonian: magnetic field coeff
 
 mu = 1
 sigma = 0
@@ -37,6 +37,7 @@ time_to_converge = np.zeros((len(h)))
 mz_matrix_TN = np.zeros((p, p, len(h)))
 
 E = []
+E_exact = []
 mx = []
 mz = []
 mx_exact = []
@@ -66,7 +67,7 @@ sy = 0.5 * pauli_y
 sx = 0.5 * pauli_x
 
 t_list = [0.1, 0.01, 0.001]
-iterations = 10
+iterations = 100
 
 Opi = pauli_z
 Opj = pauli_z
@@ -106,20 +107,26 @@ for ss in range(h.shape[0]):
         for j in range(iterations):
             counter += 2
             print('h, h_idx, t, j = ', h[ss], ss, dt, j)
-            TT1, LL1 = su.PEPS_BPupdate(cp.deepcopy(TT), cp.deepcopy(LL), dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max)
+            TT1, LL1 = su.PEPS_BPupdate(TT, LL, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max)
+            #print(su.exact_energy_per_site(TT1, LL1, smat, Jk, h[ss], Opi, Opj, Op_field))
             #TT1, LL1 = su.BPupdate(TT1, LL1, smat, imat, t_max, epsilon, dumping, D_max)
-            TT2, LL2 = su.PEPS_BPupdate(cp.deepcopy(TT1), cp.deepcopy(LL1), dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max)
+            #print(su.exact_energy_per_site(TT1, LL1, smat, Jk, h[ss], Opi, Opj, Op_field))
+
+            TT2, LL2 = su.PEPS_BPupdate(TT1, LL1, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max)
+            #print(su.exact_energy_per_site(TT2, LL2, smat, Jk, h[ss], Opi, Opj, Op_field))
+
             #TT2, LL2 = su.BPupdate(TT2, LL2, smat, imat, t_max, epsilon, dumping, D_max)
-            energy1 = su.energy_per_site(cp.deepcopy(TT1), cp.deepcopy(LL1), imat, smat, Jk, h[ss], Opi, Opj, Op_field)
-            energy2 = su.energy_per_site(cp.deepcopy(TT2), cp.deepcopy(LL2), imat, smat, Jk, h[ss], Opi, Opj, Op_field)
+            #print(su.exact_energy_per_site(TT2, LL2, smat, Jk, h[ss], Opi, Opj, Op_field))
+            energy1 = su.exact_energy_per_site(TT1, LL1, smat, Jk, h[ss], Opi, Opj, Op_field)
+            energy2 = su.exact_energy_per_site(TT2, LL2, smat, Jk, h[ss], Opi, Opj, Op_field)
             if np.abs(energy1 - energy2) < 1e-8:
                 flag = 1
-                TT = cp.deepcopy(TT2)
-                LL = cp.deepcopy(LL2)
+                TT = TT2
+                LL = LL2
                 break
             else:
-                TT = cp.deepcopy(TT2)
-                LL = cp.deepcopy(LL2)
+                TT = TT2
+                LL = LL2
         if flag:
             flag = 0
             break
@@ -145,9 +152,7 @@ for ss in range(h.shape[0]):
             tensors_reduced_dm_list, indices_reduced_dm_list = nlg.ncon_list_generator_reduced_dm(TT, LL, smat, spin_index)
             tensors_reduced_dm_listn, indices_reduced_dm_listn = nlg.ncon_list_generator(TT, LL, smat, np.eye(p), spin_index)
             reduced_dm_exact = ncon.ncon(tensors_reduced_dm_list, indices_reduced_dm_list) / ncon.ncon(tensors_reduced_dm_listn, indices_reduced_dm_listn)
-
             trace_distance_exact_gPEPS[ss, l, ll] = su.trace_distance(reduced_dm_exact, reduced_dm_gPEPS)
-
 
 
     # ------------------ calculating total magnetization, energy and time to converge -------------------
@@ -156,12 +161,13 @@ for ss in range(h.shape[0]):
     mz_exact.append(np.sum(mz_mat_exact[ss, :, :]) / n)
     mx_exact.append(np.sum(mx_mat_exact[ss, :, :]) / n)
     time_to_converge[ss] = counter
-    E.append(su.energy_per_site(cp.deepcopy(TT), cp.deepcopy(LL), imat, smat, Jk, h[ss], Opi, Opj, Op_field))
+    E.append(su.energy_per_site(TT, LL, imat, smat, Jk, h[ss], Opi, Opj, Op_field))
+    E_exact.append(su.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
+
     sum_of_trace_distance_exact_gPEPS.append(trace_distance_exact_gPEPS[ss, :, :].sum())
     print('Mx_exact, Mz_exact', mx_exact[ss], mz_exact[ss])
     print('E, Mx, Mz: ', E[ss], mx[ss], mz[ss])
     print('\n')
-
     print('d(exact, gPEPS) = ', sum_of_trace_distance_exact_gPEPS[ss])
 
 # ------------------------------------- plotting results ----------------------------------------------
@@ -178,6 +184,7 @@ color = 'tab:red'
 plt.xlabel('h')
 plt.ylabel('Energy per site', color=color)
 plt.plot(h, E, color=color)
+plt.plot(h, E_exact, 'o', color=color)
 plt.grid()
 plt.tick_params(axis='y', labelcolor=color)
 plt.twinx()  # instantiate a second axes that shares the same x-axis

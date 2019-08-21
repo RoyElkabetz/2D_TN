@@ -1,25 +1,19 @@
-import numpy as np
-import copy as cp
-import BPupdate as su
-from scipy import linalg
-import matplotlib.pyplot as plt
-import ncon_lists_generator as nlg
-import ncon
-import DEnFG as fg
 
-'''
 import numpy as np
 import DEnFG as fg
 import copy as cp
 import matplotlib.pyplot as plt
 #import pylustrator
 #pylustrator.start()
+'''
 
+# ---------------------------------- 1D DEnFG PBC-----------------------------------
+fac = np.array([[1, 0, 0, 3], [2, 0, 1, 0]])
 # parameters
-n = 10
-alphabet = 2
-d = 3
-t_max = 40
+n = 3
+alphabet = 4
+d = 2
+t_max = 200
 epsilon = 1e-5
 
 # saving data
@@ -39,11 +33,11 @@ for i in range(n):
 # add factors
 for i in range(1, n):
     neighbors = {'n' + str(n + i - 1): 0, 'n' + str(i): 1, 'n' + str(n + i): 2}
-    g.add_factor(neighbors, np.arange(np.float(d * d * alphabet)).reshape(d, alphabet, d))
+    g.add_factor(neighbors, np.reshape(0.5 * np.eye(alphabet), (d, alphabet, d)))
 
 # PBC
 neighbors = {'n' + str(2 * n - 1): 0, 'n0': 1, 'n' + str(n): 2}
-g.add_factor(neighbors, np.random.rand(d, alphabet, d))
+g.add_factor(neighbors, np.reshape(0.5 * np.eye(alphabet), (d, alphabet, d)))
 
 # run BP
 for t in range(1, t_max):
@@ -53,14 +47,81 @@ for t in range(1, t_max):
         node_marginals[:, i, t] = np.linalg.eigvals(g.node_belief['n' + str(i)])
 
 plt.figure()
-plt.plot(list(range(t_max)), node_marginals[0, 0, :], 'bo')
-plt.plot(list(range(t_max)), node_marginals[1, 0, :], 'rv')
+for i in range(n):
+    plt.plot(list(range(t_max)), node_marginals[0, i, :], 'o')
+    plt.plot(list(range(t_max)), node_marginals[1, i, :], 'v')
+    plt.plot(list(range(t_max)), node_marginals[2, i, :], 's')
+    plt.plot(list(range(t_max)), node_marginals[3, i, :], '.-')
+
 plt.ylim([0, 1])
 plt.grid()
 plt.show()
 '''
 
+# ---------------------------------- 1D DEnFG Open BC-----------------------------------
+# parameters
+fac1 = np.array([[0.5, 0], [0, 0.5]])
+fac2 = np.array([[0.5, 0, 0, 0.5], [0.5, 0, 0, 0.5]])
+n = 3
+alphabet = 2
+d = 2
+t_max = 100
+epsilon = 1e-5
+dumping = 0.2
 
+# saving data
+node_marginals = np.zeros((alphabet, n, t_max))
+
+# generate the graph
+g = fg.Graph()
+
+# add physical nodes
+for i in range(n):
+    g.add_node(alphabet, 'n' + str(i))
+
+# add virtual nodes
+for i in range(n):
+    g.add_node(d, 'n' + str(g.node_count))
+
+# add factors
+for i in range(1, n - 1):
+    neighbors = {'n' + str(n + i - 1): 0, 'n' + str(i): 1, 'n' + str(n + i): 2}
+    g.add_factor(neighbors, np.reshape(cp.copy(fac2), (d, alphabet, d)))
+
+# OBC
+neighbors_left = {'n0': 0, 'n' + str(n): 1}
+g.add_factor(neighbors_left, cp.copy(fac1))
+neighbors_rigth = {'n' + str(n - 1): 1, 'n' + str(2 * n - 2): 0}
+g.add_factor(neighbors_rigth, cp.copy(fac1))
+
+# run BP
+for t in range(1, t_max):
+    g.sum_product(t, epsilon, dumping)
+    g.calc_node_belief()
+    for i in range(n):
+        node_marginals[:, i, t] = np.linalg.eigvals(g.node_belief['n' + str(i)])
+
+plt.figure()
+for i in range(n):
+    plt.plot(list(range(t_max)), node_marginals[0, i, :], 'o')
+    plt.plot(list(range(t_max)), node_marginals[1, i, :], 'v')
+
+plt.ylim([0, 1])
+plt.grid()
+plt.show()
+
+
+
+
+'''
+import numpy as np
+import copy as cp
+import BPupdate as su
+from scipy import linalg
+import matplotlib.pyplot as plt
+import ncon_lists_generator as nlg
+import ncon
+import DEnFG as fg
 
 
 #---------------------- Tensor Network paramas ------------------
@@ -118,3 +179,4 @@ for n in range(N):
     plt.plot(range(t_max), BP_in_time[1, n, :], 'o')
 plt.grid()
 plt.show()
+'''
