@@ -52,7 +52,7 @@ class Graph:
         return np.reshape(tensor, new_shape)
 
     def pd_mat_init(self, alphabet):
-        eigenval = np.eye(alphabet) / alphabet
+        eigenval = np.eye(alphabet, dtype=complex) / alphabet
         #a = np.abs(np.random.rand(alphabet))
         #eigenval = np.zeros((alphabet, alphabet))
         #np.fill_diagonal(eigenval, a / np.sum(a))
@@ -102,7 +102,7 @@ class Graph:
                     if not neighbor_factors:
                         continue
                     else:
-                        node2factor[n][f] = dumping * node2factor[n][f] + (1 - dumping) * cp.copy(temp_message) / np.trace(cp.copy(temp_message))
+                        node2factor[n][f] = dumping * node2factor[n][f] + (1 - dumping) * temp_message
                         node2factor[n][f] /= np.trace(node2factor[n][f])
             for f in factors.keys():
                 for n in factors[f][0].keys():
@@ -165,7 +165,7 @@ class Graph:
             temp = np.ones((alphabet, alphabet), dtype=complex)
             for f in nodes[n][1]:
                 temp *= messages[f][n]
-            self.node_belief[n] = temp
+            self.node_belief[n] = temp / np.trace(temp)
 
     def calc_factor_belief(self):
         self.factor_belief = {}
@@ -195,7 +195,6 @@ class Graph:
         conj_tensor_idx[self.factors[f][0][n]] = l + 1
         message_final_idx = [self.factors[f][0][n], l + 1]
         message = np.einsum(tensor, tensor_idx, conj_tensor, conj_tensor_idx, message_final_idx)
-        message /= np.trace(message)
         return message
 
     def exact_joint_probability(self):
@@ -212,7 +211,7 @@ class Graph:
             p_dim.append(self.nodes[self.nodes_order[i]][0])
             p_dim.append(self.nodes[self.nodes_order[i]][0])
             counter += 2
-        p = np.ones(p_dim)
+        p = np.ones(p_dim, dtype=complex)
         for item in factors.keys():
             f = self.make_super_tensor(factors[item][1])
             broadcasting_idx = [0] * len(f.shape)
@@ -223,20 +222,12 @@ class Graph:
         p /= np.sum(p)
         return p, p_dic, p_order
 
-    def ni_ni_star_marginal(self, p, p_dic, p_order, ni, ni_star):
+    def nodes_marginal(self, p, p_dic, p_order, nodes_list):
         marginal = cp.deepcopy(p)
-        marginal_dim = range(len(marginal.shape))
-        marginal_dim[0] = p_dic[ni]
-        marginal_dim[p_dic[ni]] = 0
-        marginal_dim[1] = p_dic[ni_star]
-        marginal_dim[p_dic[ni_star]] = 1
-
-        marginal = np.transpose(marginal, marginal_dim)
-        sum_axis = len(marginal.shape) - 1
-        for i in range(2, len(marginal.shape)):
-            marginal = np.sum(marginal, axis=sum_axis)
-            marginal_dim.pop()
-            sum_axis -= 1
+        final_idx = [0] * len(nodes_list)
+        for i in range(len(nodes_list)):
+            final_idx[i] = p_dic[nodes_list[i]]
+        marginal = np.einsum(marginal, range(len(marginal.shape)), final_idx)
         return marginal
 
 
