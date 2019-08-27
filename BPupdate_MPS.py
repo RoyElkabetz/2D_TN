@@ -70,8 +70,8 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Aij, Bij, imat, smat, D_max):
         theta = imaginary_time_evolution(R, L, lamda_k, Ek, dt, Jk, h, Aij, Bij)  # (Q1, i', j', Q2)
 
         ## (f) Obtain R', L', lambda'_k tensors by applying an SVD to theta
-        R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes', max_eigen_num=D_max)
-        #R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes')
+        #R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes', max_eigen_num=D_max)
+        R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes')
         # (Q1 * i', D') # (D', D') # (D', j' * Q2)
 
         # reshaping R_tild and L_tild back to rank 3 tensor
@@ -298,7 +298,7 @@ def two_site_expectation(Ek, TT, LL, imat, smat, Oij):
 
     ## (a) Find tensors Ti, Tj and their corresponding legs connected along edge Ek.
     Ti, Tj = get_tensors(Ek, TT, smat, imat)
-    Ti_conj, Tj_conj = get_tensors(Ek, TT, smat, imat)
+    Ti_conj, Tj_conj = get_conjugate_tensors(Ek, TT, smat, imat)
 
     # collecting all neighboring (edges, dimensions) without the Ek (edge, dimension)
     i_dim, j_dim = get_edges(Ek, smat, imat)
@@ -351,8 +351,18 @@ def two_site_exact_expectation(TT, LL, smat, edge, operator):
     TTstar = conjTN(TT)
     TT_tilde = absorb_all_bond_vectors(TT, LL, smat)
     TTstar_tilde = absorb_all_bond_vectors(TTstar, LL, smat)
-    T_list, idx_list = nlg.ncon_list_generator_two_site_exact_expectation(TT_tilde, TTstar_tilde, smat, edge, operator)
-    T_list_norm, idx_list_norm = nlg.ncon_list_generator_braket(TT_tilde, TTstar_tilde, smat)
+    T_list, idx_list = nlg.ncon_list_generator_two_site_exact_expectation_mps(TT_tilde, TTstar_tilde, smat, edge, operator)
+    T_list_norm, idx_list_norm = nlg.ncon_list_generator_braket_mps(TT_tilde, TTstar_tilde, smat)
+    exact_expectation = ncon.ncon(T_list, idx_list) / ncon.ncon(T_list_norm, idx_list_norm)
+    return exact_expectation
+
+
+def two_site_bp_expectation(TT, LL, smat, edge, operator):
+    TTstar = conjTN(TT)
+    TT_tilde = cp.deepcopy(TT)
+    TTstar_tilde = cp.deepcopy(TTstar)
+    T_list, idx_list = nlg.ncon_list_generator_two_site_exact_expectation_mps(TT_tilde, TTstar_tilde, smat, edge, operator)
+    T_list_norm, idx_list_norm = nlg.ncon_list_generator_braket_mps(TT_tilde, TTstar_tilde, smat)
     exact_expectation = ncon.ncon(T_list, idx_list) / ncon.ncon(T_list_norm, idx_list_norm)
     return exact_expectation
 
@@ -388,6 +398,20 @@ def exact_energy_per_site(TT, LL, smat, Jk, h, Aij, Bij):
     for Ek in range(m):
         Oij = np.reshape(-Jk[Ek] * Aij - 0.5 * h * Bij, (p, p, p, p))
         energy += two_site_exact_expectation(TT, LL, smat, Ek, Oij)
+    energy /= n
+    return energy
+
+
+def BP_energy_per_site(TT, LL, smat, Jk, h, Aij, Bij):
+    # calculating the normalized exact energy per site(tensor)
+    TT = cp.deepcopy(TT)
+    LL = cp.deepcopy(LL)
+    p = np.int(np.sqrt(np.float(Aij.shape[0])))
+    energy = 0
+    n, m = np.shape(smat)
+    for Ek in range(m):
+        Oij = np.reshape(-Jk[Ek] * Aij - 0.5 * h * Bij, (p, p, p, p))
+        energy += two_site_bp_expectation(TT, LL, smat, Ek, Oij)
     energy /= n
     return energy
 
@@ -512,7 +536,8 @@ def find_P(graph, edge, smat, Dmax):
     B_sqrt = linalg.sqrtm(B)
 
     ##  Calculate the environment matrix C and its SVD
-    C = np.matmul(B_sqrt, A_sqrt)
+    #C = np.matmul(B_sqrt, A_sqrt)
+    C = np.einsum(B_sqrt, [0, 1], A_sqrt, [1, 0], [0, 1])
     u_env, s_env, vh_env = np.linalg.svd(C, full_matrices=False)
 
     ##  Define P2

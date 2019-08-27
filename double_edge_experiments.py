@@ -132,71 +132,104 @@ plt.show()
 
 # ---------------------------------- 1D DEnFG 2 sites Open BC-----------------------------------
 # parameters
-fac1 = np.array([[1, 0], [0, 1]])
-n = 2
+
+n = 6
 alphabet = 2
 d = 2
-t_max = 20
+
+fac1 = np.array([[1.8+ 6.j, 2 + 5.j], [8. + 1.j, 1.j + 5]])
+
+t_max = 40
 epsilon = 1e-5
-dumping = 0.
+dumping = 0.2
+
+z = np.array([[1, 0], [0, -1]])
+x = np.array([[0, 1], [1, 0]])
 
 # saving data
-node_marginals = np.zeros((alphabet ** 2, n, t_max), dtype=complex)
-exact_node_marginals = np.zeros((alphabet ** 2, n, t_max), dtype=complex)
+node_marginals = np.zeros((alphabet, n, t_max), dtype=complex)
+exact_node_marginals = np.zeros((alphabet, n, t_max), dtype=complex)
+z_measure = np.zeros((n, t_max), dtype=complex)
+z_exact = np.zeros((n, t_max), dtype=complex)
+x_measure = np.zeros((n, t_max), dtype=complex)
+x_exact = np.zeros((n, t_max), dtype=complex)
+marginal_error = np.zeros((n, t_max), dtype=complex)
 
 
 # generate the graph
 g = fg.Graph()
 
-# add physical nodes
-g.add_node(alphabet, 'n0')
-g.add_node(alphabet, 'n1')
-#g.add_node(alphabet, 'n2')
-#g.add_node(alphabet, 'n3')
+# add nodes
+for i in range(n):
+    g.add_node(alphabet, 'n' + str(i))
 
+# add factors
+for i in range(n - 1):
+    g.add_factor({'n' + str(i): 0, 'n' + str(i + 1): 1}, np.random.rand(d, d) + 1j * np.random.rand(d, d))
 
+# add PBC
+g.add_factor({'n0': 0, 'n' + str(n - 1): 1}, np.random.rand(d, d) + 1j * np.random.rand(d, d))
 
-
-g.add_factor({'n0': 0, 'n1': 1}, cp.copy(fac1))
-#g.add_factor({'n1': 0, 'n2': 1}, cp.copy(fac1))
-#g.add_factor({'n2': 0, 'n3': 1}, cp.copy(fac1))
+# add loops
+g.add_factor({'n2': 0, 'n4': 1}, np.random.rand(d, d) + 1j * np.random.rand(d, d))
+g.add_factor({'n1': 0, 'n4': 1}, np.random.rand(d, d) + 1j * np.random.rand(d, d))
+g.add_factor({'n2': 0, 'n5': 1}, np.random.rand(d, d) + 1j * np.random.rand(d, d))
+g.add_factor({'n0': 0, 'n3': 1}, np.random.rand(d, d) + 1j * np.random.rand(d, d))
 
 # exact joint probability
 p, p_dic, p_order = g.exact_joint_probability()
 
 # run BP
-
 for t in range(1, t_max):
     g.sum_product(t, epsilon, dumping)
     g.calc_node_belief()
     for i in range(n):
         node = 'n' + str(i)
-        node_marginals[:, i, t] = np.ravel(g.node_belief[node])
-        exact_node_marginals[:, i, t] = np.ravel(g.nodes_marginal(p, p_dic, p_order, [node, node + '*']))
+        node_marginals[:, i, t] = np.linalg.eigvals(g.node_belief[node])
+        exact_node_marginals[:, i, t] = np.linalg.eigvals(g.nodes_marginal(p, p_dic, p_order, [node, node + '*']) / np.trace(g.nodes_marginal(p, p_dic, p_order, [node, node + '*'])))
+        z_measure[i, t] = np.trace(np.matmul(g.node_belief[node], z))
+        z_exact[i, t] = np.trace(np.matmul(g.nodes_marginal(p, p_dic, p_order, [node, node + '*']) / np.trace(g.nodes_marginal(p, p_dic, p_order, [node, node + '*'])), z))
+        x_measure[i, t] = np.trace(np.matmul(g.node_belief[node], x))
+        x_exact[i, t] = np.trace(np.matmul(g.nodes_marginal(p, p_dic, p_order, [node, node + '*']) / np.trace(g.nodes_marginal(p, p_dic, p_order, [node, node + '*'])), x))
+        marginal_error[i, t] = np.sum(np.abs(g.node_belief['n' + str(i)] - g.nodes_marginal(p, p_dic, p_order, [node, node + '*']) / np.trace(g.nodes_marginal(p, p_dic, p_order, [node, node + '*']))))
 
-
+print(np.linalg.eigvals(fac1))
+print('\n')
+print(fac1)
 
 for i in range(n):
     plt.figure()
     plt.plot(range(t_max), node_marginals[0, i, :], 'o')
     plt.plot(range(t_max), node_marginals[1, i, :], 'o')
-    plt.plot(range(t_max), node_marginals[2, i, :], 'o')
-    plt.plot(range(t_max), node_marginals[3, i, :], 'o')
-    plt.plot(range(t_max), exact_node_marginals[0, i, :], 'v')
-    plt.plot(range(t_max), exact_node_marginals[1, i, :], 'v')
-    plt.plot(range(t_max), exact_node_marginals[2, i, :], 'v')
-    plt.plot(range(t_max), exact_node_marginals[3, i, :], 'v')
+    plt.plot(range(t_max), exact_node_marginals[0, i, :])
+    plt.plot(range(t_max), exact_node_marginals[1, i, :])
     plt.title('(n' + str(i) + ',n' + str(i) + '*)')
-    #plt.ylim([0, 1])
-    #plt.legend(['n0[0]', 'n0[1]', 'n2[0]', 'n2[1]'])
+    plt.legend(['n' + str(i) + '[0]-BP', 'n' + str(i) + '[1]-BP', 'n' + str(i) + '[0]-exact', 'n' + str(i) + '[1]-exact'])
     plt.grid()
     plt.show()
 
-pp = np.einsum(fac1, [0, 1], fac1, [1, 2], [0, 1, 2])
-pp = np.einsum(pp, [0, 1, 2], fac1, [2, 3], [0, 1, 2, 3])
-ppp = np.einsum(pp, [0, 1, 2, 3], np.conj(pp), [4, 5, 6, 7], [0, 4, 1, 5, 2, 6, 3, 7])
-ppp /= np.sum(ppp)
-print(np.sum(np.abs(p - ppp)))
+    plt.figure()
+    plt.plot(range(t_max), z_measure[i, :], 'o')
+    plt.plot(range(t_max), x_measure[i, :], 'o')
+    plt.plot(range(t_max), z_exact[i, :])
+    plt.plot(range(t_max), x_exact[i, :])
+    plt.title('z[(n' + str(i) + ',n' + str(i) + '*)]')
+    plt.legend(['z_measure', 'x_measure', 'z_exact', 'x_exact'])
+    plt.grid()
+    plt.show()
+
+legend = []
+plt.figure()
+for i in range(n):
+    plt.plot(range(t_max), marginal_error[i, :], 'o')
+    legend.append('n' + str(i))
+plt.ylabel('error')
+plt.xlabel('t')
+plt.legend(legend)
+plt.grid()
+plt.show()
+
+
 
 
 '''

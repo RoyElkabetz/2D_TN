@@ -4,7 +4,9 @@ import gPEPS as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
-d_vec = [2, 3, 4, 5, 6, 8, 10, 15, 20, 30]
+#d_vec = [2, 3, 4, 5, 6, 8, 10, 15, 20, 30]
+d_vec = [10]
+
 E = []
 d_and_t = np.zeros((2, len(d_vec)))
 
@@ -35,8 +37,8 @@ sz = 0.5 * pauli_z
 sy = 0.5 * pauli_y
 sx = 0.5 * pauli_x
 
-t_list = [0.1, 0.01, 0.001, 0.0001, 0.00001]
-iterations = 100
+t_list = [0.1]
+iterations = 20
 heisenberg = -J * np.real(np.kron(sx, sx) + np.kron(sy, sy) + np.kron(sz, sz))
 hij = np.reshape(heisenberg, (p, p, p, p))
 hij_energy_term = cp.deepcopy(hij)
