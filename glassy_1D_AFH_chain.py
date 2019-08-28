@@ -7,7 +7,7 @@ EE_exact = []
 EE_gpeps = []
 EE_bp = []
 
-N = 10
+N = 3
 d_vec = [2]
 E = []
 t_max = 100

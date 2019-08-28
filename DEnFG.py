@@ -99,7 +99,7 @@ class Graph:
                     neighbor_factors.remove(f)
                     temp_message = np.ones((alphabet, alphabet), dtype=complex)
                     for item in neighbor_factors:
-                        temp_message *= factor2node[item][n]
+                        temp_message *= old_messages_f2n[item][n]
                     #if not neighbor_factors:
                     #    continue
                     #else:
@@ -107,9 +107,8 @@ class Graph:
                     node2factor[n][f] /= np.trace(node2factor[n][f])
             for f in factors.keys():
                 for n in factors[f][0].keys():
-                    factor2node[f][n] = dumping * factor2node[f][n] + (1 - dumping) * self.f2n_message(f, n, node2factor)
+                    factor2node[f][n] = dumping * factor2node[f][n] + (1 - dumping) * self.f2n_message(f, n, old_messages_n2f)
                     factor2node[f][n] /= np.trace(factor2node[f][n])
-
             #self.save_messages(node2factor, factor2node)
             self.messages_n2f = node2factor
             self.messages_f2n = factor2node
@@ -219,6 +218,8 @@ class Graph:
             for object in factors[item][0]:
                 broadcasting_idx[2 * factors[item][0][object]] = p_dic[object]
                 broadcasting_idx[2 * factors[item][0][object] + 1] = p_dic[object + '*']
+            permute_tensor_indices = np.argsort(broadcasting_idx)
+            f = np.transpose(f, permute_tensor_indices)
             p *= self.tensor_broadcasting(f, broadcasting_idx, p)
         return p, p_dic, p_order
 

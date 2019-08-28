@@ -2,14 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="39f4aadf-3039-4826-aca9-4bd799d9af66" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/DEnFG_from_MPS.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BPupdate_MPS.py" beforeDir="false" afterPath="$PROJECT_DIR$/BPupdate_MPS.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DEnFG.py" beforeDir="false" afterPath="$PROJECT_DIR$/DEnFG.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/double_edge_experiments.py" beforeDir="false" afterPath="$PROJECT_DIR$/double_edge_experiments.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/glassy_1D_AFH_chain.py" beforeDir="false" afterPath="$PROJECT_DIR$/glassy_1D_AFH_chain.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ncon_lists_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/ncon_lists_generator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/su_AFH_chain.py" beforeDir="false" afterPath="$PROJECT_DIR$/su_AFH_chain.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -55,8 +50,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/DEnFG.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="142">
-              <caret line="90" selection-start-line="90" selection-end-line="90" />
+            <state relative-caret-position="182">
+              <caret line="217" column="39" selection-start-line="217" selection-start-column="39" selection-end-line="217" selection-end-column="39" />
             </state>
           </provider>
         </entry>
@@ -97,8 +92,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/BPupdate_MPS.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-895">
-              <caret line="524" column="36" lean-forward="true" selection-start-line="524" selection-start-column="36" selection-end-line="524" selection-end-column="36" />
+            <state relative-caret-position="132">
+              <caret line="478" selection-start-line="478" selection-end-line="478" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -109,8 +104,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/glassy_1D_AFH_chain.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="245">
-              <caret line="61" column="30" lean-forward="true" selection-start-line="61" selection-start-column="30" selection-end-line="61" selection-end-column="30" />
+            <state relative-caret-position="54">
+              <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -121,8 +116,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/double_edge_experiments.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-991">
-              <caret line="135" column="5" selection-start-line="135" selection-start-column="5" selection-end-line="135" selection-end-column="5" />
+            <state relative-caret-position="219">
+              <caret line="50" column="33" selection-start-line="50" selection-start-column="33" selection-end-line="50" selection-end-column="33" />
               <folding>
                 <element signature="e#1#19#0" expanded="true" />
               </folding>
@@ -186,8 +181,8 @@
         <option value="$PROJECT_DIR$/ncon_lists_generator.py" />
         <option value="$PROJECT_DIR$/su_AFH_chain.py" />
         <option value="$PROJECT_DIR$/BPupdate_MPS.py" />
-        <option value="$PROJECT_DIR$/DEnFG.py" />
         <option value="$PROJECT_DIR$/glassy_1D_AFH_chain.py" />
+        <option value="$PROJECT_DIR$/DEnFG.py" />
         <option value="$PROJECT_DIR$/double_edge_experiments.py" />
       </list>
     </option>
@@ -357,8 +352,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.glassy_1D_AFH_chain" />
         <item itemvalue="Python.double_edge_experiments" />
+        <item itemvalue="Python.glassy_1D_AFH_chain" />
         <item itemvalue="Python.su_AFH_chain" />
         <item itemvalue="Python.glassyPEPS_BPupdate_experiment" />
         <item itemvalue="Python.glassyPEPS-experiment" />
@@ -381,12 +376,12 @@
       <workItem from="1563426344920" duration="74152000" />
       <workItem from="1563953317040" duration="18017000" />
       <workItem from="1563990003506" duration="5299000" />
-      <workItem from="1564991123964" duration="161366000" />
+      <workItem from="1564991123964" duration="179360000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="379034000" />
+    <option name="totallyTimeSpent" value="397028000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -407,7 +402,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32992035" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.33762518" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.75965667" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.36051503" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32474965" />
@@ -416,12 +411,12 @@
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32474965" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.32331902" />
-      <window_info anchor="bottom" id="Python Console" order="12" visible="true" weight="0.29899856" />
+      <window_info anchor="bottom" id="Python Console" order="12" visible="true" weight="0.33619457" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Database" order="3" weight="0.32689556" />
-      <window_info anchor="right" id="SciView" order="4" weight="0.6387697" />
+      <window_info anchor="right" id="SciView" order="4" weight="0.6380544" />
       <window_info anchor="right" x="0" y="0" width="310" height="595" id="Documentation" order="5" side_tool="true" weight="0.32960597" />
     </layout>
   </component>
@@ -443,8 +438,18 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/BPupdate_MPS.py</url>
-          <line>526</line>
-          <option name="timeStamp" value="213" />
+          <line>521</line>
+          <option name="timeStamp" value="214" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/DEnFG.py</url>
+          <line>214</line>
+          <option name="timeStamp" value="217" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/DEnFG.py</url>
+          <line>62</line>
+          <option name="timeStamp" value="218" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -464,13 +469,13 @@
     <SUITE FILE_PATH="coverage/2D_TN$honeycomb_su.coverage" NAME="honeycomb_su Coverage Results" MODIFIED="1562073891824" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$ITE_testing.coverage" NAME="ITE_testing Coverage Results" MODIFIED="1562048176695" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$PEPS_4sites.coverage" NAME="PEPS_4sites Coverage Results" MODIFIED="1562216645341" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/2D_TN$double_edge_experiments.coverage" NAME="double_edge_experiments Coverage Results" MODIFIED="1566914474878" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/2D_TN$double_edge_experiments.coverage" NAME="double_edge_experiments Coverage Results" MODIFIED="1567020978583" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$temp.coverage" NAME="temp Coverage Results" MODIFIED="1561550517608" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$testing_the_su.coverage" NAME="testing_the_su Coverage Results" MODIFIED="1562152907383" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$temp1.coverage" NAME="temp1 Coverage Results" MODIFIED="1563799450704" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$glassyPEPS_BPupdate_experiment.coverage" NAME="glassyPEPS_BPupdate_experiment Coverage Results" MODIFIED="1566381497642" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$su_AFH_chain.coverage" NAME="su_AFH_chain Coverage Results" MODIFIED="1566828585225" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/2D_TN$glassy_1D_AFH_chain.coverage" NAME="glassy_1D_AFH_chain Coverage Results" MODIFIED="1566916125387" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/2D_TN$glassy_1D_AFH_chain.coverage" NAME="glassy_1D_AFH_chain Coverage Results" MODIFIED="1566988210182" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$glassyPEPS_experiment.coverage" NAME="glassyPEPS-experiment Coverage Results" MODIFIED="1563959848354" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$MPS_2sites.coverage" NAME="MPS_2sites Coverage Results" MODIFIED="1561550318058" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
@@ -763,13 +768,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/BPupdate.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="46">
-          <caret line="2" column="17" lean-forward="true" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/su_AFH_chain.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="235">
@@ -790,17 +788,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DEnFG.py">
+    <entry file="file://$PROJECT_DIR$/BPupdate.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="142">
-          <caret line="90" selection-start-line="90" selection-end-line="90" />
+        <state relative-caret-position="46">
+          <caret line="2" column="17" lean-forward="true" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/glassy_1D_AFH_chain.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="245">
-          <caret line="61" column="30" lean-forward="true" selection-start-line="61" selection-start-column="30" selection-end-line="61" selection-end-column="30" />
+        <state relative-caret-position="54">
+          <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -809,18 +807,25 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/BPupdate_MPS.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-895">
-          <caret line="524" column="36" lean-forward="true" selection-start-line="524" selection-start-column="36" selection-end-line="524" selection-end-column="36" />
+        <state relative-caret-position="132">
+          <caret line="478" selection-start-line="478" selection-end-line="478" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/DEnFG.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="182">
+          <caret line="217" column="39" selection-start-line="217" selection-start-column="39" selection-end-line="217" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/double_edge_experiments.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-991">
-          <caret line="135" column="5" selection-start-line="135" selection-start-column="5" selection-end-line="135" selection-end-column="5" />
+        <state relative-caret-position="219">
+          <caret line="50" column="33" selection-start-line="50" selection-start-column="33" selection-end-line="50" selection-end-column="33" />
           <folding>
             <element signature="e#1#19#0" expanded="true" />
           </folding>
