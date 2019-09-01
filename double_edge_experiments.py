@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 np.random.seed(seed=18)
 
-
+'''
 # ----------------------------------  chain DEnFG n sites any BC-----------------------------------
 # parameters
 
@@ -82,7 +82,7 @@ for t in range(1, t_max):
 #print(fac1)
 
 for i in range(n):
-    '''
+    
     plt.figure()
     plt.plot(range(t_max), node_marginals[0, i, :], 'o')
     plt.plot(range(t_max), node_marginals[1, i, :], 'o')
@@ -92,7 +92,7 @@ for i in range(n):
     plt.legend(['n' + str(i) + '[0]-BP', 'n' + str(i) + '[1]-BP', 'n' + str(i) + '[0]-exact', 'n' + str(i) + '[1]-exact'])
     plt.grid()
     plt.show()
-    '''
+    
     plt.figure()
     plt.plot(range(t_max), z_measure[i, :], 'o')
     plt.plot(range(t_max), x_measure[i, :], 'o')
@@ -115,9 +115,9 @@ plt.xlabel('t')
 plt.legend(legend)
 plt.grid()
 plt.show()
-
 '''
-# ---------------------------------- 1D DEnFG 2 sites Open BC-----------------------------------
+
+# ---------------------------------- 1D DEnFG MPS n sites any BC-----------------------------------
 # parameters
 
 n = 3
@@ -144,12 +144,11 @@ for i in range(n):
 # add factors
 for i in range(n - 1):
     g.add_node(alphabet, 'n' + str(g.node_count))
-    g.add_factor({'n' + str(i): 0, 'n' + str(i + 1): 1}, np.random.rand(d, d) + 1j * np.random.rand(d, d))
+    g.add_factor({'n' + str(i): 2, 'n' + str(i + 1): 1, 'n' + str(g.node_count - 1): 0}, np.random.rand(d, d, alphabet) + 1j * np.random.rand(d, d, alphabet))
 
 # add PBC
 g.add_node(alphabet, 'n' + str(g.node_count))
-g.add_node(d, 'n' + str(g.node_count))
-g.add_factor({'n' + str(n - 1): 1, 'n0': 0}, np.random.rand(d, d) + 1j * np.random.rand(d, d))
+g.add_factor({'n' + str(n - 1): 1, 'n0': 2,  'n' + str(g.node_count - 1): 0}, np.random.rand(d, d, alphabet) + 1j * np.random.rand(d, d, alphabet))
 
 # add loops
 #g.add_factor({'n2': 0, 'n4': 1}, np.random.rand(d, d) + 1j * np.random.rand(d, d))
@@ -176,6 +175,7 @@ p, p_dic, p_order = g.exact_joint_probability()
 for t in range(1, t_max):
     g.sum_product(t, epsilon, dumping)
     g.calc_node_belief()
+    
     for i in range(N):
         node = 'n' + str(i)
         node_marginals[:, i, t] = np.linalg.eigvals(g.node_belief[node])
@@ -185,11 +185,45 @@ for t in range(1, t_max):
         x_measure[i, t] = np.trace(np.matmul(g.node_belief[node], x))
         x_exact[i, t] = np.trace(np.matmul(g.nodes_marginal(p, p_dic, p_order, [node, node + '*']) / np.trace(g.nodes_marginal(p, p_dic, p_order, [node, node + '*'])), x))
         marginal_error[i, t] = np.sum(np.abs(g.node_belief['n' + str(i)] - g.nodes_marginal(p, p_dic, p_order, [node, node + '*']) / np.trace(g.nodes_marginal(p, p_dic, p_order, [node, node + '*']))))
-
+    
 #print(np.linalg.eigvals(fac1))
 #print('\n')
 #print(fac1)
-'''
+for i in range(N):
+    plt.figure()
+    plt.plot(range(t_max), node_marginals[0, i, :], 'o')
+    plt.plot(range(t_max), node_marginals[1, i, :], 'o')
+    plt.plot(range(t_max), exact_node_marginals[0, i, :])
+    plt.plot(range(t_max), exact_node_marginals[1, i, :])
+    plt.title('(n' + str(i) + ',n' + str(i) + '*)')
+    plt.legend(
+        ['n' + str(i) + '[0]-BP', 'n' + str(i) + '[1]-BP', 'n' + str(i) + '[0]-exact', 'n' + str(i) + '[1]-exact'])
+    plt.grid()
+    plt.show()
+
+    plt.figure()
+    plt.plot(range(t_max), z_measure[i, :], 'o')
+    plt.plot(range(t_max), x_measure[i, :], 'o')
+    plt.plot(range(t_max), z_exact[i, :])
+    plt.plot(range(t_max), x_exact[i, :])
+    plt.title('z[(n' + str(i) + ',n' + str(i) + '*)]')
+    plt.legend(['z_measure', 'x_measure', 'z_exact', 'x_exact'])
+    plt.ylim([-1, 1])
+    plt.grid()
+    plt.show()
+
+legend = []
+plt.figure()
+plt.title(str(n) + ' factors')
+for i in range(N):
+    plt.plot(range(t_max), marginal_error[i, :], 'o')
+    legend.append('n' + str(i))
+plt.ylabel('error')
+plt.xlabel('t')
+plt.legend(legend)
+plt.grid()
+plt.show()
+
 #------------------------------------------here
 '''
 import numpy as np
@@ -207,9 +241,9 @@ import DEnFG as fg
 N = 4 # number of spins
 L = np.int(np.sqrt(N))
 
-t_max = 40
-epsilon = 1e-15
-dumping = 0.8
+t_max = 50
+epsilon = 1e-5
+dumping = 0.2
 
 d = 2  # virtual bond dimension
 p = 2  # physical bond dimension
@@ -240,21 +274,27 @@ LL = []
 for i in range(imat.shape[1]):
     LL.append(np.ones(d, dtype=float) / d)
 
+graph = fg.Graph()
+graph = su.PEPStoDEnFG_transform(graph, cp.deepcopy(TT), cp.deepcopy(LL), smat)
 
 
-BP_in_time = np.zeros((p, N, t_max))
+BP_in_time = np.zeros((p, p, N, t_max))
+exact_marg = np.zeros((p, p, N))
+p, p_dic, p_order = graph.exact_joint_probability()
+
 for t in range(1, t_max):
-    graph = fg.Graph()
-    graph = su.PEPStoDEnFG_transform(graph, cp.deepcopy(TT), cp.deepcopy(LL), smat)
+
     graph.sum_product(t, epsilon, dumping)
     graph.calc_node_belief()
-    for n in range(N):
-        BP_in_time[:, n, t] = np.linalg.eigvals(graph.node_belief['n' + str(len(LL) + n)])
+    #for n in range(N):
+    #    BP_in_time[:, :, n, t] = graph.node_belief['n' + str(len(LL) + n)]
 
 plt.figure()
 for n in range(N):
-    plt.plot(range(t_max), BP_in_time[0, n, :], '^')
-    plt.plot(range(t_max), BP_in_time[1, n, :], 'o')
+    plt.plot(range(t_max), BP_in_time[0, 0, n, :], '^')
+    plt.plot(range(t_max), BP_in_time[0, 1, n, :], '^')
+    plt.plot(range(t_max), BP_in_time[1, 0, n, :], '^')
+    plt.plot(range(t_max), BP_in_time[1, 1, n, :], '^')
 plt.grid()
 plt.show()
 '''

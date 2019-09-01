@@ -7,12 +7,12 @@ EE_exact = []
 EE_gpeps = []
 EE_bp = []
 
-N = 3
-d_vec = [2]
+N = 4
+d_vec = [3]
 E = []
 t_max = 100
 epsilon = 1e-5
-dumping = 0.3
+dumping = 0.1
 d_and_t = np.zeros((2, len(d_vec)))
 
 d = 2
@@ -63,15 +63,15 @@ for ss in range(len(d_vec)):
             TT2, LL2 = su.PEPS_BPupdate(TT1, LL1, dt, J, h, Aij, Bij, imat, smat, D_max)
             TT2, LL2 = su.BPupdate(TT2, LL2, smat, imat, t_max, epsilon, dumping, D_max)
 
-            #energy1 = su.energy_per_site(TT1, LL1, imat, smat, J, h, Aij, Bij)
-            #energy2 = su.energy_per_site(TT2, LL2, imat, smat, J, h, Aij, Bij)
-            energy1 = su.exact_energy_per_site(TT1, LL1, smat, J, h, Aij, Bij)
-            energy2 = su.exact_energy_per_site(TT2, LL2, smat, J, h, Aij, Bij)
+            energy1 = su.energy_per_site(TT1, LL1, imat, smat, J, h, Aij, Bij)
+            energy2 = su.energy_per_site(TT2, LL2, imat, smat, J, h, Aij, Bij)
+            #energy1 = su.exact_energy_per_site(TT1, LL1, smat, J, h, Aij, Bij)
+            #energy2 = su.exact_energy_per_site(TT2, LL2, smat, J, h, Aij, Bij)
             print(energy1)
             print(energy2)
             print('\n')
 
-            if np.abs(energy1 - energy2) < 1e-5:
+            if np.abs(energy1 - energy2) < 1e-8:
                 flag = 1
                 break
             else:

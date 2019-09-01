@@ -5,7 +5,7 @@ from scipy import linalg
 import matplotlib.pyplot as plt
 
 #d_vec = [2, 3, 4, 5, 6, 8, 10, 15, 20, 30]
-d_vec = [10]
+d_vec = [3]
 
 E = []
 d_and_t = np.zeros((2, len(d_vec)))

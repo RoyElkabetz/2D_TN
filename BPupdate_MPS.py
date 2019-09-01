@@ -2,7 +2,7 @@ import numpy as np
 import ncon as ncon
 import copy as cp
 from scipy import linalg
-import DEnFG as denfg
+import virtual_DEFG as defg
 import time
 import matplotlib.pyplot as plt
 import ncon_lists_generator as nlg
@@ -25,10 +25,11 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Aij, Bij, imat, smat, D_max):
     TT = cp.deepcopy(TT)
     LL = cp.deepcopy(LL)
 
+
     n, m = np.shape(imat)
     for Ek in range(m):
 
-        lamda_k = LL[Ek]
+        lamda_k = cp.deepcopy(LL[Ek])
 
         ## (a) Find tensors Ti, Tj and their corresponding legs connected along edge Ek.
         Ti, Tj = get_tensors(Ek, TT, smat, imat)
@@ -118,6 +119,7 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Aij, Bij, imat, smat, D_max):
 
 
 def get_tensors(edge, tensors, structure_matrix, incidence_matrix):
+    tensors = cp.deepcopy(tensors)
     tidx = np.nonzero(incidence_matrix[:, edge])[0]
     tdim = structure_matrix[tidx, edge]
     Ti = [tensors[tidx[0]], [tidx[0], 'tensor_number'], [tdim[0], 'tensor_Ek_leg']]
@@ -473,9 +475,10 @@ def BPupdate(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax):
     TT = cp.deepcopy(TT)
     LL = cp.deepcopy(LL)
 
-    graph = denfg.Graph()
+    graph = defg.Graph()
     graph = MPStoDEnFG_transform(graph, TT, LL, smat)
     graph.sum_product(t_max, epsilon, dumping)
+    graph.calc_node_belief()
     for Ek in range(len(LL)):
         P = find_P(graph, Ek, smat, Dmax)
         TT, LL = smart_truncation(TT, LL, P, Ek, smat, imat, Dmax)
@@ -490,7 +493,7 @@ def BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax, Ek):
     TT = cp.deepcopy(TT)
     LL = cp.deepcopy(LL)
 
-    graph = denfg.Graph()
+    graph = defg.Graph()
     graph = MPStoDEnFG_transform(graph, TT, LL, smat)
     graph.sum_product(t_max, epsilon, dumping)
     P = find_P(graph, Ek, smat, Dmax)
@@ -502,6 +505,7 @@ def BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax, Ek):
 
 def MPStoDEnFG_transform(graph, TT, LL, smat):
     factors_list = absorb_all_bond_vectors(TT, LL, smat)
+    #factors_list = cp.deepcopy(TT)
 
     # Adding virtual nodes
     n, m = np.shape(smat)
@@ -509,13 +513,10 @@ def MPStoDEnFG_transform(graph, TT, LL, smat):
         graph.add_node(len(LL[i]), 'n' + str(graph.node_count))
     # Adding factors
     for i in range(n):
-        # Adding physical node
-        graph.add_node(factors_list[i].shape[0], 'n' + str(graph.node_count))
         # generating the neighboring nodes of the i'th factor
         neighbor_nodes = {}
         edges = np.nonzero(smat[i, :])[0]
         legs = smat[i, edges]
-        neighbor_nodes['n' + str(graph.node_count - 1)] = 0
         for j in range(len(edges)):
             neighbor_nodes['n' + str(edges[j])] = legs[j]
         graph.add_factor(neighbor_nodes, factors_list[i])
