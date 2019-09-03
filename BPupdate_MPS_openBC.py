@@ -28,7 +28,6 @@ def PEPS_BPupdate(TT1, LL1, dt, Jk, h, Aij, Bij, imat, smat, D_max):
 
     n, m = np.shape(imat)
     for Ek in range(m):
-
         lamda_k = cp.deepcopy(LL[Ek])
 
         ## (a) Find tensors Ti, Tj and their corresponding legs connected along edge Ek.
@@ -45,53 +44,40 @@ def PEPS_BPupdate(TT1, LL1, dt, Jk, h, Aij, Bij, imat, smat, D_max):
 
         for ii in range(len(iedges)):
             Ti[0] = np.einsum(Ti[0], range(len(Ti[0].shape)), LL[iedges[ii]], [ilegs[ii]], range(len(Ti[0].shape)))
+        for ii in range(len(jedges)):
             Tj[0] = np.einsum(Tj[0], range(len(Tj[0].shape)), LL[jedges[ii]], [jlegs[ii]], range(len(Tj[0].shape)))
 
         # permuting the Ek leg of tensors i and j into the 1'st dimension
         Ti = dim_perm(Ti)
         Tj = dim_perm(Tj)
 
-        ## (c) Group all virtual legs Em!=Ek to form Pl, Pr MPS tensors
-        Pl = rankN_to_rank3(Ti[0])
-        Pr = rankN_to_rank3(Tj[0])
-
-        ## (d) SVD decomposing of Pl, Pr to obtain Q1, R and Q2, L sub-tensors, respectively
-        R, sr, Q1 = svd(Pl, [0, 1], [2], keep_s='yes')
-        L, sl, Q2 = svd(Pr, [0, 1], [2], keep_s='yes')
-        R = R.dot(np.diag(sr))
-        L = L.dot(np.diag(sl))
-
-        # reshaping R and L into rank 3 tensors with shape (physical_dim, Ek_dim, Q(1/2).shape[0])
-        i_physical_dim = Ti[0].shape[0]
-        j_physical_dim = Tj[0].shape[0]
-        R = rank2_to_rank3(R, i_physical_dim)  # (i, Ek, Q1) (following the dimensions)
-        L = rank2_to_rank3(L, j_physical_dim)  # (j, Ek, Q2)
-
         ## (e) Contract the ITE gate Uij, with R, L, and lambda_k to form theta tensor.
-        theta = imaginary_time_evolution(R, L, lamda_k, Ek, dt, Jk, h, Aij, Bij)  # (Q1, i', j', Q2)
+        theta, [l, r] = imaginary_time_evolution_MPSopenBC(Ti[0], Tj[0], lamda_k, Ek, dt, Jk, h, Aij, Bij)  # (Q1, i', j', Q2)
 
         ## (f) Obtain R', L', lambda'_k tensors by applying an SVD to theta
-        #R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes', max_eigen_num=D_max)
-        R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes')
-        # (Q1 * i', D') # (D', D') # (D', j' * Q2)
+        #R_tild, lamda_k_tild, L_tild = svd(theta, range(l - 1), range(l - 1, r + l - 2), keep_s='yes', max_eigen_num=D_max)
+        R_tild, lamda_k_tild, L_tild = svd(theta, range(l - 1), range(l - 1, r + l - 2), keep_s='yes')
 
-        # reshaping R_tild and L_tild back to rank 3 tensor
-        R_tild = np.reshape(R_tild, (Q1.shape[0], i_physical_dim, R_tild.shape[1]))  # (Q1, i', D')
-        R_tild = np.transpose(R_tild, [1, 2, 0])  # (i', D', Q1)
-        L_tild = np.reshape(L_tild, (L_tild.shape[0], j_physical_dim, Q2.shape[0]))  # (D', j', Q2)
-        L_tild = np.transpose(L_tild, [1, 0, 2])  # (j', D', Q2)
 
-        ## (g) Glue back the R', L', sub-tensors to Q1, Q2, respectively, to form updated tensors P'l, P'r.
-        Pl_prime = np.einsum('ijk,kl->ijl', R_tild, Q1)
-        Pr_prime = np.einsum('ijk,kl->ijl', L_tild, Q2)
+        # reshaping R_tild and L_tild back
+        if l == 2:
+            R_tild_new_shape = [Ti[0].shape[0], R_tild.shape[1]]  # (i, D')
+            R_transpose = [0, 1]
+        if l == 3:
+            R_tild_new_shape = [Ti[0].shape[2], Ti[0].shape[0], R_tild.shape[1]]  # (d, i, D')
+            R_transpose = [1, 2, 0]
+        if r == 2:
+            L_tild_new_shape = [L_tild.shape[0], Tj[0].shape[0]]  # (D', j)
+            L_transpose = [1, 0]
+        if r == 3:
+            L_tild_new_shape = [L_tild.shape[0], Tj[0].shape[0], Tj[0].shape[2]]  # (D', j, d)
+            L_transpose = [1, 0, 2]
 
-        ## (h) Reshape back the P`l, P`r to the original rank-(z + 1) tensors Ti, Tj
-        Ti_new_shape = list(Ti[0].shape)
-        Ti_new_shape[1] = len(lamda_k_tild)
-        Tj_new_shape = list(Tj[0].shape)
-        Tj_new_shape[1] = len(lamda_k_tild)
-        Ti[0] = rank3_to_rankN(Pl_prime, Ti_new_shape)
-        Tj[0] = rank3_to_rankN(Pr_prime, Tj_new_shape)
+        R_tild = np.reshape(R_tild, R_tild_new_shape)
+        Ti[0] = np.transpose(R_tild, R_transpose)    # (i, D', ...)
+        L_tild = np.reshape(L_tild, L_tild_new_shape)
+        Tj[0] = np.transpose(L_tild, L_transpose)  # (j, D', ...)
+
 
         # permuting back the legs of Ti and Tj
         Ti = dim_perm(Ti)
@@ -101,6 +87,7 @@ def PEPS_BPupdate(TT1, LL1, dt, Jk, h, Aij, Bij, imat, smat, D_max):
         for ii in range(len(iedges)):
             Ti[0] = np.einsum(Ti[0], range(len(Ti[0].shape)), LL[iedges[ii]] ** (-1), [ilegs[ii]],
                               range(len(Ti[0].shape)))
+        for ii in range(len(jedges)):
             Tj[0] = np.einsum(Tj[0], range(len(Tj[0].shape)), LL[jedges[ii]] ** (-1), [jlegs[ii]],
                               range(len(Tj[0].shape)))
 
@@ -109,12 +96,8 @@ def PEPS_BPupdate(TT1, LL1, dt, Jk, h, Aij, Bij, imat, smat, D_max):
         TT[Tj[1][0]] = Tj[0] / tensor_normalization(Tj[0])
         LL[Ek] = lamda_k_tild / np.sum(lamda_k_tild)
 
-        ##  single edge BP update
-        t_max = 100
-        epsilon = 1e-5
-        dumping = 0.
-        TT, LL = BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, D_max, Ek)
 
+        TT, LL = smart_update(TT, LL, smat, imat, Ek, D_max)
     return TT, LL
 
 
@@ -176,8 +159,7 @@ def dim_perm(tensor):
 def rankN_to_rank3(tensor):
     # taking a rank N>=3 tensor and make it a rank 3 tensor by grouping all dimensions [2, 3, ..., N]
     if len(tensor.shape) < 3:
-        rank = len(tensor.shape)
-        raise IndexError('expecting tensor rank N>=3. instead got tensor of rank = ' + str(rank))
+        return tensor
     shape = np.array(cp.copy(tensor.shape))
     new_shape = [shape[0], shape[1], np.prod(shape[2:])]
     Pi = np.reshape(tensor, new_shape)
@@ -230,6 +212,34 @@ def imaginary_time_evolution(left_tensor, right_tensor, bond_vector, Ek, dt, Jk,
     A = np.einsum(A, [0, 1, 2], right_tensor, [3, 1, 4], [2, 0, 3, 4])  # (Q1, i, j, Q2)
     theta = np.einsum(A, [0, 1, 2, 3], unitary_time_op, [1, 2, 4, 5], [0, 4, 5, 3])  # (Q1, i', j', Q2)
     return theta
+
+
+def imaginary_time_evolution_MPSopenBC(left_tensor, right_tensor, bond_vector, Ek, dt, Jk, h, Aij, Bij):
+    # applying ITE and returning a rank 4 tensor with physical dimensions, i' and j'
+    # the indices of the unitary_time_op should be (i, j, i', j')
+    p = np.int(np.sqrt(np.float(Aij.shape[0])))
+    hij = Jk[Ek] * Aij - 0.5 * h * Bij
+    unitary_time_op = np.reshape(linalg.expm(-dt * hij), [p, p, p, p])
+    bond_matrix = np.diag(bond_vector)
+    l = len(left_tensor.shape)
+    r = len(right_tensor.shape)
+    if l == 2 and r == 3:
+        A = np.einsum(left_tensor, [0, 1], bond_matrix, [1, 3], [0, 3])  # (i, Ek)
+        A = np.einsum(A, [0, 1], right_tensor, [2, 1, 3], [0, 2, 3])  # (i, j, d)
+        theta = np.einsum(A, [0, 1, 2], unitary_time_op, [0, 1, 4, 5], [4, 5, 2])  # (i', j', d)
+    if l == 3 and r == 2:
+        A = np.einsum(left_tensor, [0, 1, 2], bond_matrix, [1, 3], [0, 3, 2])  # (i, Ek, d)
+        A = np.einsum(A, [0, 1, 2], right_tensor, [3, 1], [2, 0, 3])  # (d, i, j)
+        theta = np.einsum(A, [0, 1, 2], unitary_time_op, [1, 2, 4, 5], [0, 4, 5])  # (d, i', j')
+    if l == 2 and r == 2:
+        A = np.einsum(left_tensor, [0, 1], bond_matrix, [1, 3], [0, 3])  # (i, Ek)
+        A = np.einsum(A, [0, 1], right_tensor, [3, 1], [0, 3])  # (i, j)
+        theta = np.einsum(A, [0, 1], unitary_time_op, [0, 1, 4, 5], [4, 5])  # (i', j')
+    if l == 3 and r == 3:
+        A = np.einsum(left_tensor, [0, 1, 2], bond_matrix, [1, 3], [0, 3, 2])  # (i, Ek, Q1)
+        A = np.einsum(A, [0, 1, 2], right_tensor, [3, 1, 4], [2, 0, 3, 4])  # (Q1, i, j, Q2)
+        theta = np.einsum(A, [0, 1, 2, 3], unitary_time_op, [1, 2, 4, 5], [0, 4, 5, 3])  # (Q1, i', j', Q2)
+    return theta, [l, r]
 
 
 def tensor_normalization(T):
@@ -291,9 +301,9 @@ def site_norm(tensor_idx, TT, LL, imat, smat):
     return normalization
 
 
-def two_site_expectation(Ek, TT, LL, imat, smat, Oij):
-    TT = cp.deepcopy(TT)
-    LL = cp.deepcopy(LL)
+def two_site_expectation(Ek, TT1, LL1, imat, smat, Oij):
+    TT = cp.deepcopy(TT1)
+    LL = cp.deepcopy(LL1)
 
     # calculating the two site normalized expectation given a mutual edge Ek of those two sites (tensors) and the operator Oij
     lamda_k = cp.copy(LL[Ek])
@@ -376,9 +386,9 @@ def conjTN(TT):
     return TTconj
 
 
-def energy_per_site(TT, LL, imat, smat, Jk, h, Aij, Bij):
-    TT = cp.deepcopy(TT)
-    LL = cp.deepcopy(LL)
+def energy_per_site(TT1, LL1, imat, smat, Jk, h, Aij, Bij):
+    TT = cp.deepcopy(TT1)
+    LL = cp.deepcopy(LL1)
     # calculating the normalized energy per site(tensor)
     p = np.int(np.sqrt(np.float(Aij.shape[0])))
     energy = 0
@@ -468,6 +478,14 @@ def absorb_all_bond_vectors(TT, LL, smat):
 # ---------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------
 
+def smart_update(TT1, LL1, smat, imat, edge, D_max):
+    TT = cp.deepcopy(TT1)
+    LL = cp.deepcopy(LL1)
+    A, B = AB_contraction(TT, LL, smat, edge)
+    P = find_P(A, B, D_max)
+    TT_new, LL_new = smart_truncation(TT, LL, P, edge, smat, imat, D_max)
+    return TT_new, LL_new
+
 
 def BPupdate(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax):
     TT_old = cp.deepcopy(TT)
@@ -523,6 +541,30 @@ def MPStoDEnFG_transform(graph, TT, LL, smat):
     return graph
 
 
+def find_P(A, B, D_max):
+    A_sqrt = linalg.sqrtm(A)
+    B_sqrt = linalg.sqrtm(B)
+
+    ##  Calculate the environment matrix C and its SVD
+    C = np.matmul(B_sqrt, A_sqrt)
+    #C = np.einsum(B_sqrt, [0, 1], A_sqrt, [1, 0], [0, 1])
+    u_env, s_env, vh_env = np.linalg.svd(C, full_matrices=False)
+
+    ##  Define P2
+    new_s_env = cp.copy(s_env)
+    new_s_env[D_max:] = 0
+    P2 = np.zeros((len(s_env), len(s_env)))
+    np.fill_diagonal(P2, new_s_env)
+    P2 /= np.sum(new_s_env)
+
+    ##  Calculating P = A^(-1/2) * U^(dagger) * P2 * V * B^(-1/2)
+    P = np.matmul(np.linalg.inv(A_sqrt), np.matmul(np.transpose(np.conj(vh_env)), np.matmul(P2, np.matmul(
+        np.transpose(np.conj(u_env)), np.linalg.inv(B_sqrt)))))
+    # overlap = np.trace(np.matmul(A, np.matmul(P, B)))
+    # print('overlap = ', overlap)
+    return P
+
+'''
 def find_P(graph, edge, smat, Dmax):
     ##  Extract the A,B matrices from the messages entering the virtual node n_Ek
     the_node = 'n' + str(edge)
@@ -554,7 +596,7 @@ def find_P(graph, edge, smat, Dmax):
     # overlap = np.trace(np.matmul(A, np.matmul(P, B)))
     # print('overlap = ', overlap)
     return P
-
+'''
 
 def smart_truncation(TT, LL, P, edge, smat, imat, Dmax):
     ##  P svd calculation and Ek bond vector trancation
@@ -606,5 +648,25 @@ def BPupdate_error(TT, LL, TT_old, LL_old, smat):
     return error
 
 
-
-
+def AB_contraction(TT1, LL1, smat, edge):
+    # calculating the given edge two sides full contractions A (left) and B (right)
+    TT = cp.deepcopy(TT1)
+    TTconj = conjTN(cp.deepcopy(TT1))
+    LL = cp.deepcopy(LL1)
+    l = len(LL)
+    A_tensors_list = []
+    A_indices_list = []
+    B_tensors_list = []
+    B_indices_list = []
+    tensors = absorb_all_bond_vectors(TT, LL, smat)
+    conj_tensors = absorb_all_bond_vectors(TTconj, LL, smat)
+    A = np.einsum(tensors[0], [0, 1], conj_tensors[0], [0, 2], [1, 2]) # (i0, i0')
+    B = np.einsum(tensors[l - 1], [0, 1], conj_tensors[l - 1], [0, 2], [1, 2]) # (il, il')
+    for i in range(edge):
+        A_next_block = np.einsum(tensors[i + 1], [0, 1, 2], conj_tensors[i + 1], [0, 3, 4], [1, 3, 2, 4]) #(i0, i0', i1, i1')
+        B_next_block = np.einsum(tensors[l - 2 - i], [0, 1, 2], conj_tensors[l - 2 - i], [0, 3, 4], [1, 3, 2, 4]) #(i(l-1), i(l-1)',il, il')
+        A = np.einsum(A, [0, 1], A_next_block, [0, 1, 2, 3], [2, 3])
+        B = np.einsum(B, [0, 1], B_next_block, [2, 3, 0, 1], [2, 3])
+        # A = (ie, ie')
+        # B = (i(e+1), i(e+1)')
+    return A, B

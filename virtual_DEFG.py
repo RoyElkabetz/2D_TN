@@ -63,9 +63,10 @@ class Graph:
         tensor_idx1 = np.array(range(len(tensor.shape)))
         tensor_idx2 = cp.copy(tensor_idx1) + len(tensor_idx1)
         super_tensor_idx_shape = []
-        for i in range(len(tensor_idx1)):
+        for i in range(1, len(tensor_idx1)):
             super_tensor_idx_shape.append(tensor_idx1[i])
             super_tensor_idx_shape.append(tensor_idx2[i])
+        tensor_idx2[0] = tensor_idx1[0]
         super_tensor = np.einsum(tensor, tensor_idx1, np.conj(tensor), tensor_idx2, super_tensor_idx_shape)
         return super_tensor
 
@@ -195,6 +196,7 @@ class Graph:
         conj_tensor_idx[self.factors[f][0][n]] = l + 1
         message_final_idx = [self.factors[f][0][n], l + 1]
         message = np.einsum(tensor, tensor_idx, conj_tensor, conj_tensor_idx, message_final_idx)
+        message /= np.trace(message)
         return message
 
     def exact_joint_probability(self):
@@ -216,10 +218,11 @@ class Graph:
             f = self.make_super_tensor(factors[item][1])
             broadcasting_idx = [0] * len(f.shape)
             for object in factors[item][0]:
-                broadcasting_idx[2 * factors[item][0][object]] = p_dic[object]
-                broadcasting_idx[2 * factors[item][0][object] + 1] = p_dic[object + '*']
+                broadcasting_idx[2 * (factors[item][0][object] - 1)] = p_dic[object]
+                broadcasting_idx[2 * (factors[item][0][object] - 1) + 1] = p_dic[object + '*']
             permute_tensor_indices = np.argsort(broadcasting_idx)
             f = np.transpose(f, permute_tensor_indices)
+            broadcasting_idx = np.sort(broadcasting_idx)
             p *= self.tensor_broadcasting(f, broadcasting_idx, p)
         return p, p_dic, p_order
 
