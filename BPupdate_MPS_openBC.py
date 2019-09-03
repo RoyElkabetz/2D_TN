@@ -218,7 +218,7 @@ def imaginary_time_evolution_MPSopenBC(left_tensor, right_tensor, bond_vector, E
     # applying ITE and returning a rank 4 tensor with physical dimensions, i' and j'
     # the indices of the unitary_time_op should be (i, j, i', j')
     p = np.int(np.sqrt(np.float(Aij.shape[0])))
-    hij = Jk[Ek] * Aij - 0.5 * h * Bij
+    hij = Jk[Ek] * Aij + 0.5 * h * Bij
     unitary_time_op = np.reshape(linalg.expm(-dt * hij), [p, p, p, p])
     bond_matrix = np.diag(bond_vector)
     l = len(left_tensor.shape)
@@ -394,7 +394,7 @@ def energy_per_site(TT1, LL1, imat, smat, Jk, h, Aij, Bij):
     energy = 0
     n, m = np.shape(imat)
     for Ek in range(m):
-        Oij = np.reshape(-Jk[Ek] * Aij - 0.5 * h * Bij, (p, p, p, p))
+        Oij = np.reshape(Jk[Ek] * Aij + 0.5 * h * Bij, (p, p, p, p))
         energy += two_site_expectation(Ek, TT, LL, imat, smat, Oij)
     energy /= n
     return energy
@@ -408,7 +408,7 @@ def exact_energy_per_site(TT, LL, smat, Jk, h, Aij, Bij):
     energy = 0
     n, m = np.shape(smat)
     for Ek in range(m):
-        Oij = np.reshape(-Jk[Ek] * Aij - 0.5 * h * Bij, (p, p, p, p))
+        Oij = np.reshape(Jk[Ek] * Aij + 0.5 * h * Bij, (p, p, p, p))
         energy += two_site_exact_expectation(TT, LL, smat, Ek, Oij)
     energy /= n
     return energy
@@ -422,7 +422,7 @@ def BP_energy_per_site(TT, LL, smat, Jk, h, Aij, Bij):
     energy = 0
     n, m = np.shape(smat)
     for Ek in range(m):
-        Oij = np.reshape(-Jk[Ek] * Aij - 0.5 * h * Bij, (p, p, p, p))
+        Oij = np.reshape(Jk[Ek] * Aij + 0.5 * h * Bij, (p, p, p, p))
         energy += two_site_bp_expectation(TT, LL, smat, Ek, Oij)
     energy /= n
     return energy
@@ -556,6 +556,7 @@ def find_P(A, B, D_max):
     P2 = np.zeros((len(s_env), len(s_env)))
     np.fill_diagonal(P2, new_s_env)
     P2 /= np.sum(new_s_env)
+    print(new_s_env / np.sum(new_s_env))
 
     ##  Calculating P = A^(-1/2) * U^(dagger) * P2 * V * B^(-1/2)
     P = np.matmul(np.linalg.inv(A_sqrt), np.matmul(np.transpose(np.conj(vh_env)), np.matmul(P2, np.matmul(
@@ -654,19 +655,17 @@ def AB_contraction(TT1, LL1, smat, edge):
     TTconj = conjTN(cp.deepcopy(TT1))
     LL = cp.deepcopy(LL1)
     l = len(LL)
-    A_tensors_list = []
-    A_indices_list = []
-    B_tensors_list = []
-    B_indices_list = []
     tensors = absorb_all_bond_vectors(TT, LL, smat)
     conj_tensors = absorb_all_bond_vectors(TTconj, LL, smat)
     A = np.einsum(tensors[0], [0, 1], conj_tensors[0], [0, 2], [1, 2]) # (i0, i0')
-    B = np.einsum(tensors[l - 1], [0, 1], conj_tensors[l - 1], [0, 2], [1, 2]) # (il, il')
+    B = np.einsum(tensors[l], [0, 1], conj_tensors[l], [0, 2], [1, 2]) # (il, il')
     for i in range(edge):
         A_next_block = np.einsum(tensors[i + 1], [0, 1, 2], conj_tensors[i + 1], [0, 3, 4], [1, 3, 2, 4]) #(i0, i0', i1, i1')
-        B_next_block = np.einsum(tensors[l - 2 - i], [0, 1, 2], conj_tensors[l - 2 - i], [0, 3, 4], [1, 3, 2, 4]) #(i(l-1), i(l-1)',il, il')
         A = np.einsum(A, [0, 1], A_next_block, [0, 1, 2, 3], [2, 3])
+    for i in range(l - edge - 1):
+        B_next_block = np.einsum(tensors[l - 1 - i], [0, 1, 2], conj_tensors[l - 1 - i], [0, 3, 4], [1, 3, 2, 4])  # (i(l-1), i(l-1)',il, il')
         B = np.einsum(B, [0, 1], B_next_block, [2, 3, 0, 1], [2, 3])
+
         # A = (ie, ie')
         # B = (i(e+1), i(e+1)')
     return A, B

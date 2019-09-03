@@ -45,7 +45,7 @@ sy = 0.5 * pauli_y
 sx = 0.5 * pauli_x
 
 t_list = [0.1]
-iterations = 400
+iterations = 50
 Aij = np.real(np.kron(sx, sx) + np.kron(sy, sy) + np.kron(sz, sz))
 Bij = 0
 for ss in range(len(d_vec)):
