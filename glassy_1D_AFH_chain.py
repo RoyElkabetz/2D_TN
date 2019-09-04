@@ -1,18 +1,18 @@
 import numpy as np
 import copy as cp
-import BPupdate_MPS_openBC_smart_trancation as su
+import BPupdate_MPS_openBC as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
 np.random.seed(seed=18)
 
-N = 100
+N = 10
 
 EE_exact = []
 EE_gpeps = []
 EE_bp = []
 
-d_vec = [2]
+d_vec = [2, 3, 4, 5, 6, 10]
 t_max = 100
 epsilon = 1e-5
 dumping = 0.1
@@ -63,14 +63,14 @@ for ss in range(len(d_vec)):
             counter += 2
             print('N, D_max, ss, i, j = ', N, D_max, ss, i, j)
             TT1, LL1 = su.PEPS_BPupdate(TT, LL, dt, J, h, Aij, Bij, imat, smat, D_max)
-            TT1, LL1 = su.BPupdate(TT1, LL1, smat, imat, t_max, epsilon, dumping, D_max)
+            #TT1, LL1 = su.BPupdate(TT1, LL1, smat, imat, t_max, epsilon, dumping, D_max)
             TT2, LL2 = su.PEPS_BPupdate(TT1, LL1, dt, J, h, Aij, Bij, imat, smat, D_max)
-            TT2, LL2 = su.BPupdate(TT2, LL2, smat, imat, t_max, epsilon, dumping, D_max)
+            #TT2, LL2 = su.BPupdate(TT2, LL2, smat, imat, t_max, epsilon, dumping, D_max)
 
-            energy1 = su.energy_per_site(TT1, LL1, imat, smat, J, h, Aij, Bij)
-            energy2 = su.energy_per_site(TT2, LL2, imat, smat, J, h, Aij, Bij)
-            #energy1 = su.exact_energy_per_site(TT1, LL1, smat, J, h, Aij, Bij)
-            #energy2 = su.exact_energy_per_site(TT2, LL2, smat, J, h, Aij, Bij)
+            #energy1 = su.energy_per_site(TT1, LL1, imat, smat, J, h, Aij, Bij)
+            #energy2 = su.energy_per_site(TT2, LL2, imat, smat, J, h, Aij, Bij)
+            energy1 = su.exact_energy_per_site(TT1, LL1, smat, J, h, Aij, Bij)
+            energy2 = su.exact_energy_per_site(TT2, LL2, smat, J, h, Aij, Bij)
             print(energy1)
             print(energy2)
             print('\n')
@@ -87,13 +87,13 @@ for ss in range(len(d_vec)):
             LL = cp.deepcopy(LL2)
             break
     d_and_t[:, ss] = np.array([D_max, counter])
-    #EE_exact.append(su.exact_energy_per_site(TT, LL, smat, J, h, Aij, Bij))
+    EE_exact.append(su.exact_energy_per_site(TT, LL, smat, J, h, Aij, Bij))
     EE_gpeps.append(su.energy_per_site(TT, LL, imat, smat, J, h, Aij, Bij))
     #EE_bp.append(su.BP_energy_per_site(TT, LL, smat, J, h, Aij, Bij))
-    #print('exact: ', EE_exact[ss])
+    print('exact: ', EE_exact[ss])
     print('gPEPS: ', EE_gpeps[ss])
     #print('BP: ', EE_bp[ss])
-
+'''
 dE = np.array(EE_gpeps) - np.array(EE_exact)
 
 plt.figure()
@@ -126,3 +126,4 @@ plt.ylabel('# iterations')
 plt.tight_layout()  # otherwise the right y-label is slightly clipped
 plt.grid()
 plt.show()
+'''

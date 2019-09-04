@@ -4,7 +4,7 @@ import BPupdate_MPS_openBC as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
-np.random.seed(seed=18)
+np.random.seed(seed=17)
 
 N = 10
 
@@ -12,13 +12,13 @@ EE_exact = []
 EE_gpeps = []
 EE_bp = []
 
-d_vec = [2, 3, 4, 5, 6, 7, 8, 9, 10, 20]
+d_vec = [2]
 t_max = 100
 epsilon = 1e-5
 dumping = 0.1
 d_and_t = np.zeros((2, len(d_vec)))
 
-d = 10
+d = 2
 p = 2
 h = 0
 
@@ -93,10 +93,10 @@ for ss in range(len(d_vec)):
     EE_exact.append(su.exact_energy_per_site(TT, LL, smat, J, h, Aij, Bij))
     EE_gpeps.append(su.energy_per_site(TT, LL, imat, smat, J, h, Aij, Bij))
     #EE_bp.append(su.BP_energy_per_site(TT, LL, smat, J, h, Aij, Bij))
-    #print('exact: ', EE_exact[ss])
+    print('exact: ', EE_exact[ss])
     print('gPEPS: ', EE_gpeps[ss])
     #print('BP: ', EE_bp[ss])
-
+'''
 dE = np.array(EE_gpeps) - np.array(EE_exact)
 
 plt.figure()
@@ -129,3 +129,4 @@ plt.ylabel('# iterations')
 plt.tight_layout()  # otherwise the right y-label is slightly clipped
 plt.grid()
 plt.show()
+'''
