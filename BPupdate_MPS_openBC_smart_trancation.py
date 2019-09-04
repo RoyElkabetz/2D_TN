@@ -55,8 +55,8 @@ def PEPS_BPupdate(TT1, LL1, dt, Jk, h, Aij, Bij, imat, smat, D_max):
         theta, [l, r] = imaginary_time_evolution_MPSopenBC(Ti[0], Tj[0], lamda_k, Ek, dt, Jk, h, Aij, Bij)  # (Q1, i', j', Q2)
 
         ## (f) Obtain R', L', lambda'_k tensors by applying an SVD to theta
-        R_tild, lamda_k_tild, L_tild = svd(theta, range(l - 1), range(l - 1, r + l - 2), keep_s='yes', max_eigen_num=D_max)
-        #R_tild, lamda_k_tild, L_tild = svd(theta, range(l - 1), range(l - 1, r + l - 2), keep_s='yes')
+        #R_tild, lamda_k_tild, L_tild = svd(theta, range(l - 1), range(l - 1, r + l - 2), keep_s='yes', max_eigen_num=D_max)
+        R_tild, lamda_k_tild, L_tild = svd(theta, range(l - 1), range(l - 1, r + l - 2), keep_s='yes')
 
 
         # reshaping R_tild and L_tild back
@@ -98,6 +98,11 @@ def PEPS_BPupdate(TT1, LL1, dt, Jk, h, Aij, Bij, imat, smat, D_max):
 
 
         #TT, LL = smart_update(TT, LL, smat, imat, Ek, D_max)
+
+        t_max = 100
+        epsilon = 1e-5
+        dumping = 0.
+        #TT, LL = BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, D_max, Ek)
     return TT, LL
 
 
@@ -480,15 +485,6 @@ def smart_update(TT1, LL1, smat, imat, edge, D_max):
     TT = cp.deepcopy(TT1)
     LL = cp.deepcopy(LL1)
     A, B = AB_contraction(TT, LL, smat, edge)
-
-
-    TTstar = conjTN(TT)
-    TT_tilde = absorb_all_bond_vectors(TT, LL, smat)
-    TTstar_tilde = absorb_all_bond_vectors(TTstar, LL, smat)
-    T_list_norm, idx_list_norm = nlg.ncon_list_generator_braket_mps(TT_tilde, TTstar_tilde, smat)
-    norm = ncon.ncon(T_list_norm, idx_list_norm)
-    AB_norm = np.einsum(A, [0, 1], B, [1, 0])
-
     P = find_P(A, B, D_max)
     TT_new, LL_new = smart_truncation(TT, LL, P, edge, smat, imat, D_max)
     return TT_new, LL_new
@@ -505,7 +501,15 @@ def BPupdate(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax):
     graph.sum_product(t_max, epsilon, dumping)
     graph.calc_node_belief()
     for Ek in range(len(LL)):
-        P = find_P(graph, Ek, smat, Dmax)
+        the_node = 'n' + str(Ek)
+        neighboring_factors = np.nonzero(smat[:, Ek])[0]
+        if graph.factors['f' + str(neighboring_factors[0])][0][the_node] == 2:
+            A = graph.messages_f2n['f' + str(neighboring_factors[0])][the_node]
+            B = graph.messages_f2n['f' + str(neighboring_factors[1])][the_node]
+        else:
+            B = graph.messages_f2n['f' + str(neighboring_factors[0])][the_node]
+            A = graph.messages_f2n['f' + str(neighboring_factors[1])][the_node]
+        P = find_P(A, B, Dmax)
         TT, LL = smart_truncation(TT, LL, P, Ek, smat, imat, Dmax)
         # BPerror = BPupdate_error(TT, LL, TT_old, LL_old, smat)
         # print('BP_error = ', BPerror)
@@ -521,7 +525,17 @@ def BPupdate_single_edge(TT1, LL1, smat, imat, t_max, epsilon, dumping, Dmax, Ek
     graph = defg.Graph()
     graph = MPStoDEnFG_transform(graph, TT, LL, smat)
     graph.sum_product(t_max, epsilon, dumping)
-    P = find_P(graph, Ek, smat, Dmax)
+
+    the_node = 'n' + str(Ek)
+    neighboring_factors = np.nonzero(smat[:, Ek])[0]
+    if graph.factors['f' + str(neighboring_factors[0])][0][the_node] == 2:
+        A = graph.messages_f2n['f' + str(neighboring_factors[0])][the_node]
+        B = graph.messages_f2n['f' + str(neighboring_factors[1])][the_node]
+    else:
+        B = graph.messages_f2n['f' + str(neighboring_factors[0])][the_node]
+        A = graph.messages_f2n['f' + str(neighboring_factors[1])][the_node]
+
+    P = find_P(A, B, Dmax)
     TT, LL = smart_truncation(TT, LL, P, Ek, smat, imat, Dmax)
     # BPerror = BPupdate_error(TT, LL, TT_old, LL_old, smat)
     # print('BP_error = ', BPerror)

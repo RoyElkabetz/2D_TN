@@ -4,7 +4,7 @@ import BPupdate_MPS_openBC as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
-#np.random.seed(seed=18)
+np.random.seed(seed=18)
 
 N = 10
 
@@ -12,13 +12,13 @@ EE_exact = []
 EE_gpeps = []
 EE_bp = []
 
-d_vec = [2]
+d_vec = [2, 3, 4, 5, 6, 7, 8, 9, 10, 20]
 t_max = 100
 epsilon = 1e-5
 dumping = 0.1
 d_and_t = np.zeros((2, len(d_vec)))
 
-d = 2
+d = 10
 p = 2
 h = 0
 
@@ -45,19 +45,19 @@ sy = 0.5 * pauli_y
 sx = 0.5 * pauli_x
 
 t_list = [0.1]
-iterations = 50
+iterations = 500
 Aij = np.real(np.kron(sx, sx) + np.kron(sy, sy) + np.kron(sz, sz))
 Bij = 0
 for ss in range(len(d_vec)):
     D_max = d_vec[ss]
-    TT = [np.random.rand(p, D_max)]
+    TT = [np.random.rand(p, d) + 1j * np.random.rand(p, d)]
     for i in range(smat.shape[0] - 2):
-        TT.append(np.random.rand(p, D_max, D_max))
-    TT.append(np.random.rand(p, D_max))
+        TT.append(np.random.rand(p, d, d) + 1j * np.random.rand(p, d, d))
+    TT.append(np.random.rand(p, d) + 1j * np.random.rand(p, d))
 
     LL = []
     for i in range(imat.shape[1]):
-        LL.append(np.ones(D_max, dtype=float) / D_max)
+        LL.append(np.ones(d, dtype=float) / d)
 
     counter = 0
     for i in range(len(t_list)):
@@ -78,7 +78,7 @@ for ss in range(len(d_vec)):
             print(energy2)
             print('\n')
 
-            if np.abs(energy1 - energy2) < 1e-7:
+            if np.abs(energy1 - energy2) < 1e-5:
                 flag = 1
                 break
             else:
@@ -109,7 +109,7 @@ plt.show()
 
 
 plt.figure()
-plt.title('glassy AFH chain energy')
+plt.title('glassy AFH chain energy gPEPS')
 plt.subplot()
 color = 'tab:red'
 plt.xlabel('D_max')

@@ -71,8 +71,8 @@ def PEPS_BPupdate(TT1, LL1, dt, Jk, h, Aij, Bij, imat, smat, D_max):
         theta = imaginary_time_evolution(R, L, lamda_k, Ek, dt, Jk, h, Aij, Bij)  # (Q1, i', j', Q2)
 
         ## (f) Obtain R', L', lambda'_k tensors by applying an SVD to theta
-        #R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes', max_eigen_num=D_max)
-        R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes')
+        R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes', max_eigen_num=D_max)
+        #R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes')
         # (Q1 * i', D') # (D', D') # (D', j' * Q2)
 
         # reshaping R_tild and L_tild back to rank 3 tensor
@@ -110,10 +110,10 @@ def PEPS_BPupdate(TT1, LL1, dt, Jk, h, Aij, Bij, imat, smat, D_max):
         LL[Ek] = lamda_k_tild / np.sum(lamda_k_tild)
 
         ##  single edge BP update
-        t_max = 100
-        epsilon = 1e-5
-        dumping = 0.
-        TT, LL = BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, D_max, Ek)
+        #t_max = 100
+        #epsilon = 1e-5
+        #dumping = 0.
+        #TT, LL = BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, D_max, Ek)
 
     return TT, LL
 

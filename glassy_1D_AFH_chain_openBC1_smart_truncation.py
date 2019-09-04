@@ -1,6 +1,6 @@
 import numpy as np
 import copy as cp
-import BPupdate_MPS_openBC as su
+import BPupdate_MPS_openBC_smart_trancation as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 
@@ -138,7 +138,7 @@ plt.grid()
 
 
 plt.figure()
-plt.title('energy of N 1/2 spins (AFH MPS) gPEPS')
+plt.title('energy of N 1/2 spins (AFH MPS) smart truncation')
 plt.subplot()
 color = 'tab:red'
 plt.xlabel('N')
