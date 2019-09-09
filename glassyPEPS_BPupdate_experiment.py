@@ -1,21 +1,21 @@
 import numpy as np
 import copy as cp
-import BPupdate as su
+import BPupdate_PEPS_smart_trancation as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 import ncon_lists_generator as nlg
 import ncon
 import DEnFG as fg
 
-date = '2019.08.21_'
-experiment_num = '_6_'
+date = '2019.09.09_'
+experiment_num = '_1_'
 
 #---------------------- Tensor Network paramas ------------------
 
 N = 4 # number of spins
 L = np.int(np.sqrt(N))
 
-t_max = 500
+t_max = 100
 epsilon = 1e-15
 dumping = 0.1
 
@@ -66,8 +66,8 @@ sz = 0.5 * pauli_z
 sy = 0.5 * pauli_y
 sx = 0.5 * pauli_x
 
-t_list = [0.1, 0.01, 0.001]
-iterations = 10
+t_list = [0.1]
+iterations = 40
 
 Opi = pauli_z
 Opj = pauli_z
@@ -110,18 +110,15 @@ for ss in range(h.shape[0]):
             counter += 2
             print('h, h_idx, t, j = ', h[ss], ss, dt, j)
             TT1, LL1 = su.PEPS_BPupdate(TT, LL, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max)
-            #print(su.exact_energy_per_site(TT1, LL1, smat, Jk, h[ss], Opi, Opj, Op_field))
             TT1, LL1 = su.BPupdate(TT1, LL1, smat, imat, t_max, epsilon, dumping, D_max)
-            #print(su.exact_energy_per_site(TT1, LL1, smat, Jk, h[ss], Opi, Opj, Op_field))
-
             TT2, LL2 = su.PEPS_BPupdate(TT1, LL1, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max)
-            #print(su.exact_energy_per_site(TT2, LL2, smat, Jk, h[ss], Opi, Opj, Op_field))
-
             TT2, LL2 = su.BPupdate(TT2, LL2, smat, imat, t_max, epsilon, dumping, D_max)
-            #print(su.exact_energy_per_site(TT2, LL2, smat, Jk, h[ss], Opi, Opj, Op_field))
+
             energy1 = su.exact_energy_per_site(TT1, LL1, smat, Jk, h[ss], Opi, Opj, Op_field)
             energy2 = su.exact_energy_per_site(TT2, LL2, smat, Jk, h[ss], Opi, Opj, Op_field)
-            if np.abs(energy1 - energy2) < 1e-8:
+            print(energy1)
+            print(energy2)
+            if np.abs(energy1 - energy2) < 1e-4:
                 flag = 1
                 TT = TT2
                 LL = LL2

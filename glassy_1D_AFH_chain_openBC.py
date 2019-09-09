@@ -12,7 +12,7 @@ EE_exact = []
 EE_gpeps = []
 EE_bp = []
 
-d_vec = [2]
+d_vec = [2, 3, 4, 5]
 t_max = 100
 epsilon = 1e-5
 dumping = 0.1
