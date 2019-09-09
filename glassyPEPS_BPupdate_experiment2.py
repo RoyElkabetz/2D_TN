@@ -1,13 +1,14 @@
 import numpy as np
 import copy as cp
-import BPupdate_PEPS_smart_trancation as su
+import BPupdate_PEPS_smart_trancation2 as su
 from scipy import linalg
 import matplotlib.pyplot as plt
 import ncon_lists_generator as nlg
 import ncon
-from glassyPEPS_BPupdate_experiment2 import E, E_exact, mz, mx, mz_exact, mx_exact, time_to_converge
-date = '2019.09.09_'
-experiment_num = '_2_'
+import DEnFG as fg
+
+#date = '2019.09.09_'
+#experiment_num = '_2_'
 
 #---------------------- Tensor Network paramas ------------------
 
@@ -32,15 +33,15 @@ print('Jk = ', Jk)
 J_prop = 'J = N(' + str(mu) + ',' + str(sigma) + ')_'
 
 
-time_to_converge_BP = np.zeros((len(h)))
+time_to_converge = np.zeros((len(h)))
 mz_matrix_TN = np.zeros((p, p, len(h)))
 
-E_BP = []
-E_exact_BP = []
-mx_BP = []
-mz_BP = []
-mx_exact_BP = []
-mz_exact_BP = []
+E = []
+E_exact = []
+mx = []
+mz = []
+mx_exact = []
+mz_exact = []
 mx_graph = []
 mz_graph = []
 sum_of_trace_distance_exact_graph = []
@@ -109,9 +110,9 @@ for ss in range(h.shape[0]):
             counter += 2
             print('h, h_idx, t, j = ', h[ss], ss, dt, j)
             TT1, LL1 = su.PEPS_BPupdate(TT, LL, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max)
-            TT1, LL1 = su.BPupdate(TT1, LL1, smat, imat, t_max, epsilon, dumping, D_max)
+            #TT1, LL1 = su.BPupdate(TT1, LL1, smat, imat, t_max, epsilon, dumping, D_max)
             TT2, LL2 = su.PEPS_BPupdate(TT1, LL1, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max)
-            TT2, LL2 = su.BPupdate(TT2, LL2, smat, imat, t_max, epsilon, dumping, D_max)
+            #TT2, LL2 = su.BPupdate(TT2, LL2, smat, imat, t_max, epsilon, dumping, D_max)
 
             energy1 = su.exact_energy_per_site(TT1, LL1, smat, Jk, h[ss], Opi, Opj, Op_field)
             energy2 = su.exact_energy_per_site(TT2, LL2, smat, Jk, h[ss], Opi, Opj, Op_field)
@@ -154,20 +155,21 @@ for ss in range(h.shape[0]):
 
 
     # ------------------ calculating total magnetization, energy and time to converge -------------------
-    mz_BP.append(np.sum(mz_mat[ss, :, :]) / n)
-    mx_BP.append(np.sum(mx_mat[ss, :, :]) / n)
-    mz_exact_BP.append(np.sum(mz_mat_exact[ss, :, :]) / n)
-    mx_exact_BP.append(np.sum(mx_mat_exact[ss, :, :]) / n)
-    time_to_converge_BP[ss] = counter
-    E_BP.append(su.energy_per_site(TT, LL, imat, smat, Jk, h[ss], Opi, Opj, Op_field))
-    E_exact_BP.append(su.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
+    mz.append(np.sum(mz_mat[ss, :, :]) / n)
+    mx.append(np.sum(mx_mat[ss, :, :]) / n)
+    mz_exact.append(np.sum(mz_mat_exact[ss, :, :]) / n)
+    mx_exact.append(np.sum(mx_mat_exact[ss, :, :]) / n)
+    time_to_converge[ss] = counter
+    E.append(su.energy_per_site(TT, LL, imat, smat, Jk, h[ss], Opi, Opj, Op_field))
+    E_exact.append(su.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
 
     sum_of_trace_distance_exact_gPEPS.append(trace_distance_exact_gPEPS[ss, :, :].sum())
-    print('Mx_exact, Mz_exact', mx_exact_BP[ss], mz_exact_BP[ss])
-    print('E, Mx, Mz: ', E_BP[ss], mx_BP[ss], mz_BP[ss])
+    print('Mx_exact, Mz_exact', mx_exact[ss], mz_exact[ss])
+    print('E, Mx, Mz: ', E[ss], mx[ss], mz[ss])
     print('\n')
     print('d(exact, gPEPS) = ', sum_of_trace_distance_exact_gPEPS[ss])
 
+'''
 # ------------------------------------- plotting results ----------------------------------------------
 file_name_energy = date + 'experiment_#' + experiment_num + 'Energy_' + 'glassy_PEPS_BPupdate_'+ J_prop + str(L) + 'x' + str(L) + '_d-' + str(D_max) +'.pdf'
 file_name_magnetization = date + 'experiment_#' + experiment_num + 'Magnetization_' + 'glassy_PEPS_BPupdate_'+ J_prop + str(L) + 'x' + str(L) + '_d-' + str(D_max) +'.pdf'
@@ -181,18 +183,15 @@ plt.subplot()
 color = 'tab:red'
 plt.xlabel('h')
 plt.ylabel('Energy per site', color=color)
-plt.plot(h, E_BP, '-.', color=color)
-plt.plot(h, E, linewidth=2, color=color)
-plt.plot(h, E_exact_BP, 'o', markersize=3, color=color)
-plt.plot(h, E_exact, 'o', markersize=2, color=color)
+plt.plot(h, E, color=color)
+plt.plot(h, E_exact, 'o', color=color)
 plt.grid()
 plt.tick_params(axis='y', labelcolor=color)
-plt.legend(['BP gPEPS', 'gPEPS', 'BP exact', 'gPEPS exact'])
+plt.legend(['gPEPS', 'Exact'])
 plt.twinx()  # instantiate a second axes that shares the same x-axis
 color = 'tab:blue'
 plt.ylabel('# of gPEPS iterations until convergence', color=color)  # we already handled the x-label with ax1
-plt.plot(h, time_to_converge_BP, '-.', color=color)
-plt.plot(h, time_to_converge, linewidth=2, color=color)
+plt.plot(h, time_to_converge,color=color)
 plt.tick_params(axis='y', labelcolor=color)
 plt.tight_layout()  # otherwise the right y-label is slightly clipped
 plt.grid()
@@ -200,23 +199,19 @@ plt.savefig(file_name_energy, bbox_inches='tight')
 plt.show()
 
 plt.figure()
-plt.plot(h, mx_BP, 'go', markersize=4)
 plt.plot(h, mx, 'go', markersize=3)
-plt.plot(h, np.abs(np.array(mz_BP)), 'bo', markersize=4)
 plt.plot(h, np.abs(np.array(mz)), 'bo', markersize=3)
-plt.plot(h, mx_exact_BP, 'r-.', linewidth=3)
 plt.plot(h, mx_exact, 'r-', linewidth=2)
-plt.plot(h, np.abs(np.array(mz_exact_BP)), 'y-.', linewidth=3)
 plt.plot(h, np.abs(np.array(mz_exact)), 'y-', linewidth=2)
 
 plt.title('Averaged magnetization vs h at d = ' + str(D_max) + ' in a ' + str(L) + 'x' + str(L) + ' PEPS BP update ')
 plt.xlabel('h')
 plt.ylabel('Magnetization')
-plt.legend(['BP mx ', 'gPEPS mx', 'BP |mz|', 'gPEPS |mz|', 'BP mx exact', 'gPEPS mx exact', 'BP |mz| exact', 'gPEPS |mz| exact'])
+plt.legend(['mx', '|mz|', 'mx exact', '|mz| exact'])
 plt.grid()
 plt.savefig(file_name_magnetization, bbox_inches='tight')
 plt.show()
-'''
+
 plt.figure()
 plt.plot(h, sum_of_trace_distance_exact_gPEPS, 'v')
 plt.title('Total Trace Distance comparison of all particles rdms in a ' + str(L) + 'x' + str(L) + ' PEPS BP update')
