@@ -22,6 +22,7 @@ class Graph:
         self.node_partition = None
         self.factor_partition = None
         self.all_messages = None
+        self.rdm_belief = None
 
     def add_node(self, alphabet_size, name):
         self.nodes[name] = [alphabet_size, set(), self.node_count]
@@ -69,6 +70,18 @@ class Graph:
         tensor_idx2[0] = tensor_idx1[0]
         super_tensor = np.einsum(tensor, tensor_idx1, np.conj(tensor), tensor_idx2, super_tensor_idx_shape)
         return super_tensor
+
+    def make_super_physical_tensor(self, tensor):
+        tensor_idx1 = np.array(range(len(tensor.shape)))
+        tensor_idx2 = cp.copy(tensor_idx1) + len(tensor_idx1)
+        super_tensor_idx_shape = []
+        for i in range(len(tensor_idx1)):
+            super_tensor_idx_shape.append(tensor_idx1[i])
+            super_tensor_idx_shape.append(tensor_idx2[i])
+        #tensor_idx2[0] = tensor_idx1[0]
+        super_tensor = np.einsum(tensor, tensor_idx1, np.conj(tensor), tensor_idx2, super_tensor_idx_shape)
+        return super_tensor
+
 
     def sum_product(self, t_max, epsilon, dumping):
         #print('run BP')
@@ -168,17 +181,18 @@ class Graph:
                 temp *= messages[f][n]
             self.node_belief[n] = temp / np.trace(temp)
 
-    def calc_factor_belief(self):
-        self.factor_belief = {}
+    def calc_rdm_belief(self):
+        self.rdm_belief = {}
         factors = self.factors
         messages = self.messages_n2f
         keys = factors.keys()
         for f in keys:
-            super_tensor = self.make_super_tensor(cp.deepcopy(factors[f][1]))
+            super_tensor = self.make_super_physical_tensor(cp.deepcopy(factors[f][1]))
             neighbors = factors[f][0]
             for n in neighbors.keys():
                 super_tensor *= self.broadcasting(messages[n][f], neighbors[n], super_tensor)
-            self.factor_belief[f] = super_tensor
+            self.rdm_belief[factors[f][2]] = np.einsum(super_tensor, range(len(super_tensor.shape)), [0, 1])
+            self.rdm_belief[factors[f][2]] /= np.trace(self.rdm_belief[factors[f][2]])
 
     def f2n_message(self, f, n, messages):
         neighbors, tensor, index = cp.deepcopy(self.factors[f])

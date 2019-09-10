@@ -10,9 +10,12 @@ import DEnFG as fg
 #date = '2019.09.09_'
 #experiment_num = '_2_'
 
+np.random.seed(seed=16)
+
+
 #---------------------- Tensor Network paramas ------------------
 
-N = 4 # number of spins
+N = 9 # number of spins
 L = np.int(np.sqrt(N))
 
 t_max = 100
@@ -23,7 +26,7 @@ d = 2  # virtual bond dimension
 p = 2  # physical bond dimension
 D_max = 2  # maximal virtual bond dimension
 J = 1  # Hamiltonian: interaction coeff
-h = np.linspace(0.1, 5., num=10)  # Hamiltonian: magnetic field coeff
+h = np.linspace(0.1, 5., num=20)  # Hamiltonian: magnetic field coeff
 
 mu = 1
 sigma = 0
@@ -47,9 +50,11 @@ mz_graph = []
 sum_of_trace_distance_exact_graph = []
 sum_of_trace_distance_exact_gPEPS = []
 sum_of_trace_distance_gPEPS_graph = []
-trace_distance_exact_graph = np.zeros((len(h), L, L))
-trace_distance_exact_gPEPS = np.zeros((len(h), L, L))
-trace_distance_gPEPS_graph = np.zeros((len(h), L, L))
+trace_distance_exact_graph = np.zeros((len(h), L, L), dtype=complex)
+trace_distance_exact_gPEPS = np.zeros((len(h), L, L), dtype=complex)
+trace_distance_gPEPS_graph = np.zeros((len(h), L, L), dtype=complex)
+reduced_dm_gPEPS = np.zeros((len(h), L, L, p, p), dtype=complex)
+reduced_dm_exact = np.zeros((len(h), L, L, p, p), dtype=complex)
 
 
 mx_mat = np.zeros((len(h), L, L), dtype=complex)
@@ -93,7 +98,7 @@ for i in range(n):
 
 TT = []
 for ii in range(n):
-    TT.append(np.random.rand(p, d, d, d, d))
+    TT.append(np.random.rand(p, d, d, d, d) + 1j *np.random.rand(p, d, d, d, d))
 LL = []
 for i in range(imat.shape[1]):
     LL.append(np.ones(d, dtype=float) / d)
@@ -118,7 +123,7 @@ for ss in range(h.shape[0]):
             energy2 = su.exact_energy_per_site(TT2, LL2, smat, Jk, h[ss], Opi, Opj, Op_field)
             print(energy1)
             print(energy2)
-            if np.abs(energy1 - energy2) < 1e-4:
+            if np.abs(energy1 - energy2) < 1e-5:
                 flag = 1
                 TT = TT2
                 LL = LL2
@@ -147,11 +152,11 @@ for ss in range(h.shape[0]):
 
             # ------------------------ Trace distances of every spin reduced density matrix results ---------------
 
-            reduced_dm_gPEPS = su.tensor_reduced_dm(spin_index, TT, LL, smat, imat)
+            reduced_dm_gPEPS[ss, l, ll, :, :] = su.tensor_reduced_dm(spin_index, TT, LL, smat, imat)
             tensors_reduced_dm_list, indices_reduced_dm_list = nlg.ncon_list_generator_reduced_dm(TT, LL, smat, spin_index)
             tensors_reduced_dm_listn, indices_reduced_dm_listn = nlg.ncon_list_generator(TT, LL, smat, np.eye(p), spin_index)
-            reduced_dm_exact = ncon.ncon(tensors_reduced_dm_list, indices_reduced_dm_list) / ncon.ncon(tensors_reduced_dm_listn, indices_reduced_dm_listn)
-            trace_distance_exact_gPEPS[ss, l, ll] = su.trace_distance(reduced_dm_exact, reduced_dm_gPEPS)
+            reduced_dm_exact[ss, l, ll, :, :] = ncon.ncon(tensors_reduced_dm_list, indices_reduced_dm_list) / ncon.ncon(tensors_reduced_dm_listn, indices_reduced_dm_listn)
+            trace_distance_exact_gPEPS[ss, l, ll] = su.trace_distance(reduced_dm_exact[ss, l, ll, :, :], reduced_dm_gPEPS[ss, l, ll, :, :])
 
 
     # ------------------ calculating total magnetization, energy and time to converge -------------------

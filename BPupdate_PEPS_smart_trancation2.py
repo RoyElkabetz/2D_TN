@@ -423,8 +423,8 @@ def tensor_reduced_dm(tensor_idx, TT, LL, smat, imat):
     T_conj_idx = range(len(T_conj.shape))
     T_conj_idx[0] = -2
     reduced_dm = ncon.ncon([T, T_conj], [T_idx, T_conj_idx])
-
-    return reduced_dm / normalization
+    reduced_dm /= normalization
+    return reduced_dm
 
 
 def absorb_all_bond_vectors(TT, LL, smat):

@@ -503,7 +503,7 @@ def PEPStoDEnFG_transform(graph, TT, LL, smat):
         legs = smat[i, edges]
         for j in range(len(edges)):
             neighbor_nodes['n' + str(edges[j])] = legs[j]
-        graph.add_factor(neighbor_nodes, factors_list[i])
+        graph.add_factor(neighbor_nodes, np.array(factors_list[i], dtype=complex))
     return graph
 
 
