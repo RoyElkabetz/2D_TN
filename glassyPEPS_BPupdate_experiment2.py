@@ -15,7 +15,7 @@ np.random.seed(seed=16)
 
 #---------------------- Tensor Network paramas ------------------
 
-N = 9 # number of spins
+N = 4 # number of spins
 L = np.int(np.sqrt(N))
 
 t_max = 100
@@ -102,7 +102,6 @@ for ii in range(n):
 LL = []
 for i in range(imat.shape[1]):
     LL.append(np.ones(d, dtype=float) / d)
-
 for ss in range(h.shape[0]):
 
     counter = 0
@@ -119,11 +118,11 @@ for ss in range(h.shape[0]):
             TT2, LL2 = su.PEPS_BPupdate(TT1, LL1, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max)
             #TT2, LL2 = su.BPupdate(TT2, LL2, smat, imat, t_max, epsilon, dumping, D_max)
 
-            energy1 = su.exact_energy_per_site(TT1, LL1, smat, Jk, h[ss], Opi, Opj, Op_field)
-            energy2 = su.exact_energy_per_site(TT2, LL2, smat, Jk, h[ss], Opi, Opj, Op_field)
+            energy1 = su.energy_per_site(TT1, LL1, imat, smat, Jk, h[ss], Opi, Opj, Op_field)
+            energy2 = su.energy_per_site(TT2, LL2, imat,  smat, Jk, h[ss], Opi, Opj, Op_field)
             print(energy1)
             print(energy2)
-            if np.abs(energy1 - energy2) < 1e-5:
+            if np.abs(energy1 - energy2) < 1e-3:
                 flag = 1
                 TT = TT2
                 LL = LL2
@@ -140,12 +139,12 @@ for ss in range(h.shape[0]):
     for l in range(L):
         for ll in range(L):
             spin_index = np.int(L * l + ll)
-            T_list_n, idx_list_n = nlg.ncon_list_generator(TT, LL, smat, np.eye(p), spin_index)
-            T_listz, idx_listz = nlg.ncon_list_generator(TT, LL, smat, pauli_z, spin_index)
-            mz_mat_exact[ss, l, ll] = ncon.ncon(T_listz, idx_listz) / ncon.ncon(T_list_n, idx_list_n)
+            #T_list_n, idx_list_n = nlg.ncon_list_generator(TT, LL, smat, np.eye(p), spin_index)
+            #T_listz, idx_listz = nlg.ncon_list_generator(TT, LL, smat, pauli_z, spin_index)
+            #mz_mat_exact[ss, l, ll] = ncon.ncon(T_listz, idx_listz) / ncon.ncon(T_list_n, idx_list_n)
 
-            T_listx, idx_listx = nlg.ncon_list_generator(TT, LL, smat, pauli_x, spin_index)
-            mx_mat_exact[ss, l, ll] = ncon.ncon(T_listx, idx_listx) / ncon.ncon(T_list_n, idx_list_n)
+            #T_listx, idx_listx = nlg.ncon_list_generator(TT, LL, smat, pauli_x, spin_index)
+            #mx_mat_exact[ss, l, ll] = ncon.ncon(T_listx, idx_listx) / ncon.ncon(T_list_n, idx_list_n)
 
             mz_mat[ss, l, ll] = su.single_tensor_expectation(spin_index, TT, LL, imat, smat, pauli_z)
             mx_mat[ss, l, ll] = su.single_tensor_expectation(spin_index, TT, LL, imat, smat, pauli_x)
@@ -153,27 +152,29 @@ for ss in range(h.shape[0]):
             # ------------------------ Trace distances of every spin reduced density matrix results ---------------
 
             reduced_dm_gPEPS[ss, l, ll, :, :] = su.tensor_reduced_dm(spin_index, TT, LL, smat, imat)
-            tensors_reduced_dm_list, indices_reduced_dm_list = nlg.ncon_list_generator_reduced_dm(TT, LL, smat, spin_index)
-            tensors_reduced_dm_listn, indices_reduced_dm_listn = nlg.ncon_list_generator(TT, LL, smat, np.eye(p), spin_index)
-            reduced_dm_exact[ss, l, ll, :, :] = ncon.ncon(tensors_reduced_dm_list, indices_reduced_dm_list) / ncon.ncon(tensors_reduced_dm_listn, indices_reduced_dm_listn)
-            trace_distance_exact_gPEPS[ss, l, ll] = su.trace_distance(reduced_dm_exact[ss, l, ll, :, :], reduced_dm_gPEPS[ss, l, ll, :, :])
+            #tensors_reduced_dm_list, indices_reduced_dm_list = nlg.ncon_list_generator_reduced_dm(TT, LL, smat, spin_index)
+            #tensors_reduced_dm_listn, indices_reduced_dm_listn = nlg.ncon_list_generator(TT, LL, smat, np.eye(p), spin_index)
+            #reduced_dm_exact[ss, l, ll, :, :] = ncon.ncon(tensors_reduced_dm_list, indices_reduced_dm_list) / ncon.ncon(tensors_reduced_dm_listn, indices_reduced_dm_listn)
+            #trace_distance_exact_gPEPS[ss, l, ll] = su.trace_distance(reduced_dm_exact[ss, l, ll, :, :], reduced_dm_gPEPS[ss, l, ll, :, :])
 
 
     # ------------------ calculating total magnetization, energy and time to converge -------------------
     mz.append(np.sum(mz_mat[ss, :, :]) / n)
     mx.append(np.sum(mx_mat[ss, :, :]) / n)
-    mz_exact.append(np.sum(mz_mat_exact[ss, :, :]) / n)
-    mx_exact.append(np.sum(mx_mat_exact[ss, :, :]) / n)
+    #mz_exact.append(np.sum(mz_mat_exact[ss, :, :]) / n)
+    #mx_exact.append(np.sum(mx_mat_exact[ss, :, :]) / n)
     time_to_converge[ss] = counter
     E.append(su.energy_per_site(TT, LL, imat, smat, Jk, h[ss], Opi, Opj, Op_field))
-    E_exact.append(su.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
+    #E_exact.append(su.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
 
-    sum_of_trace_distance_exact_gPEPS.append(trace_distance_exact_gPEPS[ss, :, :].sum())
-    print('Mx_exact, Mz_exact', mx_exact[ss], mz_exact[ss])
+    #sum_of_trace_distance_exact_gPEPS.append(trace_distance_exact_gPEPS[ss, :, :].sum())
+    #print('Mx_exact, Mz_exact', mx_exact[ss], mz_exact[ss])
     print('E, Mx, Mz: ', E[ss], mx[ss], mz[ss])
     print('\n')
-    print('d(exact, gPEPS) = ', sum_of_trace_distance_exact_gPEPS[ss])
+    #print('d(exact, gPEPS) = ', sum_of_trace_distance_exact_gPEPS[ss])
 
+LLL = cp.deepcopy(LL)
+TTT = cp.deepcopy(TT)
 '''
 # ------------------------------------- plotting results ----------------------------------------------
 file_name_energy = date + 'experiment_#' + experiment_num + 'Energy_' + 'glassy_PEPS_BPupdate_'+ J_prop + str(L) + 'x' + str(L) + '_d-' + str(D_max) +'.pdf'

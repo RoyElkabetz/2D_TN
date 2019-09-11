@@ -27,7 +27,6 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
 
     n, m = np.shape(imat)
     for Ek in range(m):
-
         lamda_k = LL[Ek]
 
         ## (a) Find tensors Ti, Tj and their corresponding legs connected along edge Ek.
@@ -70,7 +69,7 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
         theta = imaginary_time_evolution(R, L, lamda_k, Ek, dt, Jk, h, Opi, Opj, Op_field)  # (Q1, i', j', Q2)
 
         ## (f) Obtain R', L', lambda'_k tensors by applying an SVD to theta
-        # R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes', max_eigen_num=D_max)
+        #R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes', max_eigen_num=D_max)
         R_tild, lamda_k_tild, L_tild = svd(theta, [0, 1], [2, 3], keep_s='yes')
         # (Q1 * i', D') # (D', D') # (D', j' * Q2)
 
@@ -108,11 +107,11 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
         TT[Tj[1][0]] = Tj[0] / tensor_normalization(Tj[0])
         LL[Ek] = lamda_k_tild / np.sum(lamda_k_tild)
 
-        ##  single edge BP update
-        # t_max = 100
-        # epsilon = 1e-5
-        # dumping = 0.1
-        # TT, LL = BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, D_max, Ek)
+        #  single edge BP update
+        #t_max = 1000
+        #epsilon = 1e-5
+        #dumping = 0.1
+        #TT, LL = BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, D_max, Ek)
 
     return TT, LL
 
@@ -459,19 +458,15 @@ def BPupdate(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax):
     for Ek in range(len(LL)):
         the_node = 'n' + str(Ek)
         neighboring_factors = np.nonzero(smat[:, Ek])[0]
-        if graph.factors['f' + str(neighboring_factors[0])][0][the_node] == 2:
-            A = graph.messages_f2n['f' + str(neighboring_factors[0])][the_node]
-            B = graph.messages_f2n['f' + str(neighboring_factors[1])][the_node]
-        else:
-            B = graph.messages_f2n['f' + str(neighboring_factors[0])][the_node]
-            A = graph.messages_f2n['f' + str(neighboring_factors[1])][the_node]
+        A = graph.messages_f2n['f' + str(neighboring_factors[0])][the_node]
+        B = graph.messages_f2n['f' + str(neighboring_factors[1])][the_node]
         P = find_P(A, B, Dmax)
         TT, LL = smart_truncation(TT, LL, P, Ek, smat, imat, Dmax)
         # BPerror = BPupdate_error(TT, LL, TT_old, LL_old, smat)
         # print('BP_error = ', BPerror)
     return TT, LL
 
-'''
+
 def BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax, Ek):
     TT_old = cp.deepcopy(TT)
     LL_old = cp.deepcopy(LL)
@@ -481,12 +476,16 @@ def BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax, Ek):
     graph = denfg.Graph()
     graph = PEPStoDEnFG_transform(graph, TT, LL, smat)
     graph.sum_product(t_max, epsilon, dumping)
-    P = find_P(graph, Ek, smat, Dmax)
+
+    the_node = 'n' + str(Ek)
+    neighboring_factors = np.nonzero(smat[:, Ek])[0]
+    A = graph.messages_f2n['f' + str(neighboring_factors[0])][the_node]
+    B = graph.messages_f2n['f' + str(neighboring_factors[1])][the_node]
+    P = find_P(A, B, Dmax)
     TT, LL = smart_truncation(TT, LL, P, Ek, smat, imat, Dmax)
     # BPerror = BPupdate_error(TT, LL, TT_old, LL_old, smat)
     # print('BP_error = ', BPerror)
     return TT, LL
-'''
 
 def PEPStoDEnFG_transform(graph, TT, LL, smat):
     factors_list = absorb_all_bond_vectors(TT, LL, smat)

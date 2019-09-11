@@ -109,7 +109,7 @@ class Graph:
             for n in nodes.keys():
                 alphabet = nodes[n][0]
                 for f in nodes[n][1]:
-                    neighbor_factors = cp.deepcopy(nodes[n][1])
+                    neighbor_factors = cp.copy(nodes[n][1])
                     neighbor_factors.remove(f)
                     temp_message = np.ones((alphabet, alphabet), dtype=complex)
                     for item in neighbor_factors:
@@ -188,7 +188,7 @@ class Graph:
         messages = self.messages_n2f
         keys = factors.keys()
         for f in keys:
-            super_tensor = self.make_super_physical_tensor(cp.deepcopy(factors[f][1]))
+            super_tensor = self.make_super_physical_tensor(factors[f][1])
             neighbors = factors[f][0]
             for n in neighbors.keys():
                 super_tensor *= self.broadcasting(messages[n][f], neighbors[n], super_tensor)

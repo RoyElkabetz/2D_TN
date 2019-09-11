@@ -212,7 +212,7 @@ def imaginary_time_evolution(left_tensor, right_tensor, bond_vector, Ek, dt, Jk,
     # applying ITE and returning a rank 4 tensor with physical dimensions, i' and j' at (Q1, i', j', Q2)
     # the indices of the unitary_time_op should be (i, j, i', j')
     p = np.int(np.sqrt(np.float(Aij.shape[0])))
-    hij = -Jk[Ek] * Aij - 0.5 * h * Bij
+    hij = Jk[Ek] * Aij + 0.5 * h * Bij
     unitary_time_op = np.reshape(linalg.expm(-dt * hij), [p, p, p, p])
     bond_matrix = np.diag(bond_vector)
     A = np.einsum(left_tensor, [0, 1, 2], bond_matrix, [1, 3], [0, 3, 2])  # (i, Ek, Q1)

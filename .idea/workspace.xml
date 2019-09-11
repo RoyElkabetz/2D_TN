@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="39f4aadf-3039-4826-aca9-4bd799d9af66" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/virtual_defg_optimized.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BPupdate_MPS_openBC_smart_trancation.py" beforeDir="false" afterPath="$PROJECT_DIR$/BPupdate_MPS_openBC_smart_trancation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py" beforeDir="false" afterPath="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation2.py" beforeDir="false" afterPath="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/glassyPEPS_BPupdate_experiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/glassyPEPS_BPupdate_experiment.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/glassyPEPS_BPupdate_experiment2.py" beforeDir="false" afterPath="$PROJECT_DIR$/glassyPEPS_BPupdate_experiment2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/virtual_DEFG.py" beforeDir="false" afterPath="$PROJECT_DIR$/virtual_DEFG.py" afterDir="false" />
@@ -41,8 +42,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="449" column="4" selection-start-line="449" selection-start-column="4" selection-end-line="449" selection-end-column="4" />
+            <state relative-caret-position="743">
+              <caret line="113" column="9" selection-start-line="113" selection-start-column="9" selection-end-line="113" selection-end-column="9" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -53,8 +54,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/BPupdate_PEPS_smart_trancation2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="385">
-              <caret line="426" selection-start-line="426" selection-end-line="426" />
+            <state relative-caret-position="5608">
+              <caret line="426" column="21" selection-start-line="426" selection-start-column="21" selection-end-line="426" selection-end-column="21" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -62,11 +63,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/glassyPEPS_BPupdate_experiment.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2511">
-              <caret line="268" column="48" lean-forward="true" selection-start-line="268" selection-start-column="48" selection-end-line="268" selection-end-column="48" />
+            <state relative-caret-position="1698">
+              <caret line="135" column="12" selection-start-line="135" selection-start-column="12" selection-end-line="135" selection-end-column="12" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -77,8 +78,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/virtual_DEFG.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="293">
-              <caret line="194" column="86" lean-forward="true" selection-start-line="194" selection-start-column="86" selection-end-line="194" selection-end-column="86" />
+            <state relative-caret-position="80">
+              <caret line="185" column="28" lean-forward="true" selection-start-line="185" selection-start-column="28" selection-end-line="185" selection-end-column="28" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -86,13 +90,28 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/glassyPEPS_BPupdate_experiment2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-693">
-              <caret line="18" column="22" lean-forward="true" selection-start-line="18" selection-start-column="22" selection-end-line="18" selection-end-column="22" />
+            <state relative-caret-position="400">
+              <caret line="124" column="47" selection-start-line="124" selection-start-column="47" selection-end-line="124" selection-end-column="47" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
             </state>
           </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="mock:///Users/royelkabetz/Library/Caches/PyCharm2019.1/snapshots/2D_TN7.pstat">
+          <provider selected="true" editor-type-id="profiler-session-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="mock:///Users/royelkabetz/Library/Caches/PyCharm2019.1/snapshots/2D_TN6.pstat">
+          <provider selected="true" editor-type-id="profiler-session-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="mock:///Users/royelkabetz/Library/Caches/PyCharm2019.1/snapshots/2D_TN4.pstat">
+          <provider selected="true" editor-type-id="profiler-session-editor" />
         </entry>
       </file>
     </leaf>
@@ -107,6 +126,7 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>number_of_spins</find>
+      <find>deep</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -160,18 +180,19 @@
         <option value="$PROJECT_DIR$/glassy_1D_AFH_chain_openBC_smart_trancation.py" />
         <option value="$PROJECT_DIR$/glassy_1D_AFH_chain_openBC.py" />
         <option value="$PROJECT_DIR$/BPupdate_MPS_openBC_smart_trancation.py" />
-        <option value="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py" />
-        <option value="$PROJECT_DIR$/virtual_DEFG.py" />
-        <option value="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation2.py" />
         <option value="$PROJECT_DIR$/glassyPEPS_BPupdate_experiment2.py" />
+        <option value="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation2.py" />
+        <option value="$PROJECT_DIR$/virtual_DEFG.py" />
+        <option value="$PROJECT_DIR$/virtual_defg_optimized.py" />
         <option value="$PROJECT_DIR$/glassyPEPS_BPupdate_experiment.py" />
+        <option value="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds">
     <option name="y" value="23" />
     <option name="width" value="1920" />
-    <option name="height" value="795" />
+    <option name="height" value="971" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -369,12 +390,12 @@
       <workItem from="1564991123964" duration="188317000" />
       <workItem from="1567361800956" duration="114000" />
       <workItem from="1567403244006" duration="62636000" />
-      <workItem from="1568034464530" duration="11273000" />
+      <workItem from="1568034464530" duration="29359000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="480008000" />
+    <option name="totallyTimeSpent" value="498094000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -386,10 +407,9 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1920" height="971" extended-state="6" />
-    <editor active="true" />
+    <frame x="0" y="23" width="1920" height="971" extended-state="0" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" weight="0.3402556" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.456869" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -404,11 +424,12 @@
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32423207" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.32309443" />
-      <window_info anchor="bottom" id="Python Console" order="12" visible="true" weight="0.33560863" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="12" visible="true" weight="0.33560863" />
+      <window_info anchor="right" id="Coverage" side_tool="true" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Database" order="3" weight="0.32689556" />
+      <window_info anchor="right" id="Database" order="3" weight="0.32641107" />
       <window_info anchor="right" id="SciView" order="4" weight="0.64377" />
       <window_info anchor="right" x="0" y="0" width="310" height="595" id="Documentation" order="5" side_tool="true" weight="0.32960597" />
     </layout>
@@ -461,7 +482,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/glassyPEPS_BPupdate_experiment2.py</url>
-          <line>154</line>
+          <line>153</line>
           <option name="timeStamp" value="275" />
         </line-breakpoint>
       </breakpoints>
@@ -499,27 +520,6 @@
     <SUITE FILE_PATH="coverage/2D_TN$MPS_2sites.coverage" NAME="MPS_2sites Coverage Results" MODIFIED="1561550318058" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/honeycomb_su.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1381">
-          <caret line="104" selection-start-line="104" selection-end-line="104" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ncon_lists_generator_PEPS.py" />
-    <entry file="file://$PROJECT_DIR$/ncon.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="29" selection-start-line="29" selection-end-line="29" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/PEPS_25spins.py" />
     <entry file="file://$PROJECT_DIR$/ITE_testing.py" />
     <entry file="file://$PROJECT_DIR$/PEPS_4sites.py">
@@ -807,16 +807,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/BPupdate_MPS_openBC_smart_trancation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1954">
-          <caret line="671" column="66" selection-start-line="671" selection-start-column="66" selection-end-line="671" selection-end-column="66" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/glassyPEPS-experiment.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="270">
@@ -847,17 +837,64 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/BPupdate_MPS_openBC_smart_trancation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="214" column="24" selection-start-line="214" selection-start-column="24" selection-end-line="214" selection-end-column="24" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda2/lib/python2.7/site-packages/singledispatch.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="185">
+          <caret line="97" selection-start-line="97" selection-end-line="97" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda2/lib/python2.7/site-packages/numba/dispatcher.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="185">
+          <caret line="458" selection-start-line="458" selection-end-line="458" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/glassyPEPS_BPupdate_experiment2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="400">
+          <caret line="124" column="47" selection-start-line="124" selection-start-column="47" selection-end-line="124" selection-end-column="47" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/virtual_defg_optimized.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-475">
+          <caret line="111" column="42" selection-start-line="111" selection-start-column="42" selection-end-line="111" selection-end-column="42" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/virtual_DEFG.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="293">
-          <caret line="194" column="86" lean-forward="true" selection-start-line="194" selection-start-column="86" selection-end-line="194" selection-end-column="86" />
+        <state relative-caret-position="80">
+          <caret line="185" column="28" lean-forward="true" selection-start-line="185" selection-start-column="28" selection-end-line="185" selection-end-column="28" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/BPupdate_PEPS_smart_trancation2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="385">
-          <caret line="426" selection-start-line="426" selection-end-line="426" />
+        <state relative-caret-position="5608">
+          <caret line="426" column="21" selection-start-line="426" selection-start-column="21" selection-end-line="426" selection-end-column="21" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -866,18 +903,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="449" column="4" selection-start-line="449" selection-start-column="4" selection-end-line="449" selection-end-column="4" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/glassyPEPS_BPupdate_experiment2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-693">
-          <caret line="18" column="22" lean-forward="true" selection-start-line="18" selection-start-column="22" selection-end-line="18" selection-end-column="22" />
+        <state relative-caret-position="743">
+          <caret line="113" column="9" selection-start-line="113" selection-start-column="9" selection-end-line="113" selection-end-column="9" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -886,8 +913,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/glassyPEPS_BPupdate_experiment.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2511">
-          <caret line="268" column="48" lean-forward="true" selection-start-line="268" selection-start-column="48" selection-end-line="268" selection-end-column="48" />
+        <state relative-caret-position="1698">
+          <caret line="135" column="12" selection-start-line="135" selection-start-column="12" selection-end-line="135" selection-end-column="12" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
