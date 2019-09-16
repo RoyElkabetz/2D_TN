@@ -26,7 +26,7 @@ d = 2  # virtual bond dimension
 p = 2  # physical bond dimension
 D_max = 2  # maximal virtual bond dimension
 J = 1  # Hamiltonian: interaction coeff
-h = np.linspace(0.1, 5., num=20)  # Hamiltonian: magnetic field coeff
+h = np.linspace(0.1, 5., num=10)  # Hamiltonian: magnetic field coeff
 
 mu = 1
 sigma = 0

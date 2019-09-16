@@ -1,5 +1,4 @@
 import numpy as np
-import networkx as nx
 import matplotlib.pyplot as plt
 import copy as cp
 from scipy.stats import unitary_group
@@ -84,24 +83,28 @@ class Graph:
         return super_tensor
 
 
-    def sum_product(self, t_max, epsilon, dumping):
+    def sum_product(self, t_max, epsilon, dumping, init_messages=None):
         #print('run BP')
         factors = self.factors
         nodes = self.nodes
-        node2factor = {}
-        factor2node = {}
-        for n in nodes.keys():
-            node2factor[n] = {}
-            alphabet = nodes[n][0]
-            for f in nodes[n][1]:
-                node2factor[n][f] = self.pd_mat_init(alphabet)
-
-        for f in factors.keys():
-            factor2node[f] = {}
-            for n in factors[f][0]:
+        if init_messages and self.messages_n2f and self.messages_f2n:
+            node2factor = self.messages_n2f
+            factor2node = self.messages_f2n
+        else:
+            node2factor = {}
+            factor2node = {}
+            for n in nodes.keys():
+                node2factor[n] = {}
                 alphabet = nodes[n][0]
-                factor2node[f][n] = self.pd_mat_init(alphabet)
-        #self.init_save_messages()
+                for f in nodes[n][1]:
+                    node2factor[n][f] = self.pd_mat_init(alphabet)
+
+            for f in factors.keys():
+                factor2node[f] = {}
+                for n in factors[f][0]:
+                    alphabet = nodes[n][0]
+                    factor2node[f][n] = self.pd_mat_init(alphabet)
+
 
         for t in range(t_max):
             old_messages_f2n = cp.deepcopy(factor2node)
@@ -123,14 +126,12 @@ class Graph:
                 for n in factors[f][0].keys():
                     factor2node[f][n] = dumping * factor2node[f][n] + (1 - dumping) * self.f2n_message(f, n, old_messages_n2f)
                     factor2node[f][n] /= np.trace(factor2node[f][n])
-            #self.save_messages(node2factor, factor2node)
             self.messages_n2f = node2factor
             self.messages_f2n = factor2node
-
             if self.check_converge(old_messages_n2f, old_messages_f2n, epsilon):
                 break
         print('t_final = ', t)
-        #print('\n')
+        print('\n')
 
     def check_converge(self, n2f_old, f2n_old, epsilon):
         counter = 0
@@ -214,6 +215,7 @@ class Graph:
         message = np.einsum(tensor, tensor_idx, conj_tensor, conj_tensor_idx, message_final_idx)
         message /= np.trace(message)
         return message
+
 
     def exact_joint_probability(self):
         factors = cp.deepcopy(self.factors)
