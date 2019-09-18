@@ -3,6 +3,7 @@ import ncon as ncon
 import copy as cp
 from scipy import linalg
 import virtual_DEFG as denfg
+from numba import jit
 import time
 import matplotlib.pyplot as plt
 import ncon_lists_generator as nlg
@@ -117,7 +118,7 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max, grap
         graph_update(Ek, TT, LL, smat, imat, graph)
 
         ## single edge BP update (uncomment for single edge BP implemintation)
-        t_max = 1000
+        t_max = 100
         epsilon = 1e-5
         dumping = 0.1
         TT, LL = BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, D_max, Ek, graph)
@@ -143,7 +144,6 @@ def get_conjugate_tensors(edge, tensors, structure_matrix, incidence_matrix):
     Ti = [cp.deepcopy(np.conj(tensors[tidx[0]])), [tidx[0], 'tensor_number'], [tdim[0], 'tensor_Ek_leg']]
     Tj = [cp.deepcopy(np.conj(tensors[tidx[1]])), [tidx[1], 'tensor_number'], [tdim[1], 'tensor_Ek_leg']]
     return Ti, Tj
-
 
 def get_edges(edge, structure_matrix, incidence_matrix):
     # given an edge collect neighboring tensors edges and legs
@@ -186,7 +186,6 @@ def remove_edges(tensor, edges_dim, bond_vectors):
         tensor[0] = np.einsum(tensor[0], range(len(tensor[0].shape)), bond_vectors[edges_dim[0][i]] ** (-1), [edges_dim[1][i]], range(len(tensor[0].shape)))
     return tensor
 
-
 def dim_perm(tensor):
     # swapping the k leg with the element in the 1 place
     permutation = np.array(range(len(tensor[0].shape)))
@@ -213,11 +212,9 @@ def rank2_to_rank3(tensor, physical_dim):
     new_tensor = np.reshape(tensor, [physical_dim, tensor.shape[0] / physical_dim, tensor.shape[1]])
     return new_tensor
 
-
 def rank3_to_rankN(tensor, old_shape):
     new_tensor = np.reshape(tensor, old_shape)
     return new_tensor
-
 
 def svd(tensor, left_legs, right_legs, keep_s=None, max_eigen_num=None):
     shape = np.array(tensor.shape)
@@ -240,12 +237,14 @@ def svd(tensor, left_legs, right_legs, keep_s=None, max_eigen_num=None):
         vh = np.einsum(np.sqrt(s), [0], vh, [0, 1], [0, 1])
     return u, vh
 
-
 def imaginary_time_evolution(left_tensor, right_tensor, bond_vector, Ek, dt, Jk, h, Opi, Opj, Op_field):
     # applying ITE and returning a rank 4 tensor with physical dimensions, i' and j' at (Q1, i', j', Q2)
     # the indices of the unitary_time_op should be (i, j, i', j')
-    p = Op_field.shape[0]
-    hij = -Jk[Ek] * np.kron(Opi, Opj) - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p)))
+    p = Opi[0].shape[0]
+    Aij = np.zeros((p ** 2, p ** 2), dtype=complex)
+    for i in range(len(Opi)):
+        Aij += np.kron(Opi[i], Opj[i])
+    hij = -Jk[Ek] * Aij - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p)))
     unitary_time_op = np.reshape(linalg.expm(-dt * hij), [p, p, p, p])
     bond_matrix = np.diag(bond_vector)
     A = np.einsum(left_tensor, [0, 1, 2], bond_matrix, [1, 3], [0, 3, 2])  # (i, Ek, Q1)
@@ -341,7 +340,7 @@ def two_site_expectation(Ek, TT, LL, imat, smat, Oij):
 
     ## (a) Find tensors Ti, Tj and their corresponding legs connected along edge Ek.
     Ti, Tj = get_tensors(Ek, TT, smat, imat)
-    Ti_conj, Tj_conj = get_tensors(Ek, TT, smat, imat)
+    Ti_conj, Tj_conj = get_conjugate_tensors(Ek, TT, smat, imat)
 
     # collecting all neighboring (edges, dimensions) without the Ek (edge, dimension)
     i_dim, j_dim = get_edges(Ek, smat, imat)
@@ -411,13 +410,14 @@ def energy_per_site(TT, LL, imat, smat, Jk, h, Opi, Opj, Op_field):
     TT = cp.deepcopy(TT)
     LL = cp.deepcopy(LL)
     # calculating the normalized energy per site(tensor)
-    p = Op_field.shape[0]
+    p = Opi[0].shape[0]
+    Aij = np.zeros((p ** 2, p ** 2), dtype=complex)
+    for i in range(len(Opi)):
+        Aij += np.kron(Opi[i], Opj[i])
     energy = 0
     n, m = np.shape(imat)
     for Ek in range(m):
-        Oij = np.reshape(
-            -Jk[Ek] * np.kron(Opi, Opj) - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p))),
-            (p, p, p, p))
+        Oij = np.reshape(-Jk[Ek] * Aij - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p))), (p, p, p, p))
         energy += two_site_expectation(Ek, TT, LL, imat, smat, Oij)
     energy /= n
     return energy
@@ -427,13 +427,14 @@ def exact_energy_per_site(TT, LL, smat, Jk, h, Opi, Opj, Op_field):
     # calculating the normalized exact energy per site(tensor)
     TT = cp.deepcopy(TT)
     LL = cp.deepcopy(LL)
-    p = Op_field.shape[0]
+    p = Opi[0].shape[0]
+    Aij = np.zeros((p ** 2, p ** 2), dtype=complex)
+    for i in range(len(Opi)):
+        Aij += np.kron(Opi[i], Opj[i])
     energy = 0
     n, m = np.shape(smat)
     for Ek in range(m):
-        Oij = np.reshape(
-            -Jk[Ek] * np.kron(Opi, Opj) - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p))),
-            (p, p, p, p))
+        Oij = np.reshape(-Jk[Ek] * Aij - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p))), (p, p, p, p))
         energy += two_site_exact_expectation(TT, LL, smat, Ek, Oij)
     energy /= n
     return energy

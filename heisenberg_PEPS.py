@@ -8,7 +8,7 @@ import virtual_DEFG as defg
 import ncon
 import time
 #from glassyPEPS_BPupdate_experiment2 import E, E_exact, mz, mx, mz_exact, mx_exact, time_to_converge, mx_mat, mx_mat_exact, mz_mat, mz_mat_exact, reduced_dm_gPEPS, reduced_dm_exact
-from glassyPEPS_BPupdate_experiment2 import E, mz, mx, time_to_converge, mx_mat, mz_mat, reduced_dm_gPEPS, LLL, TTT
+from heisenberg_PEPS2 import E, mz, mx, time_to_converge, mx_mat, mz_mat, reduced_dm_gPEPS, LLL, TTT
 
 date = '2019.18.09_'
 experiment_num = '_1_'
@@ -27,11 +27,11 @@ dumping = 0.1 # BP dumping
 
 d = 2  # virtual bond dimension
 p = 2  # physical bond dimension
-D_max = 3  # maximal virtual bond dimension
+D_max = 5  # maximal virtual bond dimension
 J = 1  # Hamiltonian: interaction coeff
-h = np.linspace(0.1, 5., num=10)  # Hamiltonian: magnetic field coeffs
+h = [0]  # Hamiltonian: magnetic field coeffs
 
-mu = 1
+mu = -1
 sigma = 0
 Jk = np.random.normal(mu, sigma, (2 * N)) # interaction constant list
 print('Jk = ', Jk)
@@ -86,12 +86,13 @@ sz = 0.5 * pauli_z
 sy = 0.5 * pauli_y
 sx = 0.5 * pauli_x
 
-t_list = [0.1] # imaginary time evolution time steps list
+t_list = [0.1]  # imaginary time evolution time steps list
 iterations = 40
 
-Opi = [pauli_z]
-Opj = [pauli_z]
-Op_field = pauli_x
+
+Opi = [sx, sy, sz]
+Opj = [sx, sy, sz]
+Op_field = np.eye(p)
 
 #------------- generating the finite PEPS structure matrix------------------
 imat = np.zeros((N, 2 * N), dtype=int)
@@ -113,7 +114,8 @@ for i in range(n):
 
 TT = []
 for ii in range(n):
-    TT.append(np.random.rand(p, d, d, d, d) + 1j *np.random.rand(p, d, d, d, d))
+    #TT.append(np.random.rand(p, d, d, d, d) + 1j * np.random.rand(p, d, d, d, d))
+    TT.append(np.random.rand(p, d, d, d, d) + 1j)
 LL = []
 for i in range(imat.shape[1]):
     LL.append(np.ones(d, dtype=float) / d)
@@ -121,7 +123,7 @@ for i in range(imat.shape[1]):
 graph = defg.Graph()
 graph = su.PEPStoDEnFG_transform(graph, TT, LL, smat)
 
-for ss in range(h.shape[0]):
+for ss in range(len(h)):
 
     counter = 0
 
@@ -141,7 +143,8 @@ for ss in range(h.shape[0]):
             energy2 = su.energy_per_site(TT2, LL2, imat, smat, Jk, h[ss], Opi, Opj, Op_field)
             #energy1 = su.exact_energy_per_site(TT1, LL1, smat, Jk, h[ss], Opi, Opj, Op_field)
             #energy2 = su.exact_energy_per_site(TT2, LL2, smat, Jk, h[ss], Opi, Opj, Op_field)
-            if np.abs(energy1 - energy2) < 1e-3:
+            print(energy1, energy2)
+            if np.abs(energy1 - energy2) < 1e-5:
                 flag = 1
                 TT = TT2
                 LL = LL2
@@ -176,9 +179,9 @@ for ss in range(h.shape[0]):
             # ------------------------ Trace distances of every spin reduced density matrix results ---------------
 
             reduced_dm_BP_gPEPS[ss, l, ll, :, :] = su.tensor_reduced_dm(spin_index, TT, LL, smat, imat)
-            #tensors_reduced_dm_list, indices_reduced_dm_list = nlg.ncon_list_generator_reduced_dm(TT, LL, smat, spin_index)
-            #tensors_reduced_dm_listn, indices_reduced_dm_listn = nlg.ncon_list_generator(TT, LL, smat, np.eye(p), spin_index)
-            #reduced_dm_BP_exact = ncon.ncon(tensors_reduced_dm_list, indices_reduced_dm_list) / ncon.ncon(tensors_reduced_dm_listn, indices_reduced_dm_listn)
+            tensors_reduced_dm_list, indices_reduced_dm_list = nlg.ncon_list_generator_reduced_dm(TT, LL, smat, spin_index)
+            tensors_reduced_dm_listn, indices_reduced_dm_listn = nlg.ncon_list_generator(TT, LL, smat, np.eye(p), spin_index)
+            reduced_dm_BP_exact = ncon.ncon(tensors_reduced_dm_list, indices_reduced_dm_list) / ncon.ncon(tensors_reduced_dm_listn, indices_reduced_dm_listn)
 
             #trace_distance_BPexact_graph[ss, l, ll] = su.trace_distance(reduced_dm_BP_exact, graph.rdm_belief[spin_index])
             #trace_distance_BPexact_BPgPEPS[ss, l, ll] = su.trace_distance(reduced_dm_BP_exact, reduced_dm_BP_gPEPS)
@@ -194,24 +197,24 @@ for ss in range(h.shape[0]):
     # ------------------ calculating total magnetization, energy and time to converge -------------------
     mz_BP.append(np.sum(mz_mat_BP[ss, :, :]) / n)
     mx_BP.append(np.sum(mx_mat_BP[ss, :, :]) / n)
-    #mz_exact_BP.append(np.sum(mz_mat_exact_BP[ss, :, :]) / n)
-    #mx_exact_BP.append(np.sum(mx_mat_exact_BP[ss, :, :]) / n)
+    mz_exact_BP.append(np.sum(mz_mat_exact_BP[ss, :, :]) / n)
+    mx_exact_BP.append(np.sum(mx_mat_exact_BP[ss, :, :]) / n)
     time_to_converge_BP[ss] = counter
     E_BP.append(su.energy_per_site(TT, LL, imat, smat, Jk, h[ss], Opi, Opj, Op_field))
-    #E_exact_BP.append(su.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
+    E_exact_BP.append(su.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
 
     #sum_of_trace_distance_BPexact_BPgPEPS.append(trace_distance_BPexact_BPgPEPS[ss, :, :].sum())
     #sum_of_trace_distance_BPexact_graph.append(trace_distance_BPexact_graph[ss, :, :].sum())
-    sum_of_trace_distance_BPgPEPS_graph.append(trace_distance_BPgPEPS_graph[ss, :, :].sum())
-    sum_of_trace_distance_gPEPS_graph.append(trace_distance_gPEPS_graph[ss, :, :].sum())
+    #sum_of_trace_distance_BPgPEPS_graph.append(trace_distance_BPgPEPS_graph[ss, :, :].sum())
+    #sum_of_trace_distance_gPEPS_graph.append(trace_distance_gPEPS_graph[ss, :, :].sum())
     #sum_of_trace_distance_gPEPS_BPexact.append(trace_distance_gPEPS_BPexact[ss, :, :].sum())
-    sum_of_trace_distance_gPEPS_BPgPEPS.append(trace_distance_gPEPS_BPgPEPS[ss, :, :].sum())
+    #sum_of_trace_distance_gPEPS_BPgPEPS.append(trace_distance_gPEPS_BPgPEPS[ss, :, :].sum())
     #sum_of_trace_distance_exact_graph.append(trace_distance_exact_graph[ss, :, :].sum())
     #sum_of_trace_distance_exact_BPgPEPS.append(trace_distance_exact_BPgPEPS[ss, :, :].sum())
     #sum_of_trace_distance_exact_BPexact.append(trace_distance_exact_BPexact[ss, :, :].sum())
     #sum_of_trace_distance_exact_gPEPS.append(trace_distance_exact_gPEPS[ss, :, :].sum())
 
-    #print('Mx_exact, Mz_exact', mx_exact_BP[ss], mz_exact_BP[ss])
+    print('Mx_exact, Mz_exact', mx_exact_BP[ss], mz_exact_BP[ss])
     print('E, Mx, Mz: ', E_BP[ss], mx_BP[ss], mz_BP[ss])
     print('\n')
     #print('d(exact, gPEPS) = ', sum_of_trace_distance_BPexact_BPgPEPS[ss])
@@ -224,68 +227,29 @@ file_name_TD = date + 'experiment_#' + experiment_num + 'Trace_Distance_' + 'gla
 
 
 plt.figure()
-plt.title(str(N) + ' spins 2D glassy PEPS BP update (' + J_prop + ') Quantum Ising Model with \n a transverse field and maximal bond dimension d = ' + str(D_max))
-plt.subplot()
-color = 'tab:red'
-plt.xlabel('h')
-plt.ylabel('Energy per site', color=color)
-plt.plot(h, E_BP, '-.', color=color)
-plt.plot(h, E, linewidth=2, color=color)
-#plt.plot(h, E_exact_BP, 'o', markersize=3, color=color)
-#plt.plot(h, E_exact, '+', markersize=5, color=color)
-plt.grid()
-plt.tick_params(axis='y', labelcolor=color)
-#plt.legend(['BP gPEPS', 'gPEPS', 'BP exact', 'gPEPS exact'])
-plt.legend(['BP gPEPS', 'gPEPS'])
-plt.twinx()  # instantiate a second axes that shares the same x-axis
-color = 'tab:blue'
-plt.ylabel('# of gPEPS iterations until convergence', color=color)  # we already handled the x-label with ax1
-plt.plot(h, time_to_converge_BP, '-.', color=color)
-plt.plot(h, time_to_converge, linewidth=2, color=color)
-plt.tick_params(axis='y', labelcolor=color)
-plt.tight_layout()  # otherwise the right y-label is slightly clipped
-plt.grid()
-plt.savefig(file_name_energy, bbox_inches='tight')
+plt.title('Heisenberg Model exact x magnetization')
+plt.imshow(np.real(mx_mat_exact_BP[0, :, :]))
+plt.colorbar()
+plt.clim(-1, 1)
 plt.show()
 
 plt.figure()
-plt.plot(h, mx_BP, 'go', markersize=4)
-plt.plot(h, mx, 'go', markersize=3)
-plt.plot(h, np.abs(np.array(mz_BP)), 'bo', markersize=4)
-plt.plot(h, np.abs(np.array(mz)), 'bo', markersize=3)
-#plt.plot(h, mx_exact_BP, 'r-.', linewidth=3)
-#plt.plot(h, mx_exact, 'r-', linewidth=2)
-#plt.plot(h, np.abs(np.array(mz_exact_BP)), 'y-.', linewidth=3)
-#plt.plot(h, np.abs(np.array(mz_exact)), 'y-', linewidth=2)
-plt.title('Averaged magnetization vs h at d = ' + str(D_max) + ' in a ' + str(L) + 'x' + str(L) + ' PEPS BP update ')
-plt.xlabel('h')
-plt.ylabel('Magnetization')
-#plt.legend(['BP mx ', 'BP |mz|', 'BP mx exact', 'BP |mz| exact'])
-plt.legend(['BP mx ', 'gPEPS mx', 'BP |mz|', 'gPEPS |mz|'])
-plt.grid()
-plt.savefig(file_name_magnetization, bbox_inches='tight')
+plt.title('Heisenberg Model exact z magnetization')
+plt.imshow(np.real(mz_mat_exact_BP[0, :, :]))
+plt.colorbar()
+plt.clim(-1, 1)
 plt.show()
 
-
-#legend = ['D(BPe,BPg)', 'D(BPe,BP)', 'D(BPg,BP)', 'D(g,BP)', 'D(BPe,g)', 'D(g,BPg)', 'D(e,BP)', 'D(e,BPg)', 'D(BPe,e)', 'D(e,g)']
-legend = ['D(BPg,BP)', 'D(g,BP)', 'D(g,BPg)']
 plt.figure()
-#plt.plot(h, sum_of_trace_distance_BPexact_BPgPEPS)
-#plt.plot(h, sum_of_trace_distance_BPexact_graph)
-plt.plot(h, sum_of_trace_distance_BPgPEPS_graph)
-plt.plot(h, sum_of_trace_distance_gPEPS_graph)
-#plt.plot(h, sum_of_trace_distance_gPEPS_BPexact)
-plt.plot(h, sum_of_trace_distance_gPEPS_BPgPEPS)
-#plt.plot(h, sum_of_trace_distance_exact_graph)
-#plt.plot(h, sum_of_trace_distance_exact_BPgPEPS)
-#plt.plot(h, sum_of_trace_distance_exact_BPexact)
-#plt.plot(h, sum_of_trace_distance_exact_gPEPS)
-plt.title('Total Trace Distance comparison of all particles rdms \n in a ' + str(L) + 'x' + str(L) + ' gPEPS update and BP update')
-plt.xlabel('h')
-plt.ylabel('Trace distance')
-plt.legend(legend)
-plt.ylim([0, 0.5])
-plt.grid()
-plt.savefig(file_name_TD, bbox_inches='tight')
+plt.title('Heisenberg Model BP x magnetization')
+plt.imshow(np.real(mx_mat_BP[0, :, :]))
+plt.colorbar()
+plt.clim(-1, 1)
 plt.show()
 
+plt.figure()
+plt.title('Heisenberg Model z magnetization')
+plt.imshow(np.real(mz_mat_BP[0, :, :]))
+plt.colorbar()
+plt.clim(-1, 1)
+plt.show()

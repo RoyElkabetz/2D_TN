@@ -220,14 +220,18 @@ def svd(tensor, left_legs, right_legs, keep_s=None, max_eigen_num=None):
 def imaginary_time_evolution(left_tensor, right_tensor, bond_vector, Ek, dt, Jk, h, Opi, Opj, Op_field):
     # applying ITE and returning a rank 4 tensor with physical dimensions, i' and j' at (Q1, i', j', Q2)
     # the indices of the unitary_time_op should be (i, j, i', j')
-    p = Op_field.shape[0]
-    hij = -Jk[Ek] * np.kron(Opi, Opj) - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p)))
+    p = Opi[0].shape[0]
+    Aij = np.zeros((p ** 2, p ** 2), dtype=complex)
+    for i in range(len(Opi)):
+        Aij += np.kron(Opi[i], Opj[i])
+    hij = -Jk[Ek] * Aij - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p)))
     unitary_time_op = np.reshape(linalg.expm(-dt * hij), [p, p, p, p])
     bond_matrix = np.diag(bond_vector)
     A = np.einsum(left_tensor, [0, 1, 2], bond_matrix, [1, 3], [0, 3, 2])  # (i, Ek, Q1)
     A = np.einsum(A, [0, 1, 2], right_tensor, [3, 1, 4], [2, 0, 3, 4])  # (Q1, i, j, Q2)
     theta = np.einsum(A, [0, 1, 2, 3], unitary_time_op, [1, 2, 4, 5], [0, 4, 5, 3])  # (Q1, i', j', Q2)
     return theta
+
 
 
 def tensor_normalization(T):
@@ -298,7 +302,7 @@ def two_site_expectation(Ek, TT, LL, imat, smat, Oij):
 
     ## (a) Find tensors Ti, Tj and their corresponding legs connected along edge Ek.
     Ti, Tj = get_tensors(Ek, TT, smat, imat)
-    Ti_conj, Tj_conj = get_tensors(Ek, TT, smat, imat)
+    Ti_conj, Tj_conj = get_conjugate_tensors(Ek, TT, smat, imat)
 
     # collecting all neighboring (edges, dimensions) without the Ek (edge, dimension)
     i_dim, j_dim = get_edges(Ek, smat, imat)
@@ -368,13 +372,14 @@ def energy_per_site(TT, LL, imat, smat, Jk, h, Opi, Opj, Op_field):
     TT = cp.deepcopy(TT)
     LL = cp.deepcopy(LL)
     # calculating the normalized energy per site(tensor)
-    p = Op_field.shape[0]
+    p = Opi[0].shape[0]
+    Aij = np.zeros((p ** 2, p ** 2), dtype=complex)
+    for i in range(len(Opi)):
+        Aij += np.kron(Opi[i], Opj[i])
     energy = 0
     n, m = np.shape(imat)
     for Ek in range(m):
-        Oij = np.reshape(
-            -Jk[Ek] * np.kron(Opi, Opj) - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p))),
-            (p, p, p, p))
+        Oij = np.reshape(-Jk[Ek] * Aij - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p))), (p, p, p, p))
         energy += two_site_expectation(Ek, TT, LL, imat, smat, Oij)
     energy /= n
     return energy
@@ -384,13 +389,14 @@ def exact_energy_per_site(TT, LL, smat, Jk, h, Opi, Opj, Op_field):
     # calculating the normalized exact energy per site(tensor)
     TT = cp.deepcopy(TT)
     LL = cp.deepcopy(LL)
-    p = Op_field.shape[0]
+    p = Opi[0].shape[0]
+    Aij = np.zeros((p ** 2, p ** 2), dtype=complex)
+    for i in range(len(Opi)):
+        Aij += np.kron(Opi[i], Opj[i])
     energy = 0
     n, m = np.shape(smat)
     for Ek in range(m):
-        Oij = np.reshape(
-            -Jk[Ek] * np.kron(Opi, Opj) - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p))),
-            (p, p, p, p))
+        Oij = np.reshape(-Jk[Ek] * Aij - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p))), (p, p, p, p))
         energy += two_site_exact_expectation(TT, LL, smat, Ek, Oij)
     energy /= n
     return energy
