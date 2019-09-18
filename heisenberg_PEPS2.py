@@ -15,7 +15,7 @@ np.random.seed(seed=16)
 
 #---------------------- Tensor Network paramas ------------------
 
-N = 4 # number of spins
+N = 25 # number of spins
 L = np.int(np.sqrt(N))
 
 t_max = 100
@@ -72,7 +72,7 @@ sy = 0.5 * pauli_y
 sx = 0.5 * pauli_x
 
 t_list = [0.1]  # imaginary time evolution time steps list
-iterations = 40
+iterations = 100
 
 
 Opi = [sx, sy, sz]
@@ -100,7 +100,6 @@ for i in range(n):
 TT = []
 for ii in range(n):
     TT.append(np.random.rand(p, d, d, d, d) + 1j *np.random.rand(p, d, d, d, d))
-    #TT.append(np.random.rand(p, d, d, d, d))
 LL = []
 for i in range(imat.shape[1]):
     LL.append(np.ones(d, dtype=float) / d)
@@ -144,12 +143,12 @@ for ss in range(len(h)):
     for l in range(L):
         for ll in range(L):
             spin_index = np.int(L * l + ll)
-            T_list_n, idx_list_n = nlg.ncon_list_generator(TT, LL, smat, np.eye(p), spin_index)
-            T_listz, idx_listz = nlg.ncon_list_generator(TT, LL, smat, pauli_z, spin_index)
-            mz_mat_exact[ss, l, ll] = ncon.ncon(T_listz, idx_listz) / ncon.ncon(T_list_n, idx_list_n)
+            #T_list_n, idx_list_n = nlg.ncon_list_generator(TT, LL, smat, np.eye(p), spin_index)
+            #T_listz, idx_listz = nlg.ncon_list_generator(TT, LL, smat, pauli_z, spin_index)
+            #mz_mat_exact[ss, l, ll] = ncon.ncon(T_listz, idx_listz) / ncon.ncon(T_list_n, idx_list_n)
 
-            T_listx, idx_listx = nlg.ncon_list_generator(TT, LL, smat, pauli_x, spin_index)
-            mx_mat_exact[ss, l, ll] = ncon.ncon(T_listx, idx_listx) / ncon.ncon(T_list_n, idx_list_n)
+            #T_listx, idx_listx = nlg.ncon_list_generator(TT, LL, smat, pauli_x, spin_index)
+            #mx_mat_exact[ss, l, ll] = ncon.ncon(T_listx, idx_listx) / ncon.ncon(T_list_n, idx_list_n)
 
             mz_mat[ss, l, ll] = su.single_tensor_expectation(spin_index, TT, LL, imat, smat, pauli_z)
             mx_mat[ss, l, ll] = su.single_tensor_expectation(spin_index, TT, LL, imat, smat, pauli_x)

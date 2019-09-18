@@ -513,12 +513,6 @@ def BPupdate(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax):
 
 def BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax, Ek, graph):
     ## this BP truncation is implemented on a single edge Ek
-    #TT = cp.deepcopy(TT)
-    #LL = cp.deepcopy(LL)
-
-    # generate the DEFG of the Tensor Network
-    #graph = denfg.Graph()
-    #graph = PEPStoDEnFG_transform(graph, TT, LL, smat)
 
     # run BP on graph
     graph.sum_product(t_max, epsilon, dumping, 'yes')

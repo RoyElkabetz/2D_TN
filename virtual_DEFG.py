@@ -84,7 +84,6 @@ class Graph:
 
 
     def sum_product(self, t_max, epsilon, dumping, init_messages=None):
-        #print('run BP')
         factors = self.factors
         nodes = self.nodes
         if init_messages and self.messages_n2f and self.messages_f2n:
