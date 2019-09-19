@@ -2,12 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="39f4aadf-3039-4826-aca9-4bd799d9af66" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/Tensor_Network_functions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Heisenberg_model_function.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py" beforeDir="false" afterPath="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/heisenberg_PEPS.py" beforeDir="false" afterPath="$PROJECT_DIR$/heisenberg_PEPS.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/heisenberg_PEPS2.py" beforeDir="false" afterPath="$PROJECT_DIR$/heisenberg_PEPS2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/virtual_DEFG.py" beforeDir="false" afterPath="$PROJECT_DIR$/virtual_DEFG.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp.py" beforeDir="false" afterPath="$PROJECT_DIR$/temp.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -41,8 +40,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-661">
-              <caret line="515" lean-forward="true" selection-start-line="515" selection-end-line="515" />
+            <state relative-caret-position="4319">
+              <caret line="314" column="4" selection-start-line="314" selection-start-column="4" selection-end-line="314" selection-end-column="4" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -65,8 +64,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/heisenberg_PEPS.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1350">
-              <caret line="90" column="16" selection-start-line="90" selection-start-column="16" selection-end-line="90" selection-end-column="16" />
+            <state relative-caret-position="105">
+              <caret line="7" column="11" lean-forward="true" selection-end-line="256" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Heisenberg_model_function.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2424">
+              <caret line="200" lean-forward="true" selection-start-line="200" selection-end-line="200" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -74,13 +82,25 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/heisenberg_PEPS2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-602">
-              <caret line="74" column="16" selection-start-line="74" selection-start-column="16" selection-end-line="74" selection-end-column="16" />
+            <state relative-caret-position="133">
+              <caret line="120" column="94" lean-forward="true" selection-start-line="116" selection-start-column="12" selection-end-line="120" selection-end-column="94" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/temp.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-226">
+              <caret line="80" column="49" selection-start-line="80" selection-start-column="49" selection-end-line="80" selection-end-column="49" />
+              <folding>
+                <element signature="e#0#21#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -98,8 +118,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/virtual_DEFG.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="391">
-              <caret line="86" selection-start-line="86" selection-end-line="86" />
+            <state relative-caret-position="209">
+              <caret line="129" column="12" selection-start-line="129" selection-start-column="12" selection-end-line="129" selection-end-column="12" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -128,7 +148,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/sncon.py" />
         <option value="$PROJECT_DIR$/random_PEPS.py" />
         <option value="$PROJECT_DIR$/Tensor_Network_contraction.py" />
         <option value="$PROJECT_DIR$/Honeycomb_aklt.py" />
@@ -170,15 +189,16 @@
         <option value="$PROJECT_DIR$/BPupdate_MPS_openBC_smart_trancation.py" />
         <option value="$PROJECT_DIR$/virtual_defg_optimized.py" />
         <option value="$PROJECT_DIR$/BPupdate_heisenberg_PEPS.py" />
-        <option value="$PROJECT_DIR$/temp.py" />
         <option value="$PROJECT_DIR$/glassyPEPS_BPupdate_experiment.py" />
         <option value="$PROJECT_DIR$/glassyPEPS_BPupdate_experiment2.py" />
         <option value="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation2.py" />
         <option value="$PROJECT_DIR$/Tensor_Network_functions.py" />
-        <option value="$PROJECT_DIR$/virtual_DEFG.py" />
         <option value="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py" />
+        <option value="$PROJECT_DIR$/virtual_DEFG.py" />
         <option value="$PROJECT_DIR$/heisenberg_PEPS2.py" />
         <option value="$PROJECT_DIR$/heisenberg_PEPS.py" />
+        <option value="$PROJECT_DIR$/temp.py" />
+        <option value="$PROJECT_DIR$/Heisenberg_model_function.py" />
       </list>
     </option>
   </component>
@@ -242,7 +262,26 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.heisenberg_PEPS2">
+  <component name="RunManager" selected="Python.Heisenberg_model_function">
+    <configuration name="Heisenberg_model_function" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="2D_TN" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Heisenberg_model_function.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="glassyPEPS_BPupdate_experiment" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="2D_TN" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -254,28 +293,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/glassyPEPS_BPupdate_experiment.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="glassyPEPS_BPupdate_experiment2" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="2D_TN" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/glassyPEPS_BPupdate_experiment2.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -343,18 +360,18 @@
     </configuration>
     <list>
       <item itemvalue="Python.glassyPEPS_BPupdate_experiment" />
-      <item itemvalue="Python.glassyPEPS_BPupdate_experiment2" />
       <item itemvalue="Python.temp" />
       <item itemvalue="Python.heisenberg_PEPS" />
       <item itemvalue="Python.heisenberg_PEPS2" />
+      <item itemvalue="Python.Heisenberg_model_function" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.Heisenberg_model_function" />
+        <item itemvalue="Python.temp" />
         <item itemvalue="Python.heisenberg_PEPS2" />
         <item itemvalue="Python.glassyPEPS_BPupdate_experiment" />
         <item itemvalue="Python.heisenberg_PEPS" />
-        <item itemvalue="Python.temp" />
-        <item itemvalue="Python.glassyPEPS_BPupdate_experiment2" />
       </list>
     </recent_temporary>
   </component>
@@ -380,12 +397,12 @@
       <workItem from="1568034464530" duration="29798000" />
       <workItem from="1568614729803" duration="15925000" />
       <workItem from="1568718300955" duration="1030000" />
-      <workItem from="1568719405080" duration="15813000" />
+      <workItem from="1568719405080" duration="27327000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="531301000" />
+    <option name="totallyTimeSpent" value="542815000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -400,12 +417,12 @@
     <frame x="0" y="23" width="1440" height="791" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" weight="0.45633653" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.45565093" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32992035" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.334471" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.33333334" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39135382" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -414,12 +431,12 @@
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32195678" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info anchor="bottom" id="Version Control" order="11" weight="0.32195678" />
-      <window_info anchor="bottom" id="Python Console" order="12" visible="true" weight="0.43633762" />
+      <window_info anchor="bottom" id="Version Control" order="11" weight="0.32188842" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="12" visible="true" weight="0.43633762" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Database" order="3" weight="0.32641107" />
+      <window_info anchor="right" id="Database" order="3" weight="0.32618025" />
       <window_info anchor="right" id="SciView" order="4" weight="0.47782546" />
       <window_info anchor="right" x="0" y="0" width="310" height="595" id="Documentation" order="5" side_tool="true" weight="0.32960597" />
       <window_info anchor="right" id="Coverage" order="6" side_tool="true" />
@@ -522,11 +539,6 @@
           <option name="timeStamp" value="281" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/temp.py</url>
-          <line>46</line>
-          <option name="timeStamp" value="283" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/BPupdate_PEPS_smart_trancation2.py</url>
           <line>375</line>
           <option name="timeStamp" value="284" />
@@ -549,31 +561,31 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/2D_TN$data.coverage" NAME="data Coverage Results" MODIFIED="1562215334019" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$glassy_1D_AFH_chain_openBC1.coverage" NAME="glassy_1D_AFH_chain_openBC1 Coverage Results" MODIFIED="1567504431513" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/2D_TN$heisenberg_PEPS.coverage" NAME="heisenberg_PEPS Coverage Results" MODIFIED="1568795989339" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$trivial_ITE.coverage" NAME="trivial_ITE Coverage Results" MODIFIED="1562149552361" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/2D_TN$Quantum_square_ising.coverage" NAME="Quantum_square_ising Coverage Results" MODIFIED="1563795854949" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/2D_TN$PEPS_25spins.coverage" NAME="PEPS_25spins Coverage Results" MODIFIED="1563791704891" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$glassyPEPS_BPupdate_experiment2.coverage" NAME="glassyPEPS_BPupdate_experiment2 Coverage Results" MODIFIED="1568019301424" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/2D_TN$honeycomb_su.coverage" NAME="honeycomb_su Coverage Results" MODIFIED="1562073891824" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/2D_TN$ITE_testing.coverage" NAME="ITE_testing Coverage Results" MODIFIED="1562048176695" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$heisenberg_PEPS2.coverage" NAME="heisenberg_PEPS2 Coverage Results" MODIFIED="1568801911965" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/2D_TN$glassy_1D_AFH_chain_openBC1_smart_truncation.coverage" NAME="glassy_1D_AFH_chain_openBC1_smart_truncation Coverage Results" MODIFIED="1567588091465" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/2D_TN$glassy_1D_AFH_chain_smart_truncation.coverage" NAME="glassy_1D_AFH_chain_smart_truncation Coverage Results" MODIFIED="1567595356056" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/2D_TN$PEPS_4sites.coverage" NAME="PEPS_4sites Coverage Results" MODIFIED="1562216645341" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$double_edge_experiments.coverage" NAME="double_edge_experiments Coverage Results" MODIFIED="1567411701207" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$glassy_1D_AFH_chain_openBC.coverage" NAME="glassy_1D_AFH_chain_openBC Coverage Results" MODIFIED="1567601297331" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$temp.coverage" NAME="temp Coverage Results" MODIFIED="1568793517752" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$glassy_1D_AFH_chain_openBC_smart_trancation.coverage" NAME="glassy_1D_AFH_chain_openBC_smart_trancation Coverage Results" MODIFIED="1567587512789" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$testing_the_su.coverage" NAME="testing_the_su Coverage Results" MODIFIED="1562152907383" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/2D_TN$glassy_1D_AFH_chain.coverage" NAME="glassy_1D_AFH_chain Coverage Results" MODIFIED="1567413783106" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/2D_TN$MPS_2sites.coverage" NAME="MPS_2sites Coverage Results" MODIFIED="1561550318058" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/2D_TN$heisenberg_PEPS.coverage" NAME="heisenberg_PEPS Coverage Results" MODIFIED="1568795989339" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/2D_TN$Quantum_square_ising.coverage" NAME="Quantum_square_ising Coverage Results" MODIFIED="1563795854949" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/2D_TN$PEPS_25spins.coverage" NAME="PEPS_25spins Coverage Results" MODIFIED="1563791704891" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/2D_TN$honeycomb_su.coverage" NAME="honeycomb_su Coverage Results" MODIFIED="1562073891824" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/2D_TN$Heisenberg_model_function.coverage" NAME="Heisenberg_model_function Coverage Results" MODIFIED="1568919850801" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/2D_TN$ITE_testing.coverage" NAME="ITE_testing Coverage Results" MODIFIED="1562048176695" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/2D_TN$glassy_1D_AFH_chain_openBC1_smart_truncation.coverage" NAME="glassy_1D_AFH_chain_openBC1_smart_truncation Coverage Results" MODIFIED="1567588091465" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/2D_TN$glassy_1D_AFH_chain_smart_truncation.coverage" NAME="glassy_1D_AFH_chain_smart_truncation Coverage Results" MODIFIED="1567595356056" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/2D_TN$PEPS_4sites.coverage" NAME="PEPS_4sites Coverage Results" MODIFIED="1562216645341" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$temp1.coverage" NAME="temp1 Coverage Results" MODIFIED="1563799450704" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$su_AFH_chain.coverage" NAME="su_AFH_chain Coverage Results" MODIFIED="1566828585225" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/2D_TN$glassy_1D_AFH_chain.coverage" NAME="glassy_1D_AFH_chain Coverage Results" MODIFIED="1567413783106" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$glassyPEPS_BPupdate_experiment.coverage" NAME="glassyPEPS_BPupdate_experiment Coverage Results" MODIFIED="1568636922389" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$glassyPEPS_experiment.coverage" NAME="glassyPEPS-experiment Coverage Results" MODIFIED="1563959848354" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/2D_TN$MPS_2sites.coverage" NAME="MPS_2sites Coverage Results" MODIFIED="1561550318058" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/testing_the_su.py" />
     <entry file="file://$PROJECT_DIR$/wavefunction.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="660">
@@ -916,16 +928,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/temp.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="389">
-          <caret line="62" column="48" lean-forward="true" selection-start-line="61" selection-end-line="62" selection-end-column="48" />
-          <folding>
-            <element signature="e#0#21#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/glassyPEPS_BPupdate_experiment2.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="331">
@@ -956,6 +958,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Tensor_Network_functions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="206">
+          <caret line="16" selection-start-line="16" selection-end-line="16" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/BPupdate_PEPS_smart_trancation2.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="249">
@@ -966,47 +975,57 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/virtual_DEFG.py">
+    <entry file="file://$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="86" selection-start-line="86" selection-end-line="86" />
+        <state relative-caret-position="4319">
+          <caret line="314" column="4" selection-start-line="314" selection-start-column="4" selection-end-line="314" selection-end-column="4" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Tensor_Network_functions.py">
+    <entry file="file://$PROJECT_DIR$/virtual_DEFG.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="206">
-          <caret line="16" selection-start-line="16" selection-end-line="16" />
+        <state relative-caret-position="209">
+          <caret line="129" column="12" selection-start-line="129" selection-start-column="12" selection-end-line="129" selection-end-column="12" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py">
+    <entry file="file://$PROJECT_DIR$/temp.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-661">
-          <caret line="515" lean-forward="true" selection-start-line="515" selection-end-line="515" />
+        <state relative-caret-position="-226">
+          <caret line="80" column="49" selection-start-line="80" selection-start-column="49" selection-end-line="80" selection-end-column="49" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#0#21#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/heisenberg_PEPS.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1350">
-          <caret line="90" column="16" selection-start-line="90" selection-start-column="16" selection-end-line="90" selection-end-column="16" />
+        <state relative-caret-position="105">
+          <caret line="7" column="11" lean-forward="true" selection-end-line="256" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/heisenberg_PEPS2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="133">
+          <caret line="120" column="94" lean-forward="true" selection-start-line="116" selection-start-column="12" selection-end-line="120" selection-end-column="94" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/heisenberg_PEPS2.py">
+    <entry file="file://$PROJECT_DIR$/Heisenberg_model_function.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-602">
-          <caret line="74" column="16" selection-start-line="74" selection-start-column="16" selection-end-line="74" selection-end-column="16" />
+        <state relative-caret-position="2424">
+          <caret line="200" lean-forward="true" selection-start-line="200" selection-end-line="200" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>

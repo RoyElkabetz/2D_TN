@@ -10,7 +10,7 @@ import DEnFG as fg
 #date = '2019.09.09_'
 #experiment_num = '_2_'
 
-np.random.seed(seed=16)
+np.random.seed(seed=15)
 
 
 #---------------------- Tensor Network paramas ------------------

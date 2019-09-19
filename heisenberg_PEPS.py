@@ -9,13 +9,17 @@ import ncon
 import time
 import Tensor_Network_functions as tnf
 #from glassyPEPS_BPupdate_experiment2 import E, E_exact, mz, mx, mz_exact, mx_exact, time_to_converge, mx_mat, mx_mat_exact, mz_mat, mz_mat_exact, reduced_dm_gPEPS, reduced_dm_exact
+s1 = time.time()
 from heisenberg_PEPS2 import E, mz, mx, time_to_converge, mx_mat, mz_mat, reduced_dm_gPEPS, LLL, TTT
+e1 = time.time()
+run_time_of_gPEPS = e1 - s1
 
 date = '2019.18.09_'
 experiment_num = '_1_'
 
-np.random.seed(seed=16)
+np.random.seed(seed=15)
 
+s2 = time.time()
 
 #---------------------- Tensor Network paramas ------------------
 
@@ -120,12 +124,15 @@ for ss in range(len(h)):
         for j in range(iterations):
             counter += 2
             print('h, h_idx, t, j = ', h[ss], ss, dt, j)
+            s = time.time()
             TT1, LL1 = su.PEPS_BPupdate(TT, LL, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max, graph)
+            print('PEPS_BPupdate t = ', time.time() - s)
             #TT1, LL1 = su.BPupdate(TT1, LL1, smat, imat, t_max, epsilon, dumping, D_max)
             TT2, LL2 = su.PEPS_BPupdate(TT1, LL1, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max, graph)
             #TT2, LL2 = su.BPupdate(TT2, LL2, smat, imat, t_max, epsilon, dumping, D_max)
-
+            s = time.time()
             energy1 = su.energy_per_site(TT1, LL1, imat, smat, Jk, h[ss], Opi, Opj, Op_field)
+            print('energy_per_site t = ', time.time() - s)
             energy2 = su.energy_per_site(TT2, LL2, imat, smat, Jk, h[ss], Opi, Opj, Op_field)
             print(energy1, energy2)
             #energy1 = su.exact_energy_per_site(TT1, LL1, smat, Jk, h[ss], Opi, Opj, Op_field)
@@ -145,9 +152,13 @@ for ss in range(len(h)):
 
     # ---------------------------------- calculating reduced density matrices using DEFG ----------------------------
 
-
+    s = time.time()
     graph.sum_product(t_max, epsilon, dumping)
+    print('sum_product t = ', time.time() - s)
+    s = time.time()
     graph.calc_rdm_belief()
+    print('calc_rdm_belief t = ', time.time() - s)
+
 
     # --------------------------------- calculating magnetization matrices -------------------------------
     for l in range(L):
@@ -206,6 +217,9 @@ for ss in range(len(h)):
     print('\n')
     #print('d(exact, gPEPS) = ', sum_of_trace_distance_BPexact_BPgPEPS[ss])
 
+e2 = time.time()
+run_time_of_BPupdate = e2 - s2
+
 # ------------------------------------- plotting results ----------------------------------------------
 file_name_energy = date + 'experiment_#' + experiment_num + 'Energy_' + 'glassy_PEPS_BPupdate_'+ J_prop + str(L) + 'x' + str(L) + '_d-' + str(D_max) +'.pdf'
 file_name_magnetization = date + 'experiment_#' + experiment_num + 'Magnetization_' + 'glassy_PEPS_BPupdate_'+ J_prop + str(L) + 'x' + str(L) + '_d-' + str(D_max) +'.pdf'
@@ -214,15 +228,15 @@ file_name_TD = date + 'experiment_#' + experiment_num + 'Trace_Distance_' + 'gla
 
 
 plt.figure()
-plt.title('Heisenberg Model exact x magnetization')
-plt.imshow(np.real(mx_mat_exact_BP[0, :, :]))
+plt.title('Heisenberg Model gPEPS x magnetization')
+plt.imshow(np.real(mx_mat[0, :, :]))
 plt.colorbar()
 plt.clim(-1, 1)
 plt.show()
 
 plt.figure()
-plt.title('Heisenberg Model exact z magnetization')
-plt.imshow(np.real(mz_mat_exact_BP[0, :, :]))
+plt.title('Heisenberg Model gPEPS z magnetization')
+plt.imshow(np.real(mz_mat[0, :, :]))
 plt.colorbar()
 plt.clim(-1, 1)
 plt.show()
@@ -235,7 +249,7 @@ plt.clim(-1, 1)
 plt.show()
 
 plt.figure()
-plt.title('Heisenberg Model z magnetization')
+plt.title('Heisenberg Model BP z magnetization')
 plt.imshow(np.real(mz_mat_BP[0, :, :]))
 plt.colorbar()
 plt.clim(-1, 1)
