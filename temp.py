@@ -68,6 +68,7 @@ AAij = np.zeros((p ** 2, p ** 2), dtype=complex)
 for i in range(len(Opi)):
     AAij += np.kron(Opi[i], Opj[i])
 '''
+'''
 t_max = 10  # BP maximal iterations
 epsilon = 1e-10  # BP convergence error
 dumping = 0.0  # BP dumping
@@ -111,3 +112,44 @@ plt.ylabel('single BP iteration time [hours]')
 plt.xticks(NN)
 plt.grid()
 plt.show()
+'''
+'''
+import pickle
+import numpy as np
+#favorite_color = [{"lion": "yellow", "kitty": "red"}, np.array([[1, 2, 3], [4, 5, 6]]), [0, 1, '456']]
+#pickle.dump(favorite_color, open("save.p", "wb"))
+
+
+cc = pickle.load(open("save.p", "rb"))
+'''
+
+
+N = 4
+# generating the smat (structure matrix) and imat (incidence matrix) of a 2D Square lattice tensor network
+    # with open boundary conditions
+L = np.int(np.sqrt(N))
+imat = np.zeros((N, 2 * N - 2 * np.int(np.sqrt(N))), dtype=int)
+smat = np.zeros((N, 2 * N - 2 * np.int(np.sqrt(N))), dtype=int)
+n, m = imat.shape
+for i in range(n):
+
+    if i < 2 * L:
+        imat[i, i + 2 * L] = 1
+        imat[i + L, i + 2 * L] = 1
+    if np.mod(i, L) == 1:
+        imat[i, i - np.int(np.floor(np.float(i) / L))] = 1
+        imat[i, i - np.int(np.floor(np.float(i) / L)) - 1] = 1
+        imat[i - 1, i - np.int(np.floor(np.float(i) / L)) - 1] = 1
+        imat[i + 1, i - np.int(np.floor(np.float(i) / L))] = 1
+
+    #imat[i, 2 * i + 1] = 1
+    #imat[i, 2 * np.mod(i + 1, L) + 2 * L * np.int(np.floor(np.float(i) / np.float(L)))] = 1
+    #imat[i, 2 * np.mod(i + L, N) + 1] = 1
+
+    #smat[i, 2 * i] = 1
+    #smat[i, 2 * i + 1] = 2
+    #smat[i, 2 * np.mod(i + 1, L) + 2 * L * np.int(np.floor(np.float(i) / np.float(L)))] = 3
+    #smat[i, 2 * np.mod(i + L, N) + 1] = 4
+
+
+

@@ -14,7 +14,7 @@ from heisenberg_PEPS2 import E, mz, mx, time_to_converge, mx_mat, mz_mat, reduce
 e1 = time.time()
 run_time_of_gPEPS = e1 - s1
 
-date = '2019.18.09_'
+date = '2019.22.09_'
 experiment_num = '_1_'
 
 np.random.seed(seed=15)
@@ -23,7 +23,7 @@ s2 = time.time()
 
 #---------------------- Tensor Network paramas ------------------
 
-N = 25 # number of spins
+N = 4 # number of spins
 L = np.int(np.sqrt(N))
 
 t_max = 100  # BP maximal iterations
@@ -124,15 +124,10 @@ for ss in range(len(h)):
         for j in range(iterations):
             counter += 2
             print('h, h_idx, t, j = ', h[ss], ss, dt, j)
-            s = time.time()
             TT1, LL1 = su.PEPS_BPupdate(TT, LL, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max, graph)
-            print('PEPS_BPupdate t = ', time.time() - s)
-            #TT1, LL1 = su.BPupdate(TT1, LL1, smat, imat, t_max, epsilon, dumping, D_max)
             TT2, LL2 = su.PEPS_BPupdate(TT1, LL1, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max, graph)
-            #TT2, LL2 = su.BPupdate(TT2, LL2, smat, imat, t_max, epsilon, dumping, D_max)
-            s = time.time()
+
             energy1 = su.energy_per_site(TT1, LL1, imat, smat, Jk, h[ss], Opi, Opj, Op_field)
-            print('energy_per_site t = ', time.time() - s)
             energy2 = su.energy_per_site(TT2, LL2, imat, smat, Jk, h[ss], Opi, Opj, Op_field)
             print(energy1, energy2)
             #energy1 = su.exact_energy_per_site(TT1, LL1, smat, Jk, h[ss], Opi, Opj, Op_field)
@@ -152,12 +147,8 @@ for ss in range(len(h)):
 
     # ---------------------------------- calculating reduced density matrices using DEFG ----------------------------
 
-    s = time.time()
     graph.sum_product(t_max, epsilon, dumping)
-    print('sum_product t = ', time.time() - s)
-    s = time.time()
     graph.calc_rdm_belief()
-    print('calc_rdm_belief t = ', time.time() - s)
 
 
     # --------------------------------- calculating magnetization matrices -------------------------------

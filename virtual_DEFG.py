@@ -215,6 +215,27 @@ class Graph:
         return message
 
 
+    def f2n_message_chnaged_factor(self, f, n, messages, new_factor):
+        neighbors, tensor, index = cp.deepcopy(self.factors[f])
+        tensor = new_factor
+        conj_tensor = cp.copy(np.conj(tensor))
+        l = cp.copy(len(tensor.shape))
+        tensor_idx = list(range(l))
+        for item in neighbors:
+            if item == n:
+                continue
+            message_idx = [self.factors[f][0][item], l + 1]
+            final_idx = cp.copy(tensor_idx)
+            final_idx[message_idx[0]] = message_idx[1]
+            tensor = np.einsum(tensor, tensor_idx, messages[item][f], message_idx, final_idx)
+        conj_tensor_idx = cp.copy(tensor_idx)
+        conj_tensor_idx[self.factors[f][0][n]] = l + 1
+        message_final_idx = [self.factors[f][0][n], l + 1]
+        message = np.einsum(tensor, tensor_idx, conj_tensor, conj_tensor_idx, message_final_idx)
+        message /= np.trace(message)
+        return message
+
+
     def exact_joint_probability(self):
         factors = cp.deepcopy(self.factors)
         p_dim = []

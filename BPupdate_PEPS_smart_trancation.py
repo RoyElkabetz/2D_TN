@@ -114,14 +114,14 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max, grap
         LL[Ek] = lamda_k_tild / np.sum(lamda_k_tild)
 
 
-        # Update graph
-        graph_update(Ek, TT, LL, smat, imat, graph)
-
         ## single edge BP update (uncomment for single edge BP implemintation)
         t_max = 100
         epsilon = 1e-5
         dumping = 0.1
         TT, LL = BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, D_max, Ek, graph)
+
+        # Update graph
+        #graph_update(Ek, TT, LL, smat, imat, graph)
 
     return TT, LL
 
@@ -268,12 +268,6 @@ def graph_update(Ek, TT, LL, smat, imat, graph):
     graph.factors['f' + str(fi[1][0])][1] = fi[0]
     graph.factors['f' + str(fj[1][0])][1] = fj[0]
     graph.nodes['n' + str(Ek)][0] = len(LL[Ek])
-
-    if graph.messages_f2n and graph.messages_n2f:
-        graph.messages_f2n['f' + str(fi[1][0])]['n' + str(Ek)] = graph.pd_mat_init(graph.nodes['n' + str(Ek)][0])
-        graph.messages_f2n['f' + str(fj[1][0])]['n' + str(Ek)] = graph.pd_mat_init(graph.nodes['n' + str(Ek)][0])
-        graph.messages_n2f['n' + str(Ek)]['f' + str(fi[1][0])] = graph.pd_mat_init(graph.nodes['n' + str(Ek)][0])
-        graph.messages_n2f['n' + str(Ek)]['f' + str(fj[1][0])] = graph.pd_mat_init(graph.nodes['n' + str(Ek)][0])
 
 
 # ---------------------------------- gPEPS expectations and exact expectation functions ---------------------------------
@@ -515,12 +509,14 @@ def BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax, Ek, 
     ## this BP truncation is implemented on a single edge Ek
 
     # run BP on graph
-    graph.sum_product(t_max, epsilon, dumping, 'yes')
+    graph.sum_product(t_max, epsilon, dumping, 'init_with_old_messages')
 
     the_node = 'n' + str(Ek)
-    neighboring_factors = np.nonzero(smat[:, Ek])[0]
-    A = graph.messages_f2n['f' + str(neighboring_factors[0])][the_node]
-    B = graph.messages_f2n['f' + str(neighboring_factors[1])][the_node]
+    Ti, Tj = get_tensors(Ek, TT, smat, imat)
+    i_dim, j_dim = get_all_edges(Ek, smat, imat)
+    fi = absorb_edges_for_graph(cp.deepcopy(Ti), i_dim, LL)
+    fj = absorb_edges_for_graph(cp.deepcopy(Tj), j_dim, LL)
+    A, B = AnB_calculation(graph, fi, fj, the_node)
     P = find_P(A, B, Dmax)
     TT, LL = smart_truncation(TT, LL, P, Ek, smat, imat, Dmax)
     graph_update(Ek, TT, LL, smat, imat, graph)
@@ -645,4 +641,11 @@ def Accordion(Ti, Tj, P, D_max):
     Tj[0] = np.transpose(L_tild, L_transpose)  # (j, D', ...)
 
     return Ti, Tj, lamda_k
+
+def AnB_calculation(graph, Ti, Tj, node_Ek):
+    A = graph.f2n_message_chnaged_factor('f' + str(Ti[1][0]), node_Ek, graph.messages_n2f, cp.deepcopy(Ti[0]))
+    B = graph.f2n_message_chnaged_factor('f' + str(Tj[1][0]), node_Ek, graph.messages_n2f, cp.deepcopy(Tj[0]))
+    return A, B
+
+
 
