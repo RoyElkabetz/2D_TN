@@ -124,7 +124,7 @@ cc = pickle.load(open("save.p", "rb"))
 '''
 
 
-N = 4
+N = 16
 # generating the smat (structure matrix) and imat (incidence matrix) of a 2D Square lattice tensor network
     # with open boundary conditions
 L = np.int(np.sqrt(N))
@@ -133,9 +133,9 @@ smat = np.zeros((N, 2 * N - 2 * np.int(np.sqrt(N))), dtype=int)
 n, m = imat.shape
 for i in range(n):
 
-    if i < 2 * L:
-        imat[i, i + 2 * L] = 1
-        imat[i + L, i + 2 * L] = 1
+    if i < L * (L - 1):
+        imat[i, i + L * (L - 1)] = 1
+        imat[i + L, i + L * (L - 1)] = 1
     if np.mod(i, L) == 1:
         imat[i, i - np.int(np.floor(np.float(i) / L))] = 1
         imat[i, i - np.int(np.floor(np.float(i) / L)) - 1] = 1

@@ -35,3 +35,36 @@ def PEPS_smat_imat_gen(N):
         smat[i, 2 * np.mod(i + L, N) + 1] = 4
     return smat, imat
 
+
+def PEPS_OBC_smat_imat(N):
+    L = np.int(np.sqrt(N))
+    n = L
+    m = L
+
+    # edge = (node_a i, node_a j, node_a l, node_b i, node_b j, node_b l)
+    edge_list = []
+    for i in range(n):
+        for j in range(m):
+            if i < n - 1:
+                edge_list.append((i, j, 4, i + 1, j, 2))
+            if j < m - 1:
+                edge_list.append((i, j, 3, i, j + 1, 1))
+
+    smat = np.zeros(shape=[n * m, len(edge_list)], dtype=np.int)
+    imat = np.zeros(shape=[n * m, len(edge_list)], dtype=np.int)
+
+    for edge_idx, edge in enumerate(edge_list):
+        noda_a_idx = np.ravel_multi_index([edge[0], edge[1]], (n, m))
+        noda_b_idx = np.ravel_multi_index([edge[3], edge[4]], (n, m))
+        smat[noda_a_idx, edge_idx] = edge[2]
+        smat[noda_b_idx, edge_idx] = edge[5]
+        imat[noda_a_idx, edge_idx] = 1
+        imat[noda_b_idx, edge_idx] = 1
+
+    for i in range(smat.shape[0]):
+        row = smat[i, np.nonzero(smat[i, :])[0]]
+        new_row = np.array(range(1, len(row) + 1))
+        order = np.argsort(row)
+        new_row = new_row[order]
+        smat[i, np.nonzero(smat[i, :])[0]] = new_row
+    return smat, imat

@@ -47,7 +47,8 @@ def Heisenberg_PEPS_BP(N, dE, D_max, t_max, epsilon, dumping):
 
     #------------- generating the finite PEPS structure matrix------------------
 
-    smat, imat = tnf.PEPS_smat_imat_gen(N)
+    #smat, imat = tnf.PEPS_smat_imat_gen(N)
+    smat, imat = tnf.PEPS_OBC_smat_imat(N)
     n, m = smat.shape
 
     # ------------- generating tensors and bond vectors ---------------------------
@@ -167,7 +168,8 @@ def Heisenberg_PEPS_gPEPS(N, dE, D_max):
 
     # ------------- generating the finite PEPS structure matrix------------------
 
-    smat, imat = tnf.PEPS_smat_imat_gen(N)
+    #smat, imat = tnf.PEPS_smat_imat_gen(N)
+    smat, imat = tnf.PEPS_OBC_smat_imat(N)
     n, m = smat.shape
 
     # ------------- generating tensors and bond vectors ---------------------------
@@ -221,10 +223,10 @@ def Heisenberg_PEPS_gPEPS(N, dE, D_max):
 
 #------------------------- main ----------------------------
 start = time.time()
-file_name = "2019_09_22_1_Antiferomagnetic_Heisenberg_lattice"
-file_name_single = "2019_09_22_1_Antiferomagnetic_Heisenberg_lattice_single_"
+file_name = "2019_09_22_2_Antiferomagnetic_Heisenberg_lattice"
+file_name_single = "2019_09_22_2_Antiferomagnetic_Heisenberg_lattice_single_"
 
-N = [4, 16, 36, 64, 100]
+N = [4, 16, 36, 64]
 dE = 1e-4
 t_max = 100
 dumping = 0.
@@ -278,7 +280,6 @@ for n in range(len(N)):
     for i in range(np.int(np.sqrt(N[n]))):
         for j in range(np.int(np.sqrt(N[n]))):
             AzBP += ((-1.) ** (i + j)) * BP_data[n][2][i, j]
-            print(i, j, (-1.) ** (i + j))
             AxBP += ((-1.) ** (i + j)) * BP_data[n][3][i, j]
             AzgPEPS += ((-1.) ** (i + j)) * gPEPS_data[n][2][i, j]
             AxgPEPS += ((-1.) ** (i + j)) * gPEPS_data[n][3][i, j]
