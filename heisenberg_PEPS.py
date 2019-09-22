@@ -23,7 +23,7 @@ s2 = time.time()
 
 #---------------------- Tensor Network paramas ------------------
 
-N = 4 # number of spins
+N = 16 # number of spins
 L = np.int(np.sqrt(N))
 
 t_max = 100  # BP maximal iterations
@@ -101,12 +101,15 @@ Op_field = np.eye(p)
 
 #------------- generating the finite PEPS structure matrix------------------
 
-smat, imat = tnf.PEPS_smat_imat_gen(N)
+#smat, imat = tnf.PEPS_smat_imat_gen(N)
+smat, imat = tnf.PEPS_OBC_smat_imat(N)
+
 n, m = smat.shape
 
 # ------------- generating tensors and bond vectors ---------------------------
 
-TT, LL = tnf.random_tn_gen(smat, p, d)
+#TT, LL = tnf.random_tn_gen(smat, p, d)
+TT, LL = tnf.PEPS_OBC_random_tn_gen(smat, p, d)
 
 # ------------- generating the double-edge factor graph (defg) of the tensor network ---------------------------
 

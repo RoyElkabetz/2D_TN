@@ -3,8 +3,13 @@
 S'N'
 p2
 a(lp3
-I9
+I4
+aI9
 aI16
+aI25
+aI36
+aI49
+aI64
 aaa(lp4
 S'dE'
 p5

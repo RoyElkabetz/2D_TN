@@ -47,18 +47,15 @@ def Heisenberg_PEPS_BP(N, dE, D_max, t_max, epsilon, dumping):
 
     #------------- generating the finite PEPS structure matrix------------------
 
-    #smat, imat = tnf.PEPS_smat_imat_gen(N)
-    smat, imat = tnf.PEPS_OBC_smat_imat(N)
+    smat, imat = tnf.PEPS_smat_imat_gen(N)
+    #smat, imat = tnf.PEPS_OBC_smat_imat(N)
     n, m = smat.shape
 
     # ------------- generating tensors and bond vectors ---------------------------
 
     TT, LL = tnf.random_tn_gen(smat, p, d)
+    #TT, LL = tnf.PEPS_OBC_random_tn_gen(smat, p, d)
 
-    # ------------- generating the double-edge factor graph (defg) of the tensor network ---------------------------
-
-    graph = defg.Graph()
-    graph = BP.PEPStoDEnFG_transform(graph, TT, LL, smat)
 
     for ss in range(len(h)):
         counter = 0
@@ -85,6 +82,10 @@ def Heisenberg_PEPS_BP(N, dE, D_max, t_max, epsilon, dumping):
             if flag:
                 flag = 0
                 break
+        # ------------- generating the double-edge factor graph (defg) of the tensor network ---------------------------
+
+        graph = defg.Graph()
+        graph = BP.PEPStoDEnFG_transform(graph, TT, LL, smat)
 
         # --------------------------------- iterating the gPEPS and BP algorithms -------------------------------------
         for dt in t_list:
@@ -168,13 +169,14 @@ def Heisenberg_PEPS_gPEPS(N, dE, D_max):
 
     # ------------- generating the finite PEPS structure matrix------------------
 
-    #smat, imat = tnf.PEPS_smat_imat_gen(N)
-    smat, imat = tnf.PEPS_OBC_smat_imat(N)
+    smat, imat = tnf.PEPS_smat_imat_gen(N)
+    #smat, imat = tnf.PEPS_OBC_smat_imat(N)
     n, m = smat.shape
 
     # ------------- generating tensors and bond vectors ---------------------------
 
     TT, LL = tnf.random_tn_gen(smat, p, d)
+    #TT, LL = tnf.PEPS_OBC_random_tn_gen(smat, p, d)
 
     for ss in range(len(h)):
         counter = 0
@@ -223,27 +225,27 @@ def Heisenberg_PEPS_gPEPS(N, dE, D_max):
 
 #------------------------- main ----------------------------
 start = time.time()
-file_name = "2019_09_22_2_Antiferomagnetic_Heisenberg_lattice"
-file_name_single = "2019_09_22_2_Antiferomagnetic_Heisenberg_lattice_single_"
+file_name = "2019_09_22_4_OBC_Antiferomagnetic_Heisenberg_lattice"
+file_name_single = "2019_09_22_4_OBC_Antiferomagnetic_Heisenberg_lattice_single_"
 
-N = [4, 16, 36, 64]
-dE = 1e-4
+N = [4, 16]
+dE = 1e-5
 t_max = 100
 dumping = 0.
 epsilon = 1e-4
-D_max = 2
+D_max = 4
 parameters = [['N', N], ['dE', dE], ['t_max', t_max], ['dumping', dumping], ['epsilon', epsilon], ['D_max', D_max]]
 BP_data = []
 gPEPS_data = []
-pickle.dump(parameters, open(file_name + '_parameters.p', "wb"))
+#pickle.dump(parameters, open(file_name + '_parameters.p', "wb"))
 
 
 
 for n in range(len(N)):
     a = Heisenberg_PEPS_BP(N[n], dE, D_max, t_max, epsilon, dumping)
     b = Heisenberg_PEPS_gPEPS(N[n], dE, D_max)
-    pickle.dump(a, open(file_name_single + str(N[n]) + 'spins_BP.p', "wb"))
-    pickle.dump(b, open(file_name_single + str(N[n]) + 'spins_gPEPS.p', "wb"))
+    #pickle.dump(a, open(file_name_single + str(N[n]) + 'spins_BP.p', "wb"))
+    #pickle.dump(b, open(file_name_single + str(N[n]) + 'spins_gPEPS.p', "wb"))
     BP_data.append(a)
     gPEPS_data.append(b)
     print('\n')

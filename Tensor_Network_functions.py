@@ -68,3 +68,20 @@ def PEPS_OBC_smat_imat(N):
         new_row = new_row[order]
         smat[i, np.nonzero(smat[i, :])[0]] = new_row
     return smat, imat
+
+
+def PEPS_OBC_random_tn_gen(smat, p, d):
+    # generating random complex tensors and random virtual bond dimension vectors for a tensor network
+    # smat: structure matrix
+    # p: physical bond dimension
+    # d: initial virtual bond dimension
+    n, m = smat.shape
+    TT = []
+    for ii in range(n):
+        shape = [p]
+        shape = shape + [d] * np.nonzero(smat[ii, :])[0].shape[0]
+        TT.append(np.random.random(shape) + 1j * np.random.random(shape))
+    LL = []
+    for i in range(m):
+        LL.append(np.ones(d, dtype=float) / d)
+    return TT, LL
