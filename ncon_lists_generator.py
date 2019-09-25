@@ -302,6 +302,7 @@ def ncon_list_generator_two_site_exact_expectation_mps(TT, TTstar, smat, edge, o
 
     return T_list, idx_list
 
+
 def ncon_list_generator_braket_mps(TT, TTstar, smat):
     TT = cp.deepcopy(TT)
     TTstar = cp.deepcopy(TTstar)

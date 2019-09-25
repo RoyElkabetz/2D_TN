@@ -15,7 +15,7 @@ np.random.seed(seed=15)
 
 #---------------------- Tensor Network paramas ------------------
 
-N = 16 # number of spins
+N = 4 # number of spins
 L = np.int(np.sqrt(N))
 
 t_max = 100

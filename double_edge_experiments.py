@@ -372,17 +372,17 @@ for t in range(1, t_max):
         node = 'n' + str(i)
         node_marginals[:, i, t] = np.linalg.eigvals(g.node_belief[node])
         exact_node_marginals[:, i, t] = np.linalg.eigvals(
-            g.nodes_marginal(p, p_dic, p_order, [node, node + '*']) / np.trace(
-                g.nodes_marginal(p, p_dic, p_order, [node, node + '*'])))
+            g.exact_nodes_marginal(p, p_dic, p_order, [node, node + '*']) / np.trace(
+                g.exact_nodes_marginal(p, p_dic, p_order, [node, node + '*'])))
         z_measure[i, t] = np.trace(np.matmul(g.node_belief[node], z))
-        z_exact[i, t] = np.trace(np.matmul(g.nodes_marginal(p, p_dic, p_order, [node, node + '*']) / np.trace(
-            g.nodes_marginal(p, p_dic, p_order, [node, node + '*'])), z))
+        z_exact[i, t] = np.trace(np.matmul(g.exact_nodes_marginal(p, p_dic, p_order, [node, node + '*']) / np.trace(
+            g.exact_nodes_marginal(p, p_dic, p_order, [node, node + '*'])), z))
         x_measure[i, t] = np.trace(np.matmul(g.node_belief[node], x))
-        x_exact[i, t] = np.trace(np.matmul(g.nodes_marginal(p, p_dic, p_order, [node, node + '*']) / np.trace(
-            g.nodes_marginal(p, p_dic, p_order, [node, node + '*'])), x))
+        x_exact[i, t] = np.trace(np.matmul(g.exact_nodes_marginal(p, p_dic, p_order, [node, node + '*']) / np.trace(
+            g.exact_nodes_marginal(p, p_dic, p_order, [node, node + '*'])), x))
         marginal_error[i, t] = np.sum(np.abs(
-            g.node_belief['n' + str(i)] - g.nodes_marginal(p, p_dic, p_order, [node, node + '*']) / np.trace(
-                g.nodes_marginal(p, p_dic, p_order, [node, node + '*']))))
+            g.node_belief['n' + str(i)] - g.exact_nodes_marginal(p, p_dic, p_order, [node, node + '*']) / np.trace(
+                g.exact_nodes_marginal(p, p_dic, p_order, [node, node + '*']))))
 
 # print(np.linalg.eigvals(fac1))
 # print('\n')

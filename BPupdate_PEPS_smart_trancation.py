@@ -14,7 +14,7 @@ import ncon_lists_generator as nlg
 """
 
 
-def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max, graph):
+def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max, graph, t_max, epsilon, dumping):
     """
     :param TT: list of tensors in the tensor network TT = [T1, T2, T3, ..., Tp]
     :param LL: list of lists of the lambdas LL = [L1, L2, ..., Ls]
@@ -117,13 +117,7 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max, grap
 
 
         ## single edge BP update (uncomment for single edge BP implemintation)
-        t_max = 100
-        epsilon = 1e-5
-        dumping = 0.1
         TT, LL = BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, D_max, Ek, graph)
-
-        # Update graph
-        #graph_update(Ek, TT, LL, smat, imat, graph)
 
     return TT, LL
 
@@ -147,10 +141,11 @@ def get_conjugate_tensors(edge, tensors, structure_matrix, incidence_matrix):
     Tj = [cp.deepcopy(np.conj(tensors[tidx[1]])), [tidx[1], 'tensor_number'], [tdim[1], 'tensor_Ek_leg']]
     return Ti, Tj
 
+
 def get_edges(edge, structure_matrix, incidence_matrix):
     # given an edge collect neighboring tensors edges and legs
     tidx = np.nonzero(incidence_matrix[:, edge])[0]
-    i_dim = [list(np.nonzero(incidence_matrix[tidx[0], :])[0]), list(structure_matrix[tidx[0], np.nonzero(incidence_matrix[tidx[0], :])[0]])]
+    i_dim = [list(np.nonzero(incidence_matrix[tidx[0], :])[0]), list(structure_matrix[tidx[0], np.nonzero(incidence_matrix[tidx[0], :])[0]])] # [edges, legs]
     j_dim = [list(np.nonzero(incidence_matrix[tidx[1], :])[0]), list(structure_matrix[tidx[1], np.nonzero(incidence_matrix[tidx[1], :])[0]])]
     # removing the Ek edge and leg
     i_dim[0].remove(edge)
@@ -188,6 +183,7 @@ def remove_edges(tensor, edges_dim, bond_vectors):
         tensor[0] = np.einsum(tensor[0], range(len(tensor[0].shape)), bond_vectors[edges_dim[0][i]] ** (-1), [edges_dim[1][i]], range(len(tensor[0].shape)))
     return tensor
 
+
 def dim_perm(tensor):
     # swapping the k leg with the element in the 1 place
     permutation = np.array(range(len(tensor[0].shape)))
@@ -214,9 +210,11 @@ def rank2_to_rank3(tensor, physical_dim):
     new_tensor = np.reshape(tensor, [physical_dim, tensor.shape[0] / physical_dim, tensor.shape[1]])
     return new_tensor
 
+
 def rank3_to_rankN(tensor, old_shape):
     new_tensor = np.reshape(tensor, old_shape)
     return new_tensor
+
 
 def svd(tensor, left_legs, right_legs, keep_s=None, max_eigen_num=None):
     shape = np.array(tensor.shape)
@@ -238,6 +236,7 @@ def svd(tensor, left_legs, right_legs, keep_s=None, max_eigen_num=None):
         u = np.einsum(u, [0, 1], np.sqrt(s), [1], [0, 1])
         vh = np.einsum(np.sqrt(s), [0], vh, [0, 1], [0, 1])
     return u, vh
+
 
 def imaginary_time_evolution(left_tensor, right_tensor, bond_vector, Ek, dt, Jk, h, Opi, Opj, Op_field):
     # applying ITE and returning a rank 4 tensor with physical dimensions, i' and j' at (Q1, i', j', Q2)
@@ -436,6 +435,69 @@ def exact_energy_per_site(TT, LL, smat, Jk, h, Opi, Opj, Op_field):
     return energy
 
 
+def BP_energy_per_site_ising_factor_belief(graph, smat, imat, Jk, h, Opi, Opj, Op_field):
+    # calculating the normalized exact energy per site(tensor)
+    if graph.factor_belief == None:
+        raise IndexError('First calculate factor beliefs')
+    p = Opi[0].shape[0]
+    Aij = np.zeros((p ** 2, p ** 2), dtype=complex)
+    for i in range(len(Opi)):
+        Aij += np.kron(Opi[i], Opj[i])
+    energy = 0
+    n, m = np.shape(smat)
+    for Ek in range(m):
+        Oij = np.reshape(-Jk[Ek] * Aij - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p))), (p, p, p, p))
+        tensors = np.nonzero(smat[:, Ek])[0]
+        fi_belief = graph.factor_belief['f' + str(tensors[0])]
+        fj_belief = graph.factor_belief['f' + str(tensors[1])]
+        fi_idx = range(len(fi_belief.shape))
+        fj_idx = range(len(fi_belief.shape), len(fi_belief.shape) + len(fj_belief.shape))
+        Oij_idx = [1000, 1001, 1002, 1003]
+        fi_idx[0] = Oij_idx[0]
+        fi_idx[1] = Oij_idx[2]
+        fj_idx[0] = Oij_idx[1]
+        fj_idx[1] = Oij_idx[3]
+        iedges, jedges = get_edges(Ek, smat, imat)
+        for leg_idx, leg in enumerate(iedges[1]):
+            fi_idx[2 * leg + 1] = fi_idx[2 * leg]
+        for leg_idx, leg in enumerate(jedges[1]):
+            fj_idx[2 * leg + 1] = fj_idx[2 * leg]
+        Ek_legs = smat[np.nonzero(smat[:, Ek])[0], Ek]
+        fi_idx[2 * Ek_legs[0]] = fj_idx[2 * Ek_legs[1]]
+        fi_idx[2 * Ek_legs[0] + 1] = fj_idx[2 * Ek_legs[1] + 1]
+        E = ncon.ncon([fi_belief, fj_belief, Oij], [fi_idx, fj_idx, Oij_idx])
+        norm = ncon.ncon([fi_belief, fj_belief, np.eye(p ** 2).reshape((p, p, p, p))], [fi_idx, fj_idx, Oij_idx])
+        E_normalized = E / norm
+        energy += E_normalized
+    energy /= n
+    return energy
+
+
+def BP_energy_per_site_ising_rdm_belief(graph, smat, imat, Jk, h, Opi, Opj, Op_field):
+    # calculating the normalized exact energy per site(tensor)
+    if graph.rdm_belief == None:
+        raise IndexError('First calculate rdm beliefs')
+    p = Opi[0].shape[0]
+    Aij = np.zeros((p ** 2, p ** 2), dtype=complex)
+    for i in range(len(Opi)):
+        Aij += np.kron(Opi[i], Opj[i])
+    energy = 0
+    n, m = np.shape(smat)
+    for Ek in range(m):
+        Oij = np.reshape(-Jk[Ek] * Aij - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p))), (p, p, p, p))
+        tensors = np.nonzero(smat[:, Ek])[0]
+        fi_belief = graph.rdm_belief[tensors[0]]
+        fj_belief = graph.rdm_belief[tensors[1]]
+        fij = np.einsum(fi_belief, [0, 1], fj_belief, [2, 3], [0, 2, 1, 3])
+        Oij_idx = [0, 1, 2, 3]
+        E = np.einsum(fij, [0, 1, 2, 3], Oij, Oij_idx)
+        norm = np.einsum(fij, [0, 1, 0, 1])
+        E_normalized = E / norm
+        energy += E_normalized
+    energy /= n
+    return energy
+
+
 def trace_distance(a, b):
     # returns the trace distance between the two density matrices a & b
     # d = 0.5 * norm(a - b)
@@ -482,30 +544,26 @@ def absorb_all_bond_vectors(TT, LL, smat):
 # ---------------------------------- BP truncation  ---------------------------------
 
 
-
-def BPupdate(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax):
+'''
+def BPupdate(graph, TT, LL, smat, imat, Dmax):
     ## this BP truncation is implemented on all edges
-    TT = cp.deepcopy(TT)
-    LL = cp.deepcopy(LL)
-
-    # generate the DEFG of the Tensor Network
-    graph = denfg.Graph()
-    graph = PEPStoDEnFG_transform(graph, TT, LL, smat)
-
-    # run BP on graph
-    graph.sum_product(t_max, epsilon, dumping)
 
     # run over all edges
 
     for Ek in range(len(LL)):
         the_node = 'n' + str(Ek)
-        neighboring_factors = np.nonzero(smat[:, Ek])[0]
-        A = graph.messages_f2n['f' + str(neighboring_factors[0])][the_node]
-        B = graph.messages_f2n['f' + str(neighboring_factors[1])][the_node]
+        Ti, Tj = get_tensors(Ek, TT, smat, imat)
+        i_dim, j_dim = get_all_edges(Ek, smat, imat)
+
+        fi = absorb_edges_for_graph(cp.deepcopy(Ti), i_dim, LL)
+        fj = absorb_edges_for_graph(cp.deepcopy(Tj), j_dim, LL)
+
+        A, B = AnB_calculation(graph, fi, fj, the_node)
         P = find_P(A, B, Dmax)
         TT, LL = smart_truncation(TT, LL, P, Ek, smat, imat, Dmax)
+        graph_update(Ek, TT, LL, smat, imat, graph)
     return TT, LL
-
+'''
 
 def BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax, Ek, graph):
     ## this BP truncation is implemented on a single edge Ek
@@ -516,14 +574,17 @@ def BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax, Ek, 
     the_node = 'n' + str(Ek)
     Ti, Tj = get_tensors(Ek, TT, smat, imat)
     i_dim, j_dim = get_all_edges(Ek, smat, imat)
+
     fi = absorb_edges_for_graph(cp.deepcopy(Ti), i_dim, LL)
     fj = absorb_edges_for_graph(cp.deepcopy(Tj), j_dim, LL)
+
     A, B = AnB_calculation(graph, fi, fj, the_node)
     P = find_P(A, B, Dmax)
     TT, LL = smart_truncation(TT, LL, P, Ek, smat, imat, Dmax)
     graph_update(Ek, TT, LL, smat, imat, graph)
 
     return TT, LL
+
 
 def PEPStoDEnFG_transform(graph, TT, LL, smat):
     # generate the double edge factor graph from PEPS
@@ -644,9 +705,17 @@ def Accordion(Ti, Tj, P, D_max):
 
     return Ti, Tj, lamda_k
 
+
 def AnB_calculation(graph, Ti, Tj, node_Ek):
     A = graph.f2n_message_chnaged_factor('f' + str(Ti[1][0]), node_Ek, graph.messages_n2f, cp.deepcopy(Ti[0]))
     B = graph.f2n_message_chnaged_factor('f' + str(Tj[1][0]), node_Ek, graph.messages_n2f, cp.deepcopy(Tj[0]))
+
+    #A = graph.f2n_message_chnaged_factor_without_matching_dof('f' + str(Ti[1][0]), node_Ek, graph.messages_n2f, cp.deepcopy(Ti[0]))
+    #B = graph.f2n_message_chnaged_factor_without_matching_dof('f' + str(Tj[1][0]), node_Ek, graph.messages_n2f, cp.deepcopy(Tj[0]))
+    #print('A, A1', np.sum(np.abs(A - A1)) / np.sum(A) / np.sum(A1))
+    #print('B, B1', np.sum(np.abs(B - B1)) / np.sum(B) / np.sum(B1))
+
+
     return A, B
 
 

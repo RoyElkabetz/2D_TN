@@ -14,6 +14,7 @@ class Graph:
         self.node_indices = {}
         self.nodes = {}
         self.node_belief = None
+        self.physical_nodes_beliefs = None
         self.factor_belief = None
         self.factors_count = 0
         self.messages_n2f = None
@@ -181,6 +182,27 @@ class Graph:
                 temp *= messages[f][n]
             self.node_belief[n] = temp / np.trace(temp)
 
+    def calc_physical_nodes_beliefs(self):
+        self.physical_nodes_beliefs = []
+        messages = self.messages_n2f
+        for n in range(self.factors_count):
+            f = 'f' + str(n)
+            neighbors, tensor, index = cp.deepcopy(self.factors[f])
+            conj_tensor = cp.copy(np.conj(tensor))
+            l = len(tensor.shape)
+            tensor_idx = list(range(l))
+            for item in neighbors:
+                message_idx = [self.factors[f][0][item], l + 1]
+                final_idx = cp.copy(tensor_idx)
+                final_idx[message_idx[0]] = message_idx[1]
+                tensor = np.einsum(tensor, tensor_idx, messages[item][f], message_idx, final_idx)
+            conj_tensor_idx = cp.copy(tensor_idx)
+            conj_tensor_idx[0] = l + 1
+            message_final_idx = [0, l + 1]
+            belief = np.einsum(tensor, tensor_idx, conj_tensor, conj_tensor_idx, message_final_idx)
+            belief /= np.trace(belief)
+            self.physical_nodes_beliefs.append(belief)
+
     def calc_rdm_belief(self):
         self.rdm_belief = {}
         factors = self.factors
@@ -191,9 +213,29 @@ class Graph:
             neighbors = factors[f][0]
             for n in neighbors.keys():
                 super_tensor *= self.broadcasting(messages[n][f], neighbors[n], super_tensor)
-            self.rdm_belief[factors[f][2]] = np.einsum(super_tensor, range(len(super_tensor.shape)), [0, 1])
-            self.rdm_belief[factors[f][2]] /= np.trace(self.rdm_belief[factors[f][2]])
+            idx = range(len(super_tensor.shape))
 
+
+
+            for i in range(2, len(idx), 2):
+                idx[i + 1] = idx[i]
+
+            self.rdm_belief[factors[f][2]] = np.einsum(super_tensor, idx, [0, 1])
+            self.rdm_belief[factors[f][2]] /= np.trace(self.rdm_belief[factors[f][2]])
+            print(self.rdm_belief[factors[f][2]])
+            print('\n')
+
+    def calc_factor_belief(self):
+        self.factor_belief = {}
+        factors = self.factors
+        messages = self.messages_n2f
+        keys = factors.keys()
+        for f in keys:
+            super_tensor = self.make_super_physical_tensor(cp.deepcopy(factors[f][1]))
+            neighbors = factors[f][0]
+            for n in neighbors.keys():
+                super_tensor *= self.broadcasting(messages[n][f], neighbors[n], super_tensor)
+            self.factor_belief[f] = super_tensor
 
     def f2n_message(self, f, n, messages):
         neighbors, tensor, index = cp.deepcopy(self.factors[f])
@@ -213,6 +255,35 @@ class Graph:
         message = np.einsum(tensor, tensor_idx, conj_tensor, conj_tensor_idx, message_final_idx)
         message /= np.trace(message)
         return message
+
+
+    def f2n_message_without_matching_dof(self, f, n, messages):
+        neighbors, tensor, index = cp.deepcopy(self.factors[f])
+        super_tensor = self.make_super_physical_tensor(tensor)
+        for p in neighbors.keys():
+            if p == n:
+                continue
+            super_tensor *= self.broadcasting(messages[p][f], neighbors[p], super_tensor)
+        idx = range(len(super_tensor.shape))
+        idx[0] = idx[1]
+        final_idx = [2 * neighbors[n], 2 * neighbors[n] + 1]
+        message = np.einsum(super_tensor, idx, final_idx)
+        return message
+
+
+    def f2n_message_chnaged_factor_without_matching_dof(self, f, n, messages, new_factor):
+        neighbors, tensor, index = cp.deepcopy(self.factors[f])
+        super_tensor = self.make_super_physical_tensor(new_factor)
+        for p in neighbors.keys():
+            if p == n:
+                continue
+            super_tensor *= self.broadcasting(messages[p][f], neighbors[p], super_tensor)
+        idx = range(len(super_tensor.shape))
+        idx[0] = idx[1]
+        final_idx = [2 * neighbors[n], 2 * neighbors[n] + 1]
+        message = np.einsum(super_tensor, idx, final_idx)
+        return message
+
 
 
     def f2n_message_chnaged_factor(self, f, n, messages, new_factor):
@@ -263,7 +334,7 @@ class Graph:
             p *= self.tensor_broadcasting(f, broadcasting_idx, p)
         return p, p_dic, p_order
 
-    def nodes_marginal(self, p, p_dic, p_order, nodes_list):
+    def exact_nodes_marginal(self, p, p_dic, p_order, nodes_list):
         marginal = cp.deepcopy(p)
         final_idx = [0] * len(nodes_list)
         for i in range(len(nodes_list)):

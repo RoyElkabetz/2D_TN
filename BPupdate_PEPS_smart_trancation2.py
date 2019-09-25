@@ -27,6 +27,7 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
 
     n, m = np.shape(imat)
     for Ek in range(m):
+    #for Ek in np.random.permutation(m):
 
         lamda_k = LL[Ek]
 
@@ -113,7 +114,6 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
         # epsilon = 1e-5
         # dumping = 0.1
         # TT, LL = BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, D_max, Ek)
-
     return TT, LL
 
 

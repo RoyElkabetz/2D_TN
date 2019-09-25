@@ -123,7 +123,7 @@ import numpy as np
 cc = pickle.load(open("save.p", "rb"))
 '''
 
-
+'''
 N = 16
 # generating the smat (structure matrix) and imat (incidence matrix) of a 2D Square lattice tensor network
     # with open boundary conditions
@@ -150,6 +150,25 @@ for i in range(n):
     #smat[i, 2 * i + 1] = 2
     #smat[i, 2 * np.mod(i + 1, L) + 2 * L * np.int(np.floor(np.float(i) / np.float(L)))] = 3
     #smat[i, 2 * np.mod(i + L, N) + 1] = 4
+'''
+
+pauli_z = np.array([[1, 0], [0, -1]])
+pauli_y = np.array([[0, -1j], [1j, 0]])
+pauli_x = np.array([[0, 1], [1, 0]])
+sz = 0.5 * pauli_z
+sy = 0.5 * pauli_y
+sx = 0.5 * pauli_x
 
 
+x = np.kron(sx, sx)
+y = np.kron(sy, sy)
+z = np.kron(sz, sz)
+i = np.eye(2)
+h01 = np.kron(np.kron(np.kron(sx, sx), i), i) + np.kron(np.kron(np.kron(sy, sy), i), i) + np.kron(np.kron(np.kron(sz, sz), i), i)
+h02 = np.kron(np.kron(np.kron(sx, i), sx), i) + np.kron(np.kron(np.kron(sy, i), sy), i) + np.kron(np.kron(np.kron(sz, i), sz), i)
+h13 = np.kron(np.kron(np.kron(i, sx), i), sx) + np.kron(np.kron(np.kron(i, sy), i), sy) + np.kron(np.kron(np.kron(i, sz), i), sz)
+h23 = np.kron(np.kron(np.kron(i, i), sx), sx) + np.kron(np.kron(np.kron(i, i), sy), sy) + np.kron(np.kron(np.kron(i, i), sz), sz)
+H = - h01 - h02 - h13 - h23
+lamda = np.linalg.eigvals(H)
+print(lamda)
 
