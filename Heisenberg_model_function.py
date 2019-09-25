@@ -33,6 +33,8 @@ def Heisenberg_PEPS_BP(N, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL):
     mz_BP = []
     mx_mat_BP = np.zeros((len(h), L, L), dtype=complex)
     mz_mat_BP = np.zeros((len(h), L, L), dtype=complex)
+    mx_mat_exact = np.zeros((len(h), L, L), dtype=complex)
+    mz_mat_exact = np.zeros((len(h), L, L), dtype=complex)
     gPEPS_rdm = []
     exact_rdm = []
 
@@ -124,7 +126,7 @@ def Heisenberg_PEPS_BP(N, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL):
 
         graph.sum_product(t_max, epsilon, dumping)
         graph.calc_rdm_belief()
-        graph.calc_factor_belief()
+        #graph.calc_factor_belief()
 
 
         # --------------------------------- calculating magnetization matrices -------------------------------
@@ -135,21 +137,23 @@ def Heisenberg_PEPS_BP(N, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL):
                 mz_mat_BP[ss, l, ll] = BP.single_tensor_expectation(spin_index, TT, LL, imat, smat, pauli_z)
                 mx_mat_BP[ss, l, ll] = BP.single_tensor_expectation(spin_index, TT, LL, imat, smat, pauli_x)
                 gPEPS_rdm.append(BP.tensor_reduced_dm(spin_index, TT, LL, smat, imat))
-                rdm_t_list, rdm_i_list = nlg.ncon_list_generator_reduced_dm(TT, LL, smat, spin_index)
-                T_list_n, idx_list_n = nlg.ncon_list_generator(TT, LL, smat, np.eye(p), spin_index)
-                exact_rdm.append(ncon.ncon(rdm_t_list, rdm_i_list) / ncon.ncon(T_list_n, idx_list_n))
+                #rdm_t_list, rdm_i_list = nlg.ncon_list_generator_reduced_dm(TT, LL, smat, spin_index)
+                #T_list_n, idx_list_n = nlg.ncon_list_generator(TT, LL, smat, np.eye(p), spin_index)
+                #exact_rdm.append(ncon.ncon(rdm_t_list, rdm_i_list) / ncon.ncon(T_list_n, idx_list_n))
+                #mz_mat_exact[ss, l, ll] = np.trace(np.matmul(exact_rdm[spin_index], pauli_z))
+                #mx_mat_exact[ss, l, ll] = np.trace(np.matmul(exact_rdm[spin_index], pauli_x))
 
         # ------------------ calculating total magnetization, energy and time to converge -------------------
         mz_BP.append(np.sum(mz_mat_BP[ss, :, :]) / n)
         mx_BP.append(np.sum(mx_mat_BP[ss, :, :]) / n)
         time_to_converge_BP.append(counter)
-        E_BP_new.append(BP.BP_energy_per_site_ising_rdm_belief(graph, smat, imat, Jk, h[0], Opi, Opj, Op_field))
+        #E_BP_new.append(BP.BP_energy_per_site_ising_rdm_belief(graph, smat, imat, Jk, h[0], Opi, Opj, Op_field))
         E_BP.append(BP.energy_per_site(TT, LL, imat, smat, Jk, h[ss], Opi, Opj, Op_field))
-        E_BP_exact.append(BP.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
-        print('E, E_exact E_BP_new = ', E_BP[ss], E_BP_exact[ss], E_BP_new[ss])
+        #E_BP_exact.append(BP.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
+        #print('E, E_exact E_BP_new = ', E_BP[ss], E_BP_exact[ss], E_BP_new[ss])
     e2 = time.time()
     run_time_of_BPupdate = e2 - s2
-    return [E_BP[0], E_BP_exact[0], E_BP_new[0], time_to_converge_BP[0], mz_mat_BP[0, :, :], mx_mat_BP[0, :, :], run_time_of_BPupdate, TT, LL, gPEPS_rdm, graph.rdm_belief, exact_rdm, graph]
+    return [E_BP[0], E_BP_exact, E_BP_new, time_to_converge_BP[0], mz_mat_BP[0, :, :], mx_mat_BP[0, :, :], run_time_of_BPupdate, TT, LL, gPEPS_rdm, graph.rdm_belief, exact_rdm, mz_mat_exact, mx_mat_exact]
 
 
 def Heisenberg_PEPS_gPEPS(N, Jk, dE, D_max, bc):
@@ -242,11 +246,11 @@ def Heisenberg_PEPS_gPEPS(N, Jk, dE, D_max, bc):
         mx.append(np.sum(mx_mat[ss, :, :]) / n)
         time_to_converge.append(counter)
         E.append(gPEPS.energy_per_site(TT, LL, imat, smat, Jk, h[ss], Opi, Opj, Op_field))
-        E_exact.append(gPEPS.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
-        print('E, E exact', E[ss], E_exact[ss])
+        #E_exact.append(gPEPS.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
+        #print('E, E exact', E[ss], E_exact[ss])
     e2 = time.time()
     run_time_of_gPEPS = e2 - s2
-    return [E[0], E_exact[0], time_to_converge[0], mz_mat[0, :, :], mx_mat[0, :, :], run_time_of_gPEPS, TT, LL]
+    return [E[0], E_exact, time_to_converge[0], mz_mat[0, :, :], mx_mat[0, :, :], run_time_of_gPEPS, TT, LL]
 
 
 

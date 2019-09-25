@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="39f4aadf-3039-4826-aca9-4bd799d9af66" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/Heisenberg_model_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/Heisenberg_model_function.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Heisenberg_model_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Heisenberg_model_main.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -113,8 +114,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Heisenberg_model_function.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-340">
-              <caret line="108" selection-start-line="108" selection-end-line="108" />
+            <state relative-caret-position="-1197">
+              <caret line="158" column="4" selection-start-line="158" selection-start-column="4" selection-end-line="158" selection-end-column="4" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -125,8 +126,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Heisenberg_model_main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="393">
-              <caret line="329" column="76" lean-forward="true" selection-start-line="329" selection-start-column="76" selection-end-line="329" selection-end-column="76" />
+            <state relative-caret-position="243">
+              <caret line="41" column="90" selection-start-line="41" selection-start-column="90" selection-end-line="41" selection-end-column="90" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -224,8 +225,8 @@
         <option value="$PROJECT_DIR$/ncon_lists_generator.py" />
         <option value="$PROJECT_DIR$/virtual_DEFG.py" />
         <option value="$PROJECT_DIR$/double_edge_experiments.py" />
-        <option value="$PROJECT_DIR$/Heisenberg_model_function.py" />
         <option value="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py" />
+        <option value="$PROJECT_DIR$/Heisenberg_model_function.py" />
         <option value="$PROJECT_DIR$/Heisenberg_model_main.py" />
       </list>
     </option>
@@ -431,12 +432,12 @@
       <workItem from="1568034464530" duration="29798000" />
       <workItem from="1568614729803" duration="15925000" />
       <workItem from="1568718300955" duration="1030000" />
-      <workItem from="1568719405080" duration="121539000" />
+      <workItem from="1568719405080" duration="124940000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="637027000" />
+    <option name="totallyTimeSpent" value="640428000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -448,8 +449,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1920" height="971" extended-state="6" />
-    <editor active="true" />
+    <frame x="0" y="23" width="1440" height="791" extended-state="6" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.27795526" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.24973376" />
@@ -457,7 +457,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32915717" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.43230945" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.27189988" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.27181688" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32188842" />
@@ -465,13 +465,13 @@
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32188842" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info anchor="bottom" id="Version Control" order="11" weight="0.32188842" />
-      <window_info anchor="bottom" id="Python Console" order="12" visible="true" weight="0.32536975" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="11" visible="true" weight="0.32188842" />
+      <window_info anchor="bottom" id="Python Console" order="12" weight="0.40915594" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Database" order="3" weight="0.3258786" />
-      <window_info anchor="right" id="SciView" order="4" weight="0.83865815" />
+      <window_info anchor="right" id="SciView" order="4" weight="0.46995708" />
       <window_info anchor="right" x="0" y="0" width="310" height="595" id="Documentation" order="5" side_tool="true" weight="0.32960597" />
       <window_info anchor="right" id="Coverage" order="6" side_tool="true" />
     </layout>
@@ -569,7 +569,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Heisenberg_model_function.py</url>
-          <line>218</line>
+          <line>222</line>
           <option name="timeStamp" value="301" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -1134,8 +1134,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Heisenberg_model_function.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-340">
-          <caret line="108" selection-start-line="108" selection-end-line="108" />
+        <state relative-caret-position="-1197">
+          <caret line="158" column="4" selection-start-line="158" selection-start-column="4" selection-end-line="158" selection-end-column="4" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -1144,8 +1144,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Heisenberg_model_main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="393">
-          <caret line="329" column="76" lean-forward="true" selection-start-line="329" selection-start-column="76" selection-end-line="329" selection-end-column="76" />
+        <state relative-caret-position="243">
+          <caret line="41" column="90" selection-start-line="41" selection-start-column="90" selection-end-line="41" selection-end-column="90" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
