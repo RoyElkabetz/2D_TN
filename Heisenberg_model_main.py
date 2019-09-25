@@ -230,15 +230,15 @@ plt.grid()
 plt.show()
 
 
-file_name = "2019_09_24_1_16_OBC_glassy_Antiferomagnetic_Heisenberg_lattice"
-file_name_single = "2019_09_24_1_16_OBC_glassy_Antiferomagnetic_Heisenberg_lattice_single_"
-pickle.dump(parameters, open(file_name + '_parameters.p', "wb"))
-pickle.dump(BP_data, open(file_name + '_BP.p', "wb"))
-pickle.dump(gPEPS_data, open(file_name + '_gPEPS.p', "wb"))
+#file_name = "2019_09_24_1_16_OBC_glassy_Antiferomagnetic_Heisenberg_lattice"
+#file_name_single = "2019_09_24_1_16_OBC_glassy_Antiferomagnetic_Heisenberg_lattice_single_"
+#pickle.dump(parameters, open(file_name + '_parameters.p', "wb"))
+#pickle.dump(BP_data, open(file_name + '_BP.p', "wb"))
+#pickle.dump(gPEPS_data, open(file_name + '_gPEPS.p', "wb"))
+
 '''
-
 # ---------------------------------- BP, gPEPS and exact rdm's comparison --------------------------------------
-
+'''
 np.random.seed(seed=14)
 
 N = [16]
@@ -257,9 +257,6 @@ parameters = [['N', N], ['dE', dE], ['t_max', t_max], ['dumping', dumping], ['ep
 
 BP_data = []
 gPEPS_data = []
-
-
-
 
 for n in range(len(D_max)):
     b = hmf.Heisenberg_PEPS_gPEPS(N[0], Jk, dE, D_max[n], bc)
@@ -329,5 +326,12 @@ print('Total trance distance -> exact-gPEPS: ', np.sum(d_exact_gPEPS_rdm_trace_d
 
 #[[0.30733656-9.28415934e-21j 0.0790835 -6.56153418e-02j]
 # [0.0790835 +6.56153418e-02j 0.69266344+9.28415934e-21j]]
+'''
+file_name = "2019_09_22_1_Antiferomagnetic_Heisenberg_lattice_single_100spins"
+#file_name_single = "2019_09_24_1_16_OBC_glassy_Antiferomagnetic_Heisenberg_lattice_single_"
+a = pickle.load(open(file_name + '_BP.p', "rb"))
+b = pickle.load(open(file_name + '_gPEPS.p', "rb"))
 
-
+plt.imshow(np.real(b[2]))
+plt.colorbar()
+plt.show()
