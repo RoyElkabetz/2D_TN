@@ -27,14 +27,20 @@ def Heisenberg_PEPS_BP(N, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL):
 
     time_to_converge_BP = []
     E_BP = []
-    E_BP_new = []
+    E_BP_rdm_belief = []
+    E_BP_factor_belief = []
     E_BP_exact = []
     mx_BP = []
     mz_BP = []
+    my_BP = []
+
     mx_mat_BP = np.zeros((len(h), L, L), dtype=complex)
     mz_mat_BP = np.zeros((len(h), L, L), dtype=complex)
+    my_mat_BP = np.zeros((len(h), L, L), dtype=complex)
     mx_mat_exact = np.zeros((len(h), L, L), dtype=complex)
     mz_mat_exact = np.zeros((len(h), L, L), dtype=complex)
+    my_mat_exact = np.zeros((len(h), L, L), dtype=complex)
+
     gPEPS_rdm = []
     exact_rdm = []
 
@@ -98,6 +104,8 @@ def Heisenberg_PEPS_BP(N, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL):
 
         graph = defg.Graph()
         graph = BP.PEPStoDEnFG_transform(graph, TT, LL, smat)
+        graph.sum_product(t_max, epsilon, dumping)
+
 
         # --------------------------------- iterating the gPEPS and BP algorithms -------------------------------------
 
@@ -107,7 +115,9 @@ def Heisenberg_PEPS_BP(N, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL):
                 counter += 2
                 print('BP_N, D max, dt, j = ', N, D_max, dt, j)
                 TT1, LL1 = BP.PEPS_BPupdate(TT, LL, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max, graph, t_max, epsilon, dumping)
+                graph.sum_product(t_max, epsilon, dumping, 'init_with_old_messages')
                 TT2, LL2 = BP.PEPS_BPupdate(TT1, LL1, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max, graph, t_max, epsilon, dumping)
+                graph.sum_product(t_max, epsilon, dumping, 'init_with_old_messages')
                 energy1 = BP.energy_per_site(TT1, LL1, imat, smat, Jk, h[ss], Opi, Opj, Op_field)
                 energy2 = BP.energy_per_site(TT2, LL2, imat, smat, Jk, h[ss], Opi, Opj, Op_field)
                 print(energy1, energy2)
@@ -126,34 +136,43 @@ def Heisenberg_PEPS_BP(N, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL):
 
         graph.sum_product(t_max, epsilon, dumping)
         graph.calc_rdm_belief()
-        #graph.calc_factor_belief()
+        graph.calc_factor_belief()
 
 
         # --------------------------------- calculating magnetization matrices -------------------------------
         for l in range(L):
             for ll in range(L):
                 spin_index = np.int(L * l + ll)
-                print(spin_index)
-                mz_mat_BP[ss, l, ll] = BP.single_tensor_expectation(spin_index, TT, LL, imat, smat, pauli_z)
-                mx_mat_BP[ss, l, ll] = BP.single_tensor_expectation(spin_index, TT, LL, imat, smat, pauli_x)
+                mz_mat_BP[ss, l, ll] = BP.single_tensor_expectation(spin_index, TT, LL, imat, smat, sz)
+                mx_mat_BP[ss, l, ll] = BP.single_tensor_expectation(spin_index, TT, LL, imat, smat, sx)
+                my_mat_BP[ss, l, ll] = BP.single_tensor_expectation(spin_index, TT, LL, imat, smat, sy)
+
                 gPEPS_rdm.append(BP.tensor_reduced_dm(spin_index, TT, LL, smat, imat))
-                #rdm_t_list, rdm_i_list = nlg.ncon_list_generator_reduced_dm(TT, LL, smat, spin_index)
-                #T_list_n, idx_list_n = nlg.ncon_list_generator(TT, LL, smat, np.eye(p), spin_index)
-                #exact_rdm.append(ncon.ncon(rdm_t_list, rdm_i_list) / ncon.ncon(T_list_n, idx_list_n))
-                #mz_mat_exact[ss, l, ll] = np.trace(np.matmul(exact_rdm[spin_index], pauli_z))
-                #mx_mat_exact[ss, l, ll] = np.trace(np.matmul(exact_rdm[spin_index], pauli_x))
+
+                rdm_t_list, rdm_i_list = nlg.ncon_list_generator_reduced_dm(TT, LL, smat, spin_index)
+                T_list_n, idx_list_n = nlg.ncon_list_generator(TT, LL, smat, np.eye(p), spin_index)
+                exact_rdm.append(ncon.ncon(rdm_t_list, rdm_i_list) / ncon.ncon(T_list_n, idx_list_n))
+
+                mz_mat_exact[ss, l, ll] = np.trace(np.matmul(exact_rdm[spin_index], sz))
+                mx_mat_exact[ss, l, ll] = np.trace(np.matmul(exact_rdm[spin_index], sx))
+                my_mat_exact[ss, l, ll] = np.trace(np.matmul(exact_rdm[spin_index], sy))
 
         # ------------------ calculating total magnetization, energy and time to converge -------------------
         mz_BP.append(np.sum(mz_mat_BP[ss, :, :]) / n)
         mx_BP.append(np.sum(mx_mat_BP[ss, :, :]) / n)
+        my_BP.append(np.sum(my_mat_BP[ss, :, :]) / n)
         time_to_converge_BP.append(counter)
-        #E_BP_new.append(BP.BP_energy_per_site_ising_rdm_belief(graph, smat, imat, Jk, h[0], Opi, Opj, Op_field))
+        E_BP_rdm_belief.append(BP.BP_energy_per_site_using_rdm_belief(graph, smat, imat, Jk, h[0], Opi, Opj, Op_field))
+        E_BP_factor_belief.append(BP.BP_energy_per_site_using_factor_belief(graph, smat, imat, Jk, h[0], Opi, Opj, Op_field))
         E_BP.append(BP.energy_per_site(TT, LL, imat, smat, Jk, h[ss], Opi, Opj, Op_field))
-        #E_BP_exact.append(BP.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
-        #print('E, E_exact E_BP_new = ', E_BP[ss], E_BP_exact[ss], E_BP_new[ss])
+        E_BP_exact.append(BP.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
+        print('E, E_exact E_BP_rdm_belief, E_BP_factor_belief = ', E_BP[ss], E_BP_exact[ss], E_BP_rdm_belief[ss], E_BP_factor_belief[ss])
     e2 = time.time()
     run_time_of_BPupdate = e2 - s2
-    return [E_BP[0], E_BP_exact, E_BP_new, time_to_converge_BP[0], mz_mat_BP[0, :, :], mx_mat_BP[0, :, :], run_time_of_BPupdate, TT, LL, gPEPS_rdm, graph.rdm_belief, exact_rdm, mz_mat_exact, mx_mat_exact]
+
+    return [E_BP[0], E_BP_exact[0], E_BP_rdm_belief[0], E_BP_factor_belief[0], time_to_converge_BP[0],
+            mz_mat_BP[0, :, :], mx_mat_BP[0, :, :], my_mat_BP[0, :, :], run_time_of_BPupdate, TT, LL,
+            gPEPS_rdm, graph.rdm_belief, exact_rdm, mz_mat_exact[0, :, :], mx_mat_exact[0, :, :], my_mat_exact[0, :, :]]
 
 
 def Heisenberg_PEPS_gPEPS(N, Jk, dE, D_max, bc):
@@ -174,8 +193,10 @@ def Heisenberg_PEPS_gPEPS(N, Jk, dE, D_max, bc):
     E = []
     E_exact = []
     mx = []
+    my = []
     mz = []
     mx_mat = np.zeros((len(h), L, L), dtype=complex)
+    my_mat = np.zeros((len(h), L, L), dtype=complex)
     mz_mat = np.zeros((len(h), L, L), dtype=complex)
 
     pauli_z = np.array([[1, 0], [0, -1]])
@@ -238,19 +259,22 @@ def Heisenberg_PEPS_gPEPS(N, Jk, dE, D_max, bc):
         for l in range(L):
             for ll in range(L):
                 spin_index = np.int(L * l + ll)
-                mz_mat[ss, l, ll] = BP.single_tensor_expectation(spin_index, TT, LL, imat, smat, pauli_z)
-                mx_mat[ss, l, ll] = BP.single_tensor_expectation(spin_index, TT, LL, imat, smat, pauli_x)
+                mz_mat[ss, l, ll] = BP.single_tensor_expectation(spin_index, TT, LL, imat, smat, sz)
+                mx_mat[ss, l, ll] = BP.single_tensor_expectation(spin_index, TT, LL, imat, smat, sx)
+                my_mat[ss, l, ll] = BP.single_tensor_expectation(spin_index, TT, LL, imat, smat, sy)
 
         # ------------------ calculating total magnetization, energy and time to converge -------------------
         mz.append(np.sum(mz_mat[ss, :, :]) / n)
         mx.append(np.sum(mx_mat[ss, :, :]) / n)
+        my.append(np.sum(my_mat[ss, :, :]) / n)
         time_to_converge.append(counter)
         E.append(gPEPS.energy_per_site(TT, LL, imat, smat, Jk, h[ss], Opi, Opj, Op_field))
-        #E_exact.append(gPEPS.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
-        #print('E, E exact', E[ss], E_exact[ss])
+        E_exact.append(gPEPS.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
+        print('E, E exact', E[ss], E_exact[ss])
+
     e2 = time.time()
     run_time_of_gPEPS = e2 - s2
-    return [E[0], E_exact, time_to_converge[0], mz_mat[0, :, :], mx_mat[0, :, :], run_time_of_gPEPS, TT, LL]
+    return [E[0], E_exact[0], time_to_converge[0], mz_mat[0, :, :], mx_mat[0, :, :], my_mat[0, :, :], run_time_of_gPEPS, TT, LL]
 
 
 

@@ -54,6 +54,7 @@ class Graph:
 
     def pd_mat_init(self, alphabet):
         #eigenval = np.eye(alphabet, dtype=complex) / alphabet
+        #eigenval = np.ones((alphabet, alphabet), dtype=complex)
         eigenval = np.ones((alphabet, alphabet), dtype=complex)
         #a = np.abs(np.random.rand(alphabet))
         #eigenval = np.zeros((alphabet, alphabet))
@@ -217,13 +218,13 @@ class Graph:
 
 
 
-            for i in range(2, len(idx), 2):
-                idx[i + 1] = idx[i]
+            #for i in range(2, len(idx), 2):
+            #    idx[i + 1] = idx[i]
 
             self.rdm_belief[factors[f][2]] = np.einsum(super_tensor, idx, [0, 1])
             self.rdm_belief[factors[f][2]] /= np.trace(self.rdm_belief[factors[f][2]])
-            print(self.rdm_belief[factors[f][2]])
-            print('\n')
+            #print(self.rdm_belief[factors[f][2]])
+            #print('\n')
 
     def calc_factor_belief(self):
         self.factor_belief = {}
@@ -341,6 +342,45 @@ class Graph:
             final_idx[i] = p_dic[nodes_list[i]]
         marginal = np.einsum(marginal, range(len(marginal.shape)), final_idx)
         return marginal
+
+
+    def special_factor_belief(self, f, legs):
+        neighbors, factor, idx = self.factors[f]
+
+
+        messages = self.messages_n2f
+
+        super_tensor = self.make_super_physical_tensor(cp.deepcopy(factor))
+        super_tensor_idx = range(len(super_tensor.shape))
+        final_idx = cp.copy(super_tensor_idx)
+        for n in neighbors.keys():
+            if neighbors[n] in legs:
+                continue
+            message = messages[n][f]
+            message_idx = [2 * neighbors[n], 2 * neighbors[n] + 1]
+            for i in message_idx:
+                final_idx.remove(i)
+
+
+    def new_factor_belief(self):
+        self.factor_belief = {}
+        messages = self.messages_n2f
+        keys = self.factors.keys()
+        for f in keys:
+            neighbors, tensor, index = cp.deepcopy(self.factors[f])
+            conj_tensor = cp.copy(np.conj(tensor))
+            l = cp.copy(len(tensor.shape))
+            tensor_idx = list(range(l))
+            for item in neighbors:
+                message_idx = [self.factors[f][0][item], l + 1]
+                final_idx = cp.copy(tensor_idx)
+                final_idx[message_idx[0]] = message_idx[1]
+                tensor = np.einsum(tensor, tensor_idx, messages[item][f], message_idx, final_idx)
+            conj_tensor_idx = cp.copy(tensor_idx)
+            conj_tensor_idx[self.factors[f][0][n]] = l + 1
+            message_final_idx = [self.factors[f][0][n], l + 1]
+            message = np.einsum(tensor, tensor_idx, conj_tensor, conj_tensor_idx, message_final_idx)
+            message /= np.trace(message)
 
 
 

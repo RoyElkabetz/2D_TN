@@ -119,6 +119,7 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max, grap
         ## single edge BP update (uncomment for single edge BP implemintation)
         TT, LL = BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, D_max, Ek, graph)
 
+
     return TT, LL
 
 
@@ -435,7 +436,7 @@ def exact_energy_per_site(TT, LL, smat, Jk, h, Opi, Opj, Op_field):
     return energy
 
 
-def BP_energy_per_site_ising_factor_belief(graph, smat, imat, Jk, h, Opi, Opj, Op_field):
+def BP_energy_per_site_using_factor_belief(graph, smat, imat, Jk, h, Opi, Opj, Op_field):
     # calculating the normalized exact energy per site(tensor)
     if graph.factor_belief == None:
         raise IndexError('First calculate factor beliefs')
@@ -473,7 +474,7 @@ def BP_energy_per_site_ising_factor_belief(graph, smat, imat, Jk, h, Opi, Opj, O
     return energy
 
 
-def BP_energy_per_site_ising_rdm_belief(graph, smat, imat, Jk, h, Opi, Opj, Op_field):
+def BP_energy_per_site_using_rdm_belief(graph, smat, imat, Jk, h, Opi, Opj, Op_field):
     # calculating the normalized exact energy per site(tensor)
     if graph.rdm_belief == None:
         raise IndexError('First calculate rdm beliefs')
@@ -545,7 +546,7 @@ def absorb_all_bond_vectors(TT, LL, smat):
 
 
 '''
-def BPupdate(graph, TT, LL, smat, imat, Dmax):
+def BPupdate_all_edges(graph, TT, LL, smat, imat, Dmax):
     ## this BP truncation is implemented on all edges
 
     # run over all edges
@@ -569,7 +570,7 @@ def BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, Dmax, Ek, 
     ## this BP truncation is implemented on a single edge Ek
 
     # run BP on graph
-    graph.sum_product(t_max, epsilon, dumping, 'init_with_old_messages')
+    #graph.sum_product(t_max, epsilon, dumping, 'init_with_old_messages')
 
     the_node = 'n' + str(Ek)
     Ti, Tj = get_tensors(Ek, TT, smat, imat)
@@ -608,7 +609,7 @@ def PEPStoDEnFG_transform(graph, TT, LL, smat):
 
 def find_P(A, B, D_max):
     A_sqrt = linalg.sqrtm(A)
-    B_sqrt = linalg.sqrtm(np.transpose(B))
+    B_sqrt = linalg.sqrtm(B)
 
     ##  Calculate the environment matrix C and its SVD
     C = np.matmul(B_sqrt, A_sqrt)
@@ -623,6 +624,27 @@ def find_P(A, B, D_max):
 
     ##  Calculating P = A^(-1/2) * V * P2 * U^(dagger) * B^(-1/2)
     P = np.matmul(np.linalg.inv(A_sqrt), np.matmul(np.transpose(np.conj(vh_env)), np.matmul(P2, np.matmul(np.transpose(np.conj(u_env)), np.linalg.inv(B_sqrt)))))
+    return P
+
+
+def find_P_entrywise(A, B, D_max):
+    A_sqrt = linalg.sqrtm(A)
+    B_sqrt = linalg.sqrtm(B)
+
+    ##  Calculate the environment matrix C and its SVD
+    C = B_sqrt * A_sqrt
+    u_env, s_env, vh_env = np.linalg.svd(C, full_matrices=False)
+
+    ##  Define P2
+    new_s_env = cp.copy(s_env)
+    new_s_env[D_max:] = 0
+    P2 = np.zeros((len(s_env), len(s_env)))
+    np.fill_diagonal(P2, new_s_env)
+    P2 /= np.sum(new_s_env)
+
+    ##  Calculating P = A^(-1/2) * V * P2 * U^(dagger) * B^(-1/2)
+    PP = np.matmul(np.matmul(np.transpose(np.conj(vh_env)), P2), np.transpose(np.conj(u_env)))
+    P = np.linalg.inv(A_sqrt) * PP * np.linalg.inv(B_sqrt)
     return P
 
 
@@ -660,6 +682,7 @@ def smart_truncation(TT1, LL1, P, edge, smat, imat, D_max):
     # saving tensors and lamda
     TT1[Ti[1][0]] = cp.deepcopy(Ti[0] / tensor_normalization(Ti[0]))
     TT1[Tj[1][0]] = cp.deepcopy(Tj[0] / tensor_normalization(Tj[0]))
+
     LL1[edge] = lamda_edge / np.sum(lamda_edge)
     return TT1, LL1
 

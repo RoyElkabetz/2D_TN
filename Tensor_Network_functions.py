@@ -9,7 +9,7 @@ def random_tn_gen(smat, p, d):
     n, m = smat.shape
     TT = []
     for ii in range(n):
-        TT.append(np.random.rand(p, d, d, d, d) + 1j * np.random.rand(p, d, d, d, d))
+        TT.append(np.random.rand(p, d, d, d, d))
     LL = []
     for i in range(m):
         LL.append(np.ones(d, dtype=float) / d)

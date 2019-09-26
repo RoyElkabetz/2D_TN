@@ -34,6 +34,8 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
         ## (a) Find tensors Ti, Tj and their corresponding legs connected along edge Ek.
         Ti, Tj = get_tensors(Ek, TT, smat, imat)
 
+        old_Ti = cp.deepcopy(Ti)
+
         iedges = list(np.nonzero(smat[Ti[1][0], :])[0])
         ilegs = list(smat[Ti[1][0], iedges])
         jedges = list(np.nonzero(smat[Tj[1][0], :])[0])
@@ -109,11 +111,8 @@ def PEPS_BPupdate(TT, LL, dt, Jk, h, Opi, Opj, Op_field, imat, smat, D_max):
         TT[Tj[1][0]] = Tj[0] / tensor_normalization(Tj[0])
         LL[Ek] = lamda_k_tild / np.sum(lamda_k_tild)
 
-        ##  single edge BP update
-        # t_max = 100
-        # epsilon = 1e-5
-        # dumping = 0.1
-        # TT, LL = BPupdate_single_edge(TT, LL, smat, imat, t_max, epsilon, dumping, D_max, Ek)
+        new_Ti, new_Tj = get_tensors(Ek, TT, smat, imat)
+        #print('Ti error = ', np.max(np.abs(new_Ti[0] - old_Ti[0]) / np.abs(old_Ti[0])))
     return TT, LL
 
 

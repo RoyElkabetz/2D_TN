@@ -13,7 +13,7 @@ import pickle
 import Heisenberg_model_function as hmf
 
 #------------------------- main ----------------------------
-
+'''
 start = time.time()
 file_name = "2019_09_22_4_OBC_Antiferomagnetic_Heisenberg_lattice"
 file_name_single = "2019_09_22_4_OBC_Antiferomagnetic_Heisenberg_lattice_single_"
@@ -145,21 +145,22 @@ plt.legend(names)
 plt.grid()
 plt.show()
 
-
-# ---------------------------------- BP and gPEPS comparison --------------------------------------
 '''
+# ---------------------------------- BP and gPEPS comparison --------------------------------------
+
 np.random.seed(seed=14)
 
-N = [9]
+N = [16]
 bc = 'open'
-dE = 1e-4
-t_max = 500
+dE = 1e-5
+t_max = 200
 dumping = 0.2
 epsilon = 1e-5
-D_max = [2, 3, 4, 5]
+D_max = [2]
 mu = -1
 sigma = 0
 Jk = np.random.normal(mu, sigma, np.int(2 * N[0] - 2 * np.sqrt(N[0]))) # interaction constant list
+#Jk = np.random.normal(mu, sigma, np.int(2 * N[0])) # interaction constant list
 print('Jk = ', Jk)
 
 parameters = [['N', N], ['dE', dE], ['t_max', t_max], ['dumping', dumping], ['epsilon', epsilon], ['D_max', D_max]]
@@ -168,7 +169,8 @@ BP_data = []
 gPEPS_data = []
 E_gPEPS = []
 E_BP = []
-E_BP_new = []
+E_BP_rdm_belief = []
+E_BP_factor_belief = []
 E_exact_BP = []
 E_exact_gPEPS = []
 E_article = [-0.54557, -0.55481, -0.56317, -0.56660, -0.56714, -0.56715]
@@ -177,13 +179,15 @@ D = []
 
 for n in range(len(D_max)):
     b = hmf.Heisenberg_PEPS_gPEPS(N[0], Jk, dE, D_max[n], bc)
-    a = hmf.Heisenberg_PEPS_BP(N[0], Jk, dE, D_max[n], t_max, epsilon, dumping, bc, cp.deepcopy(b[6]), cp.deepcopy(b[7]))
+    TT, LL = cp.deepcopy(b[7]), cp.deepcopy(b[8])
+    a = hmf.Heisenberg_PEPS_BP(N[0], Jk, dE, D_max[n], t_max, epsilon, dumping, bc, TT, LL)
 
     E_gPEPS.append(b[0])
     E_exact_gPEPS.append(b[1])
     E_BP.append(a[0])
     E_exact_BP.append(a[1])
-    E_BP_new.append(a[2])
+    E_BP_rdm_belief.append(a[2])
+    E_BP_factor_belief.append(a[3])
     BP_data.append(a)
     gPEPS_data.append(b)
     #E_BP.append(a[0])
@@ -197,8 +201,10 @@ plt.plot(D_max, E_gPEPS, 'o')
 plt.plot(D_max, E_exact_gPEPS, 'o')
 plt.plot(D_max, E_BP, 'o')
 plt.plot(D_max, E_exact_BP, 'o')
-plt.plot(D_max, E_BP_new, 'o')
-plt.legend(['gPEPS', 'exact gPEPS', 'BP', 'exact BP', 'BP new'])
+plt.plot(D_max, E_BP_rdm_belief, 'o')
+plt.plot(D_max, E_BP_factor_belief, 'o')
+
+plt.legend(['gPEPS', 'exact gPEPS', 'BP gPEPS', 'exact BP', 'BP rdm', 'BP factor'])
 plt.show()
 
 E_dif = -(np.array(E_exact_gPEPS) - np.array(E_exact_BP))
@@ -234,6 +240,10 @@ plt.tight_layout()  # otherwise the right y-label is slightly clipped
 plt.grid()
 plt.show()
 
+[5, 6, 7, 14, 15, 16]
+plt.imshow(np.real(BP_data[0][14]))
+plt.colorbar()
+plt.show()
 
 #file_name = "2019_09_24_1_16_OBC_glassy_Antiferomagnetic_Heisenberg_lattice"
 #file_name_single = "2019_09_24_1_16_OBC_glassy_Antiferomagnetic_Heisenberg_lattice_single_"
@@ -241,18 +251,18 @@ plt.show()
 #pickle.dump(BP_data, open(file_name + '_BP.p', "wb"))
 #pickle.dump(gPEPS_data, open(file_name + '_gPEPS.p', "wb"))
 
-'''
+
 # ---------------------------------- BP, gPEPS and exact rdm's comparison --------------------------------------
 '''
 np.random.seed(seed=14)
 
 N = [16]
 bc = 'open'
-dE = 1e-5
+dE = 1e-8
 t_max = 100
 dumping = 0.2
-epsilon = 1e-6
-D_max = [3]
+epsilon = 1e-10
+D_max = [4]
 mu = -1
 sigma = 0
 Jk = np.random.normal(mu, sigma, np.int(2 * N[0] - 2 * np.sqrt(N[0]))) # interaction constant list
@@ -265,11 +275,12 @@ gPEPS_data = []
 
 for n in range(len(D_max)):
     b = hmf.Heisenberg_PEPS_gPEPS(N[0], Jk, dE, D_max[n], bc)
-    a = hmf.Heisenberg_PEPS_BP(N[0], Jk, dE, D_max[n], t_max, epsilon, dumping, bc, cp.deepcopy(b[6]), cp.deepcopy(b[7]))
-    BP_rdm = a[10]
-    gPEPS_rdm = a[9]
-    exact_rdm = a[11]
-    graph = a[12]
+    TT, LL = cp.deepcopy(b[7]), cp.deepcopy(b[8])
+    a = hmf.Heisenberg_PEPS_BP(N[0], Jk, dE, D_max[n], t_max, epsilon, dumping, bc, TT, LL)
+    BP_rdm = a[12]
+    gPEPS_rdm = a[11]
+    exact_rdm = a[13]
+    graph = a[14]
 
 d_BP_gPEPS_rdm = []
 d_BP_exact_rdm = []
