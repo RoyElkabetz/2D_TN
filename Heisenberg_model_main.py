@@ -150,15 +150,15 @@ plt.show()
 
 np.random.seed(seed=14)
 
-N, M = 3, 4
+N, M = 3, 3
 
 
 bc = 'open'
-dE = 1e-20
+dE = 1e-5
 t_max = 200
 dumping = 0.2
 epsilon = 1e-5
-D_max = [4]
+D_max = [2]
 mu = -1
 sigma = 0
 Jk = np.random.normal(mu, sigma, np.int((N - 1) * M + (M - 1) * N)) # interaction constant list

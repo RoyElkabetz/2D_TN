@@ -438,8 +438,7 @@ def exact_energy_per_site(TT, LL, smat, Jk, h, Opi, Opj, Op_field):
 
 def BP_energy_per_site_using_factor_belief(graph, LL, smat, imat, Jk, h, Opi, Opj, Op_field):
     # calculating the normalized exact energy per site(tensor)
-    if graph.factor_belief == None:
-        raise IndexError('First calculate factor beliefs')
+
     p = Opi[0].shape[0]
     Aij = np.zeros((p ** 2, p ** 2), dtype=complex)
     for i in range(len(Opi)):
@@ -449,8 +448,7 @@ def BP_energy_per_site_using_factor_belief(graph, LL, smat, imat, Jk, h, Opi, Op
     for Ek in range(m):
         Oij = np.reshape(-Jk[Ek] * Aij - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p))), (p, p, p, p))
         tensors = np.nonzero(smat[:, Ek])[0]
-        fi_belief = graph.factor_belief['f' + str(tensors[0])]
-        fj_belief = graph.factor_belief['f' + str(tensors[1])]
+        fi_belief, fj_belief = graph.two_factors_belief('f' + str(tensors[0]), 'f' + str(tensors[1]))
         fi_idx = range(len(fi_belief.shape))
         fj_idx = range(len(fi_belief.shape), len(fi_belief.shape) + len(fj_belief.shape))
         Oij_idx = [1000, 1001, 1002, 1003]

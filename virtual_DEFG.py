@@ -261,6 +261,28 @@ class Graph:
             rdm[i] /= np.trace(rdm[i])
         return rdm
 
+
+    def two_factors_belief(self, f1, f2):
+        ne1, ten1, idx1 = cp.deepcopy(self.factors[f1])
+        ne2, ten2, idx2 = cp.deepcopy(self.factors[f2])
+        for n in ne1:
+            if n in ne2:
+                del ne1[n]
+                del ne2[n]
+                break
+        messages = self.messages_n2f
+        super_tensor1 = self.make_super_physical_tensor(ten1)
+        super_tensor2 = self.make_super_physical_tensor(ten2)
+        for n in ne1.keys():
+            super_tensor1 *= self.broadcasting(messages[n][f1], ne1[n], super_tensor1)
+        for n in ne2.keys():
+            super_tensor2 *= self.broadcasting(messages[n][f2], ne2[n], super_tensor2)
+        return super_tensor1, super_tensor2
+
+
+
+
+
     def f2n_message(self, f, n, messages):
         neighbors, tensor, index = cp.deepcopy(self.factors[f])
         conj_tensor = cp.copy(np.conj(tensor))
