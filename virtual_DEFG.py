@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import copy as cp
 from scipy.stats import unitary_group
+import scipy.linalg
 import time
 
 
@@ -43,6 +44,12 @@ class Graph:
 
     def broadcasting(self, message, idx, tensor):
         idx = [2 * idx, 2 * idx + 1]
+        new_shape = np.ones(len(tensor.shape), dtype=np.int)
+        new_shape[idx] = message.shape
+        return np.reshape(message, new_shape)
+
+    def virtual_broadcasting(self, message, idx, tensor):
+        idx = [2 * (idx - 1), 2 * (idx - 1) + 1]
         new_shape = np.ones(len(tensor.shape), dtype=np.int)
         new_shape[idx] = message.shape
         return np.reshape(message, new_shape)
@@ -125,7 +132,7 @@ class Graph:
                     node2factor[n][f] /= np.trace(node2factor[n][f])
             for f in factors.keys():
                 for n in factors[f][0].keys():
-                    factor2node[f][n] = dumping * factor2node[f][n] + (1 - dumping) * self.f2n_message(f, n, old_messages_n2f)
+                    factor2node[f][n] = dumping * factor2node[f][n] + (1 - dumping) * self.f2n_message_without_matching_dof_and_broadcasting(f, n, old_messages_n2f)
                     factor2node[f][n] /= np.trace(factor2node[f][n])
             self.messages_n2f = node2factor
             self.messages_f2n = factor2node
@@ -238,6 +245,22 @@ class Graph:
                 super_tensor *= self.broadcasting(messages[n][f], neighbors[n], super_tensor)
             self.factor_belief[f] = super_tensor
 
+    def rdm_comparison(self):
+        error = 0
+        for i in range(self.factors_count):
+            factor_rdm = np.einsum(self.factor_belief['f' + str(i)], range(len(self.factor_belief['f' + str(i)].shape)), [0, 1])
+            factor_rdm /= np.trace(factor_rdm)
+            error += np.sum((np.abs(self.rdm_belief[i] - factor_rdm)) / np.max(np.abs(self.rdm_belief[i])))
+        print('rdm error = ', error)
+
+
+    def rdm_using_factors(self):
+        rdm = {}
+        for i in range(self.factors_count):
+            rdm[i] = np.einsum(self.factor_belief['f' + str(i)], range(len(self.factor_belief['f' + str(i)].shape)), [0, 1])
+            rdm[i] /= np.trace(rdm[i])
+        return rdm
+
     def f2n_message(self, f, n, messages):
         neighbors, tensor, index = cp.deepcopy(self.factors[f])
         conj_tensor = cp.copy(np.conj(tensor))
@@ -258,16 +281,15 @@ class Graph:
         return message
 
 
-    def f2n_message_without_matching_dof(self, f, n, messages):
+    def f2n_message_without_matching_dof_and_broadcasting(self, f, n, messages):
         neighbors, tensor, index = cp.deepcopy(self.factors[f])
-        super_tensor = self.make_super_physical_tensor(tensor)
+        super_tensor = self.make_super_tensor(tensor)
         for p in neighbors.keys():
             if p == n:
                 continue
-            super_tensor *= self.broadcasting(messages[p][f], neighbors[p], super_tensor)
+            super_tensor *= self.virtual_broadcasting(messages[p][f], neighbors[p], super_tensor)
         idx = range(len(super_tensor.shape))
-        idx[0] = idx[1]
-        final_idx = [2 * neighbors[n], 2 * neighbors[n] + 1]
+        final_idx = [2 * (neighbors[n] - 1), 2 * (neighbors[n] - 1) + 1]
         message = np.einsum(super_tensor, idx, final_idx)
         return message
 

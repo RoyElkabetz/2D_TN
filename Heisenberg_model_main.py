@@ -150,16 +150,18 @@ plt.show()
 
 np.random.seed(seed=14)
 
-N = [16]
+N, M = 3, 4
+
+
 bc = 'open'
-dE = 1e-5
+dE = 1e-20
 t_max = 200
 dumping = 0.2
 epsilon = 1e-5
-D_max = [2]
+D_max = [4]
 mu = -1
 sigma = 0
-Jk = np.random.normal(mu, sigma, np.int(2 * N[0] - 2 * np.sqrt(N[0]))) # interaction constant list
+Jk = np.random.normal(mu, sigma, np.int((N - 1) * M + (M - 1) * N)) # interaction constant list
 #Jk = np.random.normal(mu, sigma, np.int(2 * N[0])) # interaction constant list
 print('Jk = ', Jk)
 
@@ -178,9 +180,9 @@ D = []
 
 
 for n in range(len(D_max)):
-    b = hmf.Heisenberg_PEPS_gPEPS(N[0], Jk, dE, D_max[n], bc)
+    b = hmf.Heisenberg_PEPS_gPEPS(N, M, Jk, dE, D_max[n], bc)
     TT, LL = cp.deepcopy(b[7]), cp.deepcopy(b[8])
-    a = hmf.Heisenberg_PEPS_BP(N[0], Jk, dE, D_max[n], t_max, epsilon, dumping, bc, TT, LL)
+    a = hmf.Heisenberg_PEPS_BP(N, M, Jk, dE, D_max[n], t_max, epsilon, dumping, bc, TT, LL)
 
     E_gPEPS.append(b[0])
     E_exact_gPEPS.append(b[1])

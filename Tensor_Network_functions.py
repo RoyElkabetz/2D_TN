@@ -36,10 +36,7 @@ def PEPS_smat_imat_gen(N):
     return smat, imat
 
 
-def PEPS_OBC_smat_imat(N):
-    L = np.int(np.sqrt(N))
-    n = L
-    m = L
+def PEPS_OBC_smat_imat(n, m):
 
     # edge = (node_a i, node_a j, node_a l, node_b i, node_b j, node_b l)
     edge_list = []

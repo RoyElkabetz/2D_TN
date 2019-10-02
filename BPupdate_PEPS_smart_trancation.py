@@ -436,7 +436,7 @@ def exact_energy_per_site(TT, LL, smat, Jk, h, Opi, Opj, Op_field):
     return energy
 
 
-def BP_energy_per_site_using_factor_belief(graph, smat, imat, Jk, h, Opi, Opj, Op_field):
+def BP_energy_per_site_using_factor_belief(graph, LL, smat, imat, Jk, h, Opi, Opj, Op_field):
     # calculating the normalized exact energy per site(tensor)
     if graph.factor_belief == None:
         raise IndexError('First calculate factor beliefs')
@@ -610,6 +610,7 @@ def PEPStoDEnFG_transform(graph, TT, LL, smat):
 def find_P(A, B, D_max):
     A_sqrt = linalg.sqrtm(A)
     B_sqrt = linalg.sqrtm(B)
+
 
     ##  Calculate the environment matrix C and its SVD
     C = np.matmul(B_sqrt, np.transpose(A_sqrt))
