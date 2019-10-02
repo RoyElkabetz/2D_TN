@@ -612,7 +612,7 @@ def find_P(A, B, D_max):
     B_sqrt = linalg.sqrtm(B)
 
     ##  Calculate the environment matrix C and its SVD
-    C = np.matmul(B_sqrt, A_sqrt)
+    C = np.matmul(B_sqrt, np.transpose(A_sqrt))
     u_env, s_env, vh_env = np.linalg.svd(C, full_matrices=False)
 
     ##  Define P2
@@ -623,7 +623,7 @@ def find_P(A, B, D_max):
     P2 /= np.sum(new_s_env)
 
     ##  Calculating P = A^(-1/2) * V * P2 * U^(dagger) * B^(-1/2)
-    P = np.matmul(np.linalg.inv(A_sqrt), np.matmul(np.transpose(np.conj(vh_env)), np.matmul(P2, np.matmul(np.transpose(np.conj(u_env)), np.linalg.inv(B_sqrt)))))
+    P = np.matmul(np.transpose(np.linalg.inv(A_sqrt)), np.matmul(np.transpose(np.conj(vh_env)), np.matmul(P2, np.matmul(np.transpose(np.conj(u_env)), np.linalg.inv(B_sqrt)))))
     return P
 
 
