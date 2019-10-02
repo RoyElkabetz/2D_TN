@@ -52,7 +52,7 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL)
     sy = 0.5 * pauli_y
     sx = 0.5 * pauli_x
 
-    t_list = [0.1, 0.05, 0.01, 0.005, 0.001, 0.0005]  # imaginary time evolution time steps list
+    t_list = [1, 0.5, 0.1, 0.05, 0.01]  # imaginary time evolution time steps list
     iterations = 100
     Opi = [sx, sy, sz]
     Opj = [sx, sy, sz]
@@ -70,17 +70,18 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL)
 
 
     # ------------- generating tensors and bond vectors ---------------------------
-
+    '''
     if bc == 'open':
         TT, LL = tnf.PEPS_OBC_random_tn_gen(smat, p, d)
     if bc == 'periodic':
         TT, LL = tnf.random_tn_gen(smat, p, d)
-
+    '''
 
     for ss in range(len(h)):
+
         counter = 0
         # --------------------- finding initial condition approximated ground state for BP using gPEPS -----------------
-
+        '''
         for dt in t_list:
             flag = 0
             for j in range(iterations):
@@ -99,14 +100,14 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL)
                 else:
                     TT = TT2
                     LL = LL2
-
+        
         # --------------------------------- calculating magnetization matrices -------------------------------
         for l in range(N):
             for ll in range(M):
                 spin_index = np.int(M * l + ll)
 
                 gPEPS1_rdm.append(BP.tensor_reduced_dm(spin_index, TT, LL, smat, imat))
-
+        '''
 
         # ------------- generating the double-edge factor graph (defg) of the tensor network ---------------------------
 
@@ -116,7 +117,6 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL)
 
 
         # --------------------------------- iterating the gPEPS and BP algorithms -------------------------------------
-
         for dt in t_list:
             flag = 0
             for j in range(iterations):
@@ -124,16 +124,16 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL)
                 print('BP_N, D max, dt, j = ', N, D_max, dt, j)
                 TT1, LL1 = BP.PEPS_BPupdate(TT, LL, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max, graph, t_max, epsilon, dumping)
                 graph.sum_product(t_max, epsilon, dumping, 'init_with_old_messages')
-
+                energy1 = BP.BP_energy_per_site_using_factor_belief(graph, smat, imat, Jk, h[0], Opi, Opj, Op_field)
                 TT2, LL2 = BP.PEPS_BPupdate(TT1, LL1, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max, graph, t_max, epsilon, dumping)
                 graph.sum_product(t_max, epsilon, dumping, 'init_with_old_messages')
-
-                energy1 = BP.energy_per_site(TT1, LL1, imat, smat, Jk, h[ss], Opi, Opj, Op_field)
-                energy2 = BP.energy_per_site(TT2, LL2, imat, smat, Jk, h[ss], Opi, Opj, Op_field)
+                energy2 = BP.BP_energy_per_site_using_factor_belief(graph, smat, imat, Jk, h[0], Opi, Opj, Op_field)
+                #energy1 = BP.energy_per_site(TT1, LL1, imat, smat, Jk, h[ss], Opi, Opj, Op_field)
+                #energy2 = BP.energy_per_site(TT2, LL2, imat, smat, Jk, h[ss], Opi, Opj, Op_field)
 
                 print(energy1, energy2)
 
-                if np.abs(energy1 - energy2) < dE:
+                if np.abs(energy1 - energy2) < dE or energy1 < energy2:
                     flag = 1
                     TT = TT2
                     LL = LL2
@@ -147,9 +147,9 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL)
 
         graph.sum_product(t_max, epsilon, dumping, 'init_with_old_messages')
         graph.calc_rdm_belief()
-        graph.calc_factor_belief()
-        graph.rdm_comparison()
-        rdm = graph.rdm_using_factors()
+        #graph.calc_factor_belief()
+        #graph.rdm_comparison()
+        #rdm = graph.rdm_using_factors()
 
 
         # --------------------------------- calculating magnetization matrices -------------------------------
@@ -171,18 +171,18 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL)
                 my_mat_exact[ss, l, ll] = np.trace(np.matmul(exact_rdm[spin_index], sy))
 
         ## trace distance comparison
-        error_gPEPS1 = 0
-        error_BP = 0
-        error_gPEPS = 0
-        error = []
-        for i in range(n):
-            error_BP += BP.trace_distance(rdm[i], exact_rdm[i])
-            error_gPEPS += BP.trace_distance(gPEPS_rdm[i], exact_rdm[i])
-            error_gPEPS1 += BP.trace_distance(gPEPS1_rdm[i], exact_rdm[i])
-            error.append(BP.trace_distance(rdm[i], exact_rdm[i]))
-        print('rdm BP error = ', error_BP)
-        print('rdm gPEPS error = ', error_gPEPS)
-        print('rdm gPEPS1 error = ', error_gPEPS1)
+        #error_gPEPS1 = 0
+        #error_BP = 0
+        #error_gPEPS = 0
+        #error = []
+        #for i in range(n):
+        #    error_BP += BP.trace_distance(rdm[i], exact_rdm[i])
+        #    error_gPEPS += BP.trace_distance(gPEPS_rdm[i], exact_rdm[i])
+        #    error_gPEPS1 += BP.trace_distance(gPEPS1_rdm[i], exact_rdm[i])
+        #    error.append(BP.trace_distance(rdm[i], exact_rdm[i]))
+        #print('rdm BP error = ', error_BP)
+        #print('rdm gPEPS error = ', error_gPEPS)
+        #print('rdm gPEPS1 error = ', error_gPEPS1)
 
         # ------------------ calculating total magnetization, energy and time to converge -------------------
         mz_BP.append(np.sum(mz_mat_BP[ss, :, :]) / n)
@@ -190,7 +190,7 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL)
         my_BP.append(np.sum(my_mat_BP[ss, :, :]) / n)
         time_to_converge_BP.append(counter)
         E_BP_rdm_belief.append(BP.BP_energy_per_site_using_rdm_belief(graph, smat, imat, Jk, h[0], Opi, Opj, Op_field))
-        E_BP_factor_belief.append(BP.BP_energy_per_site_using_factor_belief(graph, LL, smat, imat, Jk, h[0], Opi, Opj, Op_field))
+        E_BP_factor_belief.append(BP.BP_energy_per_site_using_factor_belief(graph, smat, imat, Jk, h[0], Opi, Opj, Op_field))
         E_BP.append(BP.energy_per_site(TT, LL, imat, smat, Jk, h[ss], Opi, Opj, Op_field))
         E_BP_exact.append(BP.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
         print('E, E_exact E_BP_rdm_belief, E_BP_factor_belief = ', E_BP[ss], E_BP_exact[ss], E_BP_rdm_belief[ss], E_BP_factor_belief[ss])
@@ -232,7 +232,7 @@ def Heisenberg_PEPS_gPEPS(N, M, Jk, dE, D_max, bc):
     sz = 0.5 * pauli_z
     sy = 0.5 * pauli_y
     sx = 0.5 * pauli_x
-    t_list = [0.1, 0.05, 0.01, 0.005, 0.001, 0.0005]  # imaginary time evolution time steps list
+    t_list = [0.5, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005]  # imaginary time evolution time steps list
     iterations = 100
     Opi = [sx, sy, sz]
     Opj = [sx, sy, sz]
@@ -296,12 +296,12 @@ def Heisenberg_PEPS_gPEPS(N, M, Jk, dE, D_max, bc):
         my.append(np.sum(my_mat[ss, :, :]) / n)
         time_to_converge.append(counter)
         E.append(gPEPS.energy_per_site(TT, LL, imat, smat, Jk, h[ss], Opi, Opj, Op_field))
-        E_exact.append(gPEPS.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
-        print('E, E exact', E[ss], E_exact[ss])
+        #E_exact.append(gPEPS.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
+        #print('E, E exact', E[ss], E_exact[ss])
 
     e2 = time.time()
     run_time_of_gPEPS = e2 - s2
-    return [E[0], E_exact[0], time_to_converge[0], mz_mat[0, :, :], mx_mat[0, :, :], my_mat[0, :, :], run_time_of_gPEPS, TT, LL]
+    return [E[0], E_exact, time_to_converge[0], mz_mat[0, :, :], mx_mat[0, :, :], my_mat[0, :, :], run_time_of_gPEPS, TT, LL]
 
 
 

@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="39f4aadf-3039-4826-aca9-4bd799d9af66" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py" beforeDir="false" afterPath="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Heisenberg_model_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/Heisenberg_model_function.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Heisenberg_model_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Heisenberg_model_main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/virtual_DEFG.py" beforeDir="false" afterPath="$PROJECT_DIR$/virtual_DEFG.py" afterDir="false" />
     </list>
@@ -41,8 +42,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="224">
-              <caret line="450" column="100" lean-forward="true" selection-start-line="450" selection-start-column="100" selection-end-line="450" selection-end-column="100" />
+            <state relative-caret-position="44">
+              <caret line="438" column="49" selection-start-line="438" selection-start-column="49" selection-end-line="438" selection-end-column="49" />
               <folding>
                 <element signature="e#213#336#1" />
                 <element signature="e#452#1237#1" />
@@ -113,8 +114,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Heisenberg_model_function.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4086">
-              <caret line="285" column="26" lean-forward="true" selection-start-line="285" selection-start-column="26" selection-end-line="285" selection-end-column="26" />
+            <state relative-caret-position="246">
+              <caret line="299" column="9" selection-start-line="299" selection-start-column="9" selection-end-line="299" selection-end-column="9" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -122,11 +123,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Heisenberg_model_main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
-              <caret line="156" column="9" selection-start-line="156" selection-start-column="9" selection-end-line="156" selection-end-column="9" />
+            <state relative-caret-position="273">
+              <caret line="160" column="10" selection-start-line="160" selection-start-column="10" selection-end-line="160" selection-end-column="10" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -143,11 +144,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/virtual_DEFG.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="192">
-              <caret line="271" column="21" selection-start-line="271" selection-start-column="21" selection-end-line="271" selection-end-column="21" />
+            <state relative-caret-position="161">
+              <caret line="126" column="65" lean-forward="true" selection-start-line="126" selection-start-column="65" selection-end-line="126" selection-end-column="65" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -223,9 +224,9 @@
         <option value="$PROJECT_DIR$/double_edge_experiments.py" />
         <option value="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation2.py" />
         <option value="$PROJECT_DIR$/Tensor_Network_functions.py" />
+        <option value="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py" />
         <option value="$PROJECT_DIR$/Heisenberg_model_function.py" />
         <option value="$PROJECT_DIR$/Heisenberg_model_main.py" />
-        <option value="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py" />
         <option value="$PROJECT_DIR$/virtual_DEFG.py" />
       </list>
     </option>
@@ -438,12 +439,12 @@
       <workItem from="1568614729803" duration="15925000" />
       <workItem from="1568718300955" duration="1030000" />
       <workItem from="1568719405080" duration="124966000" />
-      <workItem from="1569482563539" duration="28739000" />
+      <workItem from="1569482563539" duration="37129000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="669193000" />
+    <option name="totallyTimeSpent" value="677583000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -473,12 +474,12 @@
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32188842" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.3208191" />
-      <window_info anchor="bottom" id="Python Console" order="12" visible="true" weight="0.36051503" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="12" visible="true" weight="0.36194563" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Database" order="3" weight="0.3258786" />
-      <window_info anchor="right" id="SciView" order="4" weight="0.46852645" />
+      <window_info anchor="right" id="SciView" order="4" weight="0.6287554" />
       <window_info anchor="right" x="0" y="0" width="310" height="595" id="Documentation" order="5" side_tool="true" weight="0.32960597" />
       <window_info anchor="right" id="Coverage" order="6" side_tool="true" />
     </layout>
@@ -1040,6 +1041,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/BPupdate_PEPS_smart_trancation2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="31">
+          <caret line="114" column="9" selection-start-line="114" selection-start-column="9" selection-end-line="114" selection-end-column="9" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Tensor_Network_functions.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="277">
@@ -1049,8 +1060,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="224">
-          <caret line="450" column="100" lean-forward="true" selection-start-line="450" selection-start-column="100" selection-end-line="450" selection-end-column="100" />
+        <state relative-caret-position="44">
+          <caret line="438" column="49" selection-start-line="438" selection-start-column="49" selection-end-line="438" selection-end-column="49" />
           <folding>
             <element signature="e#213#336#1" />
             <element signature="e#452#1237#1" />
@@ -1105,30 +1116,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/virtual_DEFG.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="271" column="21" selection-start-line="271" selection-start-column="21" selection-end-line="271" selection-end-column="21" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/BPupdate_PEPS_smart_trancation2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="31">
-          <caret line="114" column="9" selection-start-line="114" selection-start-column="9" selection-end-line="114" selection-end-column="9" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Heisenberg_model_function.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4086">
-          <caret line="285" column="26" lean-forward="true" selection-start-line="285" selection-start-column="26" selection-end-line="285" selection-end-column="26" />
+        <state relative-caret-position="246">
+          <caret line="299" column="9" selection-start-line="299" selection-start-column="9" selection-end-line="299" selection-end-column="9" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -1137,8 +1128,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Heisenberg_model_main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="156" column="9" selection-start-line="156" selection-start-column="9" selection-end-line="156" selection-end-column="9" />
+        <state relative-caret-position="273">
+          <caret line="160" column="10" selection-start-line="160" selection-start-column="10" selection-end-line="160" selection-end-column="10" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/virtual_DEFG.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="161">
+          <caret line="126" column="65" lean-forward="true" selection-start-line="126" selection-start-column="65" selection-end-line="126" selection-end-column="65" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>

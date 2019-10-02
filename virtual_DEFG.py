@@ -132,7 +132,7 @@ class Graph:
                     node2factor[n][f] /= np.trace(node2factor[n][f])
             for f in factors.keys():
                 for n in factors[f][0].keys():
-                    factor2node[f][n] = dumping * factor2node[f][n] + (1 - dumping) * self.f2n_message_without_matching_dof_and_broadcasting(f, n, old_messages_n2f)
+                    factor2node[f][n] = dumping * factor2node[f][n] + (1 - dumping) * self.f2n_message(f, n, old_messages_n2f)
                     factor2node[f][n] /= np.trace(factor2node[f][n])
             self.messages_n2f = node2factor
             self.messages_f2n = factor2node

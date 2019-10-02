@@ -436,7 +436,7 @@ def exact_energy_per_site(TT, LL, smat, Jk, h, Opi, Opj, Op_field):
     return energy
 
 
-def BP_energy_per_site_using_factor_belief(graph, LL, smat, imat, Jk, h, Opi, Opj, Op_field):
+def BP_energy_per_site_using_factor_belief(graph, smat, imat, Jk, h, Opi, Opj, Op_field):
     # calculating the normalized exact energy per site(tensor)
 
     p = Opi[0].shape[0]

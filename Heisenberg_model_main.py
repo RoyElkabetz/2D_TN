@@ -150,15 +150,15 @@ plt.show()
 
 np.random.seed(seed=14)
 
-N, M = 3, 3
+N, M = 10, 10
 
 
 bc = 'open'
-dE = 1e-5
-t_max = 200
+dE = 1e-6
+t_max = 100
 dumping = 0.2
 epsilon = 1e-5
-D_max = [2]
+D_max = [4]
 mu = -1
 sigma = 0
 Jk = np.random.normal(mu, sigma, np.int((N - 1) * M + (M - 1) * N)) # interaction constant list
@@ -203,19 +203,19 @@ plt.plot(D_max, E_gPEPS, 'o')
 plt.plot(D_max, E_exact_gPEPS, 'o')
 plt.plot(D_max, E_BP, 'o')
 plt.plot(D_max, E_exact_BP, 'o')
-plt.plot(D_max, E_BP_rdm_belief, 'o')
+#plt.plot(D_max, E_BP_rdm_belief, 'o')
 plt.plot(D_max, E_BP_factor_belief, 'o')
 
-plt.legend(['gPEPS', 'exact gPEPS', 'BP gPEPS', 'exact BP', 'BP rdm', 'BP factor'])
+plt.legend(['gPEPS', 'exact gPEPS', 'BP gPEPS', 'exact BP', 'BP factor'])
 plt.show()
 
 E_dif = -(np.array(E_exact_gPEPS) - np.array(E_exact_BP))
 
 plt.figure()
-plt.plot(D_max, E_exact_gPEPS, 'o')
-plt.plot(D_max, E_exact_BP, 'o')
+plt.plot(D_max, E_gPEPS, 'o')
+plt.plot(D_max, E_BP_factor_belief, 'o')
 #plt.plot(D_max, E_article, 'o')
-plt.legend(['exact gPEPS','exact BP'])
+plt.legend(['gPEPS','BP'])
 plt.show()
 
 plt.figure()
