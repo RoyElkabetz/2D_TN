@@ -52,7 +52,7 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL)
     sy = 0.5 * pauli_y
     sx = 0.5 * pauli_x
 
-    t_list = [1, 0.5, 0.1, 0.05, 0.01]  # imaginary time evolution time steps list
+    t_list = [0.1, 0.5, 1]  # imaginary time evolution time steps list
     iterations = 100
     Opi = [sx, sy, sz]
     Opj = [sx, sy, sz]
@@ -142,6 +142,26 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL)
                     TT = TT2
                     LL = LL2
 
+        t_list = [0.0005, 0.0001, 0.00005]  # imaginary time evolution time steps list
+        iterations = 500
+        for dt in t_list:
+            flag = 0
+            for j in range(iterations):
+                print('N, D max, dt, j = ', N * M, D_max, dt, j)
+                TT1, LL1 = gPEPS.PEPS_BPupdate(TT, LL, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max)
+                TT2, LL2 = gPEPS.PEPS_BPupdate(TT1, LL1, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max)
+                energy1 = BP.energy_per_site(TT1, LL1, imat, smat, Jk, h[ss], Opi, Opj, Op_field)
+                energy2 = BP.energy_per_site(TT2, LL2, imat, smat, Jk, h[ss], Opi, Opj, Op_field)
+                print(energy1, energy2)
+
+                if np.abs(energy1 - energy2) < dE:
+                    flag = 1
+                    TT = TT2
+                    LL = LL2
+                    break
+                else:
+                    TT = TT2
+                    LL = LL2
 
         # ---------------------------------- calculating reduced density matrices using DEFG ----------------------------
 
@@ -162,13 +182,13 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL)
 
                 gPEPS_rdm.append(BP.tensor_reduced_dm(spin_index, TT, LL, smat, imat))
 
-                rdm_t_list, rdm_i_list = nlg.ncon_list_generator_reduced_dm(TT, LL, smat, spin_index)
-                T_list_n, idx_list_n = nlg.ncon_list_generator(TT, LL, smat, np.eye(p), spin_index)
-                exact_rdm.append(ncon.ncon(rdm_t_list, rdm_i_list) / ncon.ncon(T_list_n, idx_list_n))
+                #rdm_t_list, rdm_i_list = nlg.ncon_list_generator_reduced_dm(TT, LL, smat, spin_index)
+                #T_list_n, idx_list_n = nlg.ncon_list_generator(TT, LL, smat, np.eye(p), spin_index)
+                #exact_rdm.append(ncon.ncon(rdm_t_list, rdm_i_list) / ncon.ncon(T_list_n, idx_list_n))
 
-                mz_mat_exact[ss, l, ll] = np.trace(np.matmul(exact_rdm[spin_index], sz))
-                mx_mat_exact[ss, l, ll] = np.trace(np.matmul(exact_rdm[spin_index], sx))
-                my_mat_exact[ss, l, ll] = np.trace(np.matmul(exact_rdm[spin_index], sy))
+                #mz_mat_exact[ss, l, ll] = np.trace(np.matmul(exact_rdm[spin_index], sz))
+                #mx_mat_exact[ss, l, ll] = np.trace(np.matmul(exact_rdm[spin_index], sx))
+                #my_mat_exact[ss, l, ll] = np.trace(np.matmul(exact_rdm[spin_index], sy))
 
         ## trace distance comparison
         #error_gPEPS1 = 0
@@ -192,14 +212,15 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL)
         E_BP_rdm_belief.append(BP.BP_energy_per_site_using_rdm_belief(graph, smat, imat, Jk, h[0], Opi, Opj, Op_field))
         E_BP_factor_belief.append(BP.BP_energy_per_site_using_factor_belief(graph, smat, imat, Jk, h[0], Opi, Opj, Op_field))
         E_BP.append(BP.energy_per_site(TT, LL, imat, smat, Jk, h[ss], Opi, Opj, Op_field))
-        E_BP_exact.append(BP.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
-        print('E, E_exact E_BP_rdm_belief, E_BP_factor_belief = ', E_BP[ss], E_BP_exact[ss], E_BP_rdm_belief[ss], E_BP_factor_belief[ss])
+        #E_BP_exact.append(BP.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
+        #print('E, E_exact E_BP_rdm_belief, E_BP_factor_belief = ', E_BP[ss], E_BP_exact[ss], E_BP_rdm_belief[ss], E_BP_factor_belief[ss])
+        print('E, E_BP_rdm_belief, E_BP_factor_belief = ', E_BP[ss], E_BP_rdm_belief[ss], E_BP_factor_belief[ss])
     e2 = time.time()
     run_time_of_BPupdate = e2 - s2
 
-    return [E_BP[0], E_BP_exact[0], E_BP_rdm_belief[0], E_BP_factor_belief[0], time_to_converge_BP[0],
+    return [E_BP[0], E_BP_exact, E_BP_rdm_belief[0], E_BP_factor_belief[0], time_to_converge_BP[0],
             mz_mat_BP[0, :, :], mx_mat_BP[0, :, :], my_mat_BP[0, :, :], run_time_of_BPupdate, TT, LL,
-            gPEPS_rdm, graph.rdm_belief, exact_rdm, mz_mat_exact[0, :, :], mx_mat_exact[0, :, :], my_mat_exact[0, :, :]]
+            gPEPS_rdm, graph.rdm_belief, exact_rdm, mz_mat_exact, mx_mat_exact, my_mat_exact]
 
 
 def Heisenberg_PEPS_gPEPS(N, M, Jk, dE, D_max, bc):

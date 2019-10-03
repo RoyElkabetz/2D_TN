@@ -158,14 +158,14 @@ dE = 1e-6
 t_max = 100
 dumping = 0.2
 epsilon = 1e-5
-D_max = [4]
+D_max = [2, 3, 4, 5]
 mu = -1
 sigma = 0
 Jk = np.random.normal(mu, sigma, np.int((N - 1) * M + (M - 1) * N)) # interaction constant list
 #Jk = np.random.normal(mu, sigma, np.int(2 * N[0])) # interaction constant list
 print('Jk = ', Jk)
 
-parameters = [['N', N], ['dE', dE], ['t_max', t_max], ['dumping', dumping], ['epsilon', epsilon], ['D_max', D_max]]
+
 
 BP_data = []
 gPEPS_data = []
@@ -200,13 +200,14 @@ for n in range(len(D_max)):
 
 plt.figure()
 plt.plot(D_max, E_gPEPS, 'o')
-plt.plot(D_max, E_exact_gPEPS, 'o')
+#plt.plot(D_max, E_exact_gPEPS, 'o')
 plt.plot(D_max, E_BP, 'o')
-plt.plot(D_max, E_exact_BP, 'o')
+#plt.plot(D_max, E_exact_BP, 'o')
 #plt.plot(D_max, E_BP_rdm_belief, 'o')
 plt.plot(D_max, E_BP_factor_belief, 'o')
 
-plt.legend(['gPEPS', 'exact gPEPS', 'BP gPEPS', 'exact BP', 'BP factor'])
+#plt.legend(['gPEPS', 'exact gPEPS', 'BP gPEPS', 'exact BP', 'BP factor'])
+plt.legend(['gPEPS', 'BP gPEPS', 'BP factor'])
 plt.show()
 
 E_dif = -(np.array(E_exact_gPEPS) - np.array(E_exact_BP))
@@ -243,12 +244,13 @@ plt.grid()
 plt.show()
 
 [5, 6, 7, 14, 15, 16]
-plt.imshow(np.real(BP_data[0][14]))
+plt.imshow(np.real(BP_data[3][7]))
 plt.colorbar()
 plt.show()
 
-#file_name = "2019_09_24_1_16_OBC_glassy_Antiferomagnetic_Heisenberg_lattice"
-#file_name_single = "2019_09_24_1_16_OBC_glassy_Antiferomagnetic_Heisenberg_lattice_single_"
+#parameters = [['N, M', [N, M]], ['dE', dE], ['t_max', t_max], ['dumping', dumping], ['epsilon', epsilon], ['D_max', D_max]]
+#file_name = "2019_10_2_1_100_OBC_glassy_Antiferomagnetic_Heisenberg_lattice"
+#file_name_single = "2019_10_2_1_100_OBC_glassy_Antiferomagnetic_Heisenberg_lattice_single_"
 #pickle.dump(parameters, open(file_name + '_parameters.p', "wb"))
 #pickle.dump(BP_data, open(file_name + '_BP.p', "wb"))
 #pickle.dump(gPEPS_data, open(file_name + '_gPEPS.p', "wb"))

@@ -82,3 +82,37 @@ def PEPS_OBC_random_tn_gen(smat, p, d):
     for i in range(m):
         LL.append(np.ones(d, dtype=float) / d)
     return TT, LL
+
+
+def PEPS_OBC_edge_rect_env(Ek, smat, h_w):
+    # given an edge 'Ek' and a structure matrix 'smat' (tensors, edges) of an obc PEPS this function finds the
+    # rectangular environment (single step)
+    # h_w = [height, width] of PEPS lattice
+    n, m = smat.shape
+    omat = np.arange(n).reshape((h_w[0], h_w[1]))
+    Ek_tens = np.nonzero(smat[:, Ek])[0]
+    i, j = np.unravel_index(Ek_tens, omat.shape)
+    mat_j = np.mod(omat, h_w[1])
+    mat_i = (omat - mat_j) / h_w[1]
+    Ti_idx = [i[0], j[0]]
+    Tj_idx = [i[1], j[1]]
+    bmatTi = (mat_i <= Ti_idx[0] + 1) & (mat_i >= Ti_idx[0] - 1) & (mat_j <= Ti_idx[1] + 1) & (mat_j >= Ti_idx[1] - 1)
+    bmatTj = (mat_i <= Tj_idx[0] + 1) & (mat_i >= Tj_idx[0] - 1) & (mat_j <= Tj_idx[1] + 1) & (mat_j >= Tj_idx[1] - 1)
+    condition = bmatTi | bmatTj
+    emat = np.where(condition, 1, -1)
+    return emat
+
+
+def PEPS_OBC_divide_edge_regions(Ek, emat, smat):
+    omat = np.arange(smat.shape[0]).reshape(emat.shape)
+    tensors = omat[np.nonzero(emat)]
+    edges = np.nonzero(smat[tensors, :])
+    unique, indices, counts = np.unique(edges[1], return_index=True, return_counts=True)
+    inside = unique[np.nonzero(np.where(counts == 2, unique, -1) > -1)[0]]
+    outside = unique[np.nonzero(np.where(counts == 1, unique, -1) > -1)[0]]
+    return inside, outside
+
+
+
+
+
