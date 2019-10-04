@@ -6,6 +6,7 @@ import virtual_DEFG as denfg
 from numba import jit
 import time
 import matplotlib.pyplot as plt
+import Tensor_Network_functions as tnf
 import ncon_lists_generator as nlg
 
 """
@@ -156,6 +157,12 @@ def get_edges(edge, structure_matrix, incidence_matrix):
     return i_dim, j_dim
 
 
+def get_tensor_edges_n_legs(t_idx, smat):
+    edges = np.nonzero(smat[t_idx, :])[0]
+    legs = smat[t_idx, edges]
+    return [edges, legs]
+
+
 def get_all_edges(edge, structure_matrix, incidence_matrix):
     # given an edge collect neighboring tensors edges and legs
     tidx = np.nonzero(incidence_matrix[:, edge])[0]
@@ -175,6 +182,17 @@ def absorb_edges_for_graph(tensor, edges_dim, bond_vectors):
     # absorb tensor edges
     for i in range(len(edges_dim[0])):
         tensor[0] = np.einsum(tensor[0], range(len(tensor[0].shape)), np.sqrt(bond_vectors[edges_dim[0][i]]), [edges_dim[1][i]], range(len(tensor[0].shape)))
+    return tensor
+
+
+def absorb_edges_for_two_site_expectation_with_env(tensor, edges_dim, bond_vectors, inside_env, outside_env):
+    # absorb tensor edges
+    for i in range(len(edges_dim[0])):
+        if edges_dim[0][i] in inside_env:
+            tensor = np.einsum(tensor, range(len(tensor.shape)), np.sqrt(bond_vectors[edges_dim[0][i]]), [edges_dim[1][i]], range(len(tensor.shape)))
+        elif edges_dim[0][i] in outside_env:
+            tensor = np.einsum(tensor, range(len(tensor.shape)), bond_vectors[edges_dim[0][i]], [edges_dim[1][i]], range(len(tensor.shape)))
+        else: raise IndexError('The edge is not in any edge list')
     return tensor
 
 
@@ -385,6 +403,38 @@ def two_site_expectation(Ek, TT, LL, imat, smat, Oij):
     return two_site_expec
 
 
+def two_site_expectation_with_environment(Ek, env_size, network_shape, TT1, LL1, smat, Oij):
+    TT = cp.deepcopy(TT1)
+    TTconj = conjTN(cp.deepcopy(TT1))
+    LL = cp.deepcopy(LL1)
+    p = Oij.shape[0]
+    Iop = np.eye(p ** 2).reshape(p, p, p, p)
+
+    # get th environment matrix and the lists of inside and outside edges
+    emat = tnf.PEPS_OBC_edge_rect_env(Ek, smat, network_shape, env_size)
+    inside, outside = tnf.PEPS_OBC_divide_edge_regions(emat, smat)
+    omat = np.arange(smat.shape[0]).reshape(emat.shape)
+    tensors_indices = omat[np.nonzero(emat > -1)]
+
+    # absorb edges
+    for t in tensors_indices:
+        edge_leg = get_tensor_edges_n_legs(t, smat)
+        TT[t] = absorb_edges_for_two_site_expectation_with_env(TT[t], edge_leg, LL, inside, outside)
+        TTconj[t] = absorb_edges_for_two_site_expectation_with_env(TTconj[t], edge_leg, LL, inside, outside)
+
+    # lists and ncon
+    t_list, i_list, o_list = nlg.ncon_list_generator_two_site_expectation_with_env_peps_obc(TT, TTconj, Oij, smat, emat, Ek, tensors_indices, inside, outside)
+    t_list_n, i_list_n, o_list_n = nlg.ncon_list_generator_two_site_expectation_with_env_peps_obc(TT, TTconj, Iop, smat, emat, Ek, tensors_indices, inside, outside)
+    expec = ncon.ncon(t_list, i_list, o_list)
+    norm = ncon.ncon(t_list_n, i_list_n, o_list_n)
+    expectation = expec / norm
+    return expectation
+
+
+
+
+
+
 def two_site_exact_expectation(TT, LL, smat, edge, operator):
     TTstar = conjTN(TT)
     TT_tilde = absorb_all_bond_vectors(TT, LL, smat)
@@ -415,6 +465,23 @@ def energy_per_site(TT, LL, imat, smat, Jk, h, Opi, Opj, Op_field):
     for Ek in range(m):
         Oij = np.reshape(-Jk[Ek] * Aij - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p))), (p, p, p, p))
         energy += two_site_expectation(Ek, TT, LL, imat, smat, Oij)
+    energy /= n
+    return energy
+
+
+def energy_per_site_with_environment(network_shape, env_size, TT, LL, smat, Jk, h, Opi, Opj, Op_field):
+    TT = cp.deepcopy(TT)
+    LL = cp.deepcopy(LL)
+    # calculating the normalized energy per site(tensor)
+    p = Opi[0].shape[0]
+    Aij = np.zeros((p ** 2, p ** 2), dtype=complex)
+    for i in range(len(Opi)):
+        Aij += np.kron(Opi[i], Opj[i])
+    energy = 0
+    n, m = np.shape(smat)
+    for Ek in range(m):
+        Oij = np.reshape(-Jk[Ek] * Aij - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p))), (p, p, p, p))
+        energy += two_site_expectation_with_environment(Ek, env_size, network_shape, TT, LL, smat, Oij)
     energy /= n
     return energy
 

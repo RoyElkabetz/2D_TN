@@ -11,7 +11,7 @@ import time
 import Tensor_Network_functions as tnf
 import pickle
 
-def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL):
+def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL, env_size):
     np.random.seed(seed=13)
     s2 = time.time()
     #---------------------- Tensor Network paramas ------------------
@@ -29,6 +29,7 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL)
     E_BP_rdm_belief = []
     E_BP_factor_belief = []
     E_BP_exact = []
+    E_env = []
     mx_BP = []
     mz_BP = []
     my_BP = []
@@ -41,7 +42,6 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL)
     my_mat_exact = np.zeros((len(h), N, M), dtype=complex)
 
     gPEPS_rdm = []
-    gPEPS1_rdm = []
     exact_rdm = []
 
 
@@ -52,7 +52,7 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL)
     sy = 0.5 * pauli_y
     sx = 0.5 * pauli_x
 
-    t_list = [0.1, 0.5, 1]  # imaginary time evolution time steps list
+    t_list = [0.5, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005]  # imaginary time evolution time steps list
     iterations = 100
     Opi = [sx, sy, sz]
     Opj = [sx, sy, sz]
@@ -132,6 +132,9 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL)
                 #energy2 = BP.energy_per_site(TT2, LL2, imat, smat, Jk, h[ss], Opi, Opj, Op_field)
 
                 print(energy1, energy2)
+                print('E env = ', BP.energy_per_site_with_environment([N, M], env_size, TT2, LL2, smat, Jk, h[ss], Opi, Opj, Op_field))
+                #print('E exact = ', BP.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
+                print('\n')
 
                 if np.abs(energy1 - energy2) < dE or energy1 < energy2:
                     flag = 1
@@ -142,8 +145,6 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL)
                     TT = TT2
                     LL = LL2
 
-        t_list = [0.0005, 0.0001, 0.00005]  # imaginary time evolution time steps list
-        iterations = 500
         for dt in t_list:
             flag = 0
             for j in range(iterations):
@@ -152,8 +153,11 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL)
                 TT2, LL2 = gPEPS.PEPS_BPupdate(TT1, LL1, dt, Jk, h[ss], Opi, Opj, Op_field, imat, smat, D_max)
                 energy1 = BP.energy_per_site(TT1, LL1, imat, smat, Jk, h[ss], Opi, Opj, Op_field)
                 energy2 = BP.energy_per_site(TT2, LL2, imat, smat, Jk, h[ss], Opi, Opj, Op_field)
+                env_E = BP.energy_per_site_with_environment([N, M], env_size, TT2, LL2, smat, Jk, h[ss], Opi, Opj, Op_field)
                 print(energy1, energy2)
-
+                print('E env = ', env_E)
+                #print('E exact = ', BP.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
+                print('n')
                 if np.abs(energy1 - energy2) < dE:
                     flag = 1
                     TT = TT2
@@ -213,8 +217,10 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL)
         E_BP_factor_belief.append(BP.BP_energy_per_site_using_factor_belief(graph, smat, imat, Jk, h[0], Opi, Opj, Op_field))
         E_BP.append(BP.energy_per_site(TT, LL, imat, smat, Jk, h[ss], Opi, Opj, Op_field))
         #E_BP_exact.append(BP.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
-        #print('E, E_exact E_BP_rdm_belief, E_BP_factor_belief = ', E_BP[ss], E_BP_exact[ss], E_BP_rdm_belief[ss], E_BP_factor_belief[ss])
-        print('E, E_BP_rdm_belief, E_BP_factor_belief = ', E_BP[ss], E_BP_rdm_belief[ss], E_BP_factor_belief[ss])
+        E_env.append(BP.energy_per_site_with_environment([N, M], env_size, TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
+        #print('E_exact', E_BP_exact[ss])
+        print('E, E_BP_factor_belief, E_BP_rbm_belief = ', E_BP[ss], E_BP_factor_belief[ss], E_BP_rdm_belief[ss])
+        print('env_size, E env = ', env_size, E_env[ss])
     e2 = time.time()
     run_time_of_BPupdate = e2 - s2
 

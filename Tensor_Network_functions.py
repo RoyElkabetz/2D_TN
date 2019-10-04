@@ -84,7 +84,7 @@ def PEPS_OBC_random_tn_gen(smat, p, d):
     return TT, LL
 
 
-def PEPS_OBC_edge_rect_env(Ek, smat, h_w):
+def PEPS_OBC_edge_rect_env(Ek, smat, h_w, env_size):
     # given an edge 'Ek' and a structure matrix 'smat' (tensors, edges) of an obc PEPS this function finds the
     # rectangular environment (single step)
     # h_w = [height, width] of PEPS lattice
@@ -96,21 +96,36 @@ def PEPS_OBC_edge_rect_env(Ek, smat, h_w):
     mat_i = (omat - mat_j) / h_w[1]
     Ti_idx = [i[0], j[0]]
     Tj_idx = [i[1], j[1]]
-    bmatTi = (mat_i <= Ti_idx[0] + 1) & (mat_i >= Ti_idx[0] - 1) & (mat_j <= Ti_idx[1] + 1) & (mat_j >= Ti_idx[1] - 1)
-    bmatTj = (mat_i <= Tj_idx[0] + 1) & (mat_i >= Tj_idx[0] - 1) & (mat_j <= Tj_idx[1] + 1) & (mat_j >= Tj_idx[1] - 1)
+    bmatTi = (mat_i <= Ti_idx[0] + env_size) & (mat_i >= Ti_idx[0] - env_size) & (mat_j <= Ti_idx[1] + env_size) & (mat_j >= Ti_idx[1] - env_size)
+    bmatTj = (mat_i <= Tj_idx[0] + env_size) & (mat_i >= Tj_idx[0] - env_size) & (mat_j <= Tj_idx[1] + env_size) & (mat_j >= Tj_idx[1] - env_size)
     condition = bmatTi | bmatTj
     emat = np.where(condition, 1, -1)
     return emat
 
 
-def PEPS_OBC_divide_edge_regions(Ek, emat, smat):
+def PEPS_OBC_divide_edge_regions(emat, smat):
     omat = np.arange(smat.shape[0]).reshape(emat.shape)
-    tensors = omat[np.nonzero(emat)]
+    tensors = omat[np.nonzero(emat > -1)]
     edges = np.nonzero(smat[tensors, :])
     unique, indices, counts = np.unique(edges[1], return_index=True, return_counts=True)
     inside = unique[np.nonzero(np.where(counts == 2, unique, -1) > -1)[0]]
     outside = unique[np.nonzero(np.where(counts == 1, unique, -1) > -1)[0]]
     return inside, outside
+
+def PEPS_OBC_edge_environment_sub_order_matrix(emat):
+    n, m = emat.shape
+    omat = np.arange(n * m).reshape(emat.shape)
+    tensors = omat[np.nonzero(emat > -1)]
+    for i in range(n):
+        if len(np.nonzero(emat[i, :] > -1)[0]):
+            env_ud = len(np.nonzero(emat[i, :] > -1)[0])
+            break
+    for j in range(m):
+        if len(np.nonzero(emat[:, j] > -1)[0]):
+            env_lr = len(np.nonzero(emat[:, j] > -1)[0])
+            break
+    sub_omat = np.array(tensors).reshape(env_lr, env_ud)
+    return sub_omat
 
 
 

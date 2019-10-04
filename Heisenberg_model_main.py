@@ -150,15 +150,15 @@ plt.show()
 
 np.random.seed(seed=14)
 
-N, M = 10, 10
+N, M = 4, 4
 
-
+env_size = 2
 bc = 'open'
-dE = 1e-6
+dE = 1e-5
 t_max = 100
 dumping = 0.2
 epsilon = 1e-5
-D_max = [2, 3, 4, 5]
+D_max = [4]
 mu = -1
 sigma = 0
 Jk = np.random.normal(mu, sigma, np.int((N - 1) * M + (M - 1) * N)) # interaction constant list
@@ -182,7 +182,7 @@ D = []
 for n in range(len(D_max)):
     b = hmf.Heisenberg_PEPS_gPEPS(N, M, Jk, dE, D_max[n], bc)
     TT, LL = cp.deepcopy(b[7]), cp.deepcopy(b[8])
-    a = hmf.Heisenberg_PEPS_BP(N, M, Jk, dE, D_max[n], t_max, epsilon, dumping, bc, TT, LL)
+    a = hmf.Heisenberg_PEPS_BP(N, M, Jk, dE, D_max[n], t_max, epsilon, dumping, bc, TT, LL, env_size)
 
     E_gPEPS.append(b[0])
     E_exact_gPEPS.append(b[1])

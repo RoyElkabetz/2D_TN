@@ -1,5 +1,6 @@
 import numpy as np
 import copy as cp
+import Tensor_Network_functions as tnf
 
 
 def ncon_list_generator(TT, LL, smat, O, spin):
@@ -335,3 +336,74 @@ def ncon_list_generator_braket_mps(TT, TTstar, smat):
         T_list.append(cp.copy(Tstar))
         idx_list.append(cp.copy(Tstaridx))
     return T_list, idx_list
+
+
+def ncon_list_generator_two_site_expectation_with_env_peps_obc(TT, TTstar, Oij, smat, emat, Ek, tensors_list, inside_env, outside_env):
+    Oij_flag = 0
+    e = smat.shape[1]
+    last_edge = 2 * e
+    sub_omat = tnf.PEPS_OBC_edge_environment_sub_order_matrix(emat)
+    n, m = sub_omat.shape
+    if n < m:
+        sub_omat = np.transpose(sub_omat)
+        n, m = sub_omat.shape
+    spins_idx = np.array(range(last_edge, last_edge + len(tensors_list))).reshape(n, m)
+    Oij_idx = range(last_edge + len(tensors_list), last_edge + len(tensors_list) + 4)
+    t_list = [Oij]
+    i_list = [Oij_idx]
+    o_list = []
+    for i in range(n):
+        for j in range(m):
+
+            ## pick a tensor T, T*
+            idx = sub_omat[i, j]
+            t = TT[idx]
+            ts = TTstar[idx]
+            edges = np.nonzero(smat[idx, :])[0]
+            legs = smat[idx, edges]
+            t_idx = [0] * len(t.shape)
+            ts_idx = [0] * len(ts.shape)
+            t_idx[0] = spins_idx[i, j]
+            ts_idx[0] = spins_idx[i, j]
+
+            ## arange legs indices
+            for k in range(len(edges)):
+                if edges[k] in inside_env:
+                    t_idx[legs[k]] = edges[k]
+                    ts_idx[legs[k]] = edges[k] + e
+                elif edges[k] in outside_env:
+                    t_idx[legs[k]] = edges[k]
+                    ts_idx[legs[k]] = edges[k]
+                if edges[k] == Ek:
+                    t_Ek = np.nonzero(smat[:, Ek])[0]
+                    if idx == t_Ek[0]:
+                        Oij_flag = 1
+                        t_idx[0] = Oij_idx[0]
+                        ts_idx[0] = Oij_idx[2]
+                    if idx == t_Ek[1]:
+                        t_idx[0] = Oij_idx[1]
+                        ts_idx[0] = Oij_idx[3]
+
+            ## add to lists
+            t_list += [t, ts]
+            i_list += [t_idx, ts_idx]
+            o_list += t_idx
+            o_list += ts_idx
+            if Oij_flag:
+                o_list += Oij_idx
+                Oij_flag = 0
+
+    return t_list, i_list, o_list
+
+
+
+
+
+
+
+
+
+
+
+
+
