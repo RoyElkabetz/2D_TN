@@ -112,6 +112,7 @@ def PEPS_OBC_divide_edge_regions(emat, smat):
     outside = unique[np.nonzero(np.where(counts == 1, unique, -1) > -1)[0]]
     return inside, outside
 
+
 def PEPS_OBC_edge_environment_sub_order_matrix(emat):
     n, m = emat.shape
     omat = np.arange(n * m).reshape(emat.shape)

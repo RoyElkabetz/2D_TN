@@ -280,7 +280,15 @@ class Graph:
         return super_tensor1, super_tensor2
 
 
-
+    def absorb_message_into_factor_in_env(self, f, nodes_out):
+        # return a copy of f super physical tensor with absorbd message from node n
+        ne, ten, idx = cp.deepcopy(self.factors[f])
+        messages = self.messages_n2f
+        super_tensor = self.make_super_physical_tensor(ten)
+        for n in ne:
+            if n in nodes_out:
+                super_tensor *= self.broadcasting(messages[n][f], ne[n], super_tensor)
+        return super_tensor
 
 
     def f2n_message(self, f, n, messages):

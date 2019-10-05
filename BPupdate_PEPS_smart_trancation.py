@@ -3,7 +3,6 @@ import ncon as ncon
 import copy as cp
 from scipy import linalg
 import virtual_DEFG as denfg
-from numba import jit
 import time
 import matplotlib.pyplot as plt
 import Tensor_Network_functions as tnf
@@ -431,10 +430,6 @@ def two_site_expectation_with_environment(Ek, env_size, network_shape, TT1, LL1,
     return expectation
 
 
-
-
-
-
 def two_site_exact_expectation(TT, LL, smat, edge, operator):
     TTstar = conjTN(TT)
     TT_tilde = absorb_all_bond_vectors(TT, LL, smat)
@@ -504,7 +499,6 @@ def exact_energy_per_site(TT, LL, smat, Jk, h, Opi, Opj, Op_field):
 
 
 def BP_energy_per_site_using_factor_belief(graph, smat, imat, Jk, h, Opi, Opj, Op_field):
-    # calculating the normalized exact energy per site(tensor)
 
     p = Opi[0].shape[0]
     Aij = np.zeros((p ** 2, p ** 2), dtype=complex)
@@ -535,6 +529,26 @@ def BP_energy_per_site_using_factor_belief(graph, smat, imat, Jk, h, Opi, Opj, O
         norm = ncon.ncon([fi_belief, fj_belief, np.eye(p ** 2).reshape((p, p, p, p))], [fi_idx, fj_idx, Oij_idx])
         E_normalized = E / norm
         energy += E_normalized
+    energy /= n
+    return energy
+
+
+def BP_energy_per_site_using_factor_belief_with_environment(graph, env_size, network_shape, smat, Jk, h, Opi, Opj, Op_field):
+    energy = 0
+    p = Opi[0].shape[0]
+    Aij = np.zeros((p ** 2, p ** 2), dtype=complex)
+    Iop = np.eye(Aij.shape[0]).reshape(p, p, p, p)
+    for i in range(len(Opi)):
+        Aij += np.kron(Opi[i], Opj[i])
+    n, m = np.shape(smat)
+    for Ek in range(m):
+        Oij = np.reshape(-Jk[Ek] * Aij - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p))), (p, p, p, p))
+        f_list, i_list, o_list = nlg.ncon_list_generator_two_site_expectation_with_factor_belief_env_peps_obc(Ek, graph, env_size, network_shape, smat, Oij)
+        f_list_n, i_list_n, o_list_n = nlg.ncon_list_generator_two_site_expectation_with_factor_belief_env_peps_obc(Ek, graph, env_size, network_shape, smat, Iop)
+        expec = ncon.ncon(f_list, i_list, o_list)
+        norm = ncon.ncon(f_list_n, i_list_n, o_list_n)
+        expectation = expec / norm
+        energy += expectation
     energy /= n
     return energy
 

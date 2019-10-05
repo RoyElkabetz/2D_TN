@@ -133,6 +133,7 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL,
 
                 print(energy1, energy2)
                 print('E env = ', BP.energy_per_site_with_environment([N, M], env_size, TT2, LL2, smat, Jk, h[ss], Opi, Opj, Op_field))
+                print('E env f belief', BP.BP_energy_per_site_using_factor_belief_with_environment(graph, env_size, [N, M], smat, Jk, h[ss], Opi, Opj, Op_field))
                 #print('E exact = ', BP.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
                 print('\n')
 
@@ -156,6 +157,8 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL,
                 env_E = BP.energy_per_site_with_environment([N, M], env_size, TT2, LL2, smat, Jk, h[ss], Opi, Opj, Op_field)
                 print(energy1, energy2)
                 print('E env = ', env_E)
+                print('E env f belief', BP.BP_energy_per_site_using_factor_belief_with_environment(graph, env_size, [N, M], smat, Jk, h[ss], Opi, Opj, Op_field))
+
                 #print('E exact = ', BP.exact_energy_per_site(TT, LL, smat, Jk, h[ss], Opi, Opj, Op_field))
                 print('n')
                 if np.abs(energy1 - energy2) < dE:
@@ -221,6 +224,8 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL,
         #print('E_exact', E_BP_exact[ss])
         print('E, E_BP_factor_belief, E_BP_rbm_belief = ', E_BP[ss], E_BP_factor_belief[ss], E_BP_rdm_belief[ss])
         print('env_size, E env = ', env_size, E_env[ss])
+        print('E env f belief', BP.BP_energy_per_site_using_factor_belief_with_environment(graph, env_size, [N, M], smat, Jk, h[ss], Opi, Opj, Op_field))
+
     e2 = time.time()
     run_time_of_BPupdate = e2 - s2
 
