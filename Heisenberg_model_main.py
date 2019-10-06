@@ -11,6 +11,8 @@ import time
 import Tensor_Network_functions as tnf
 import pickle
 import Heisenberg_model_function as hmf
+import pandas as pd
+
 
 #------------------------- main ----------------------------
 '''
@@ -150,17 +152,17 @@ plt.show()
 
 np.random.seed(seed=14)
 
-N, M = 6, 4
+N, M = 10, 10
 
-env_size = 2
+env_size = [0, 1, 2, 3, 4]
 bc = 'open'
-dE = 1e-5
-t_max = 100
+dE = 1e-8
+t_max = 200
 dumping = 0.2
 epsilon = 1e-5
 D_max = [2]
 mu = -1
-sigma = 0
+sigma = 2
 Jk = np.random.normal(mu, sigma, np.int((N - 1) * M + (M - 1) * N)) # interaction constant list
 #Jk = np.random.normal(mu, sigma, np.int(2 * N[0])) # interaction constant list
 print('Jk = ', Jk)
@@ -169,35 +171,80 @@ print('Jk = ', Jk)
 
 BP_data = []
 gPEPS_data = []
-E_gPEPS = []
+
+# energies
 E_BP = []
-E_BP_rdm_belief = []
-E_BP_factor_belief = []
-E_exact_BP = []
-E_exact_gPEPS = []
-E_article = [-0.54557, -0.55481, -0.56317, -0.56660, -0.56714, -0.56715]
-D = []
+E_BP_env = []
+E_BP_f_belief = []
+E_BP_f_belief_env = []
+
+E_gPEPS = []
+E_gPEPS_env = []
+
 
 
 for n in range(len(D_max)):
-    b = hmf.Heisenberg_PEPS_gPEPS(N, M, Jk, dE, D_max[n], bc)
-    TT, LL = cp.deepcopy(b[7]), cp.deepcopy(b[8])
+    b = hmf.Heisenberg_PEPS_gPEPS(N, M, Jk, dE, D_max[n], bc, env_size)
+    TT, LL = cp.deepcopy(b[2]), cp.deepcopy(b[3])
     a = hmf.Heisenberg_PEPS_BP(N, M, Jk, dE, D_max[n], t_max, epsilon, dumping, bc, TT, LL, env_size)
-
     E_gPEPS.append(b[0])
-    E_exact_gPEPS.append(b[1])
+    E_gPEPS_env.append(b[1])
     E_BP.append(a[0])
-    E_exact_BP.append(a[1])
-    E_BP_rdm_belief.append(a[2])
-    E_BP_factor_belief.append(a[3])
-    BP_data.append(a)
-    gPEPS_data.append(b)
-    #E_BP.append(a[0])
-    #print('\n')
-    #print('gPEPS, BP = ', E_gPEPS[n], E_BP[n])
-    #print('\n')
+    E_BP_f_belief.append(a[1])
+    E_BP_env.append(a[2])
+    E_BP_f_belief_env.append(a[3])
+
+E = [list(np.real(E_gPEPS_env[0])), list(np.real(E_BP_env[0])), list(np.real(E_BP_f_belief_env[0]))]
+## convert your array into a dataframe
+df = pd.DataFrame(E, columns=env_size, index=['E gPEPS', 'E BP', 'E BP f-belief'])
+## save to xlsx file
+filepath = 'my_excel_file.xlsx'
+df.to_excel(filepath, index=True)
+
+'''
+columns = ('0', '1', '2')
+rows = ['E gPEPS', 'E BP', 'E BP f-belief']
+fig = plt.figure()
+ax = fig.add_subplot(111)
+# Draw table
+plt.title('Energy calculations with environment of 10x10 \n AFH with D = 2, Jij = normal(1, 0)')
+the_table = plt.table(cellText=E,
+                      colWidths=[0.03] * 4,
+                      rowLabels=rows,
+                      colLabels=columns,
+                      loc='center')
+the_table.auto_set_font_size(False)
+the_table.set_fontsize(10)
+the_table.scale(6, 4)
+
+# Removing ticks and spines enables you to get the figure only with table
+plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
+plt.tick_params(axis='y', which='both', right=False, left=False, labelleft=False)
+for pos in ['right','top','bottom','left']:
+    plt.gca().spines[pos].set_visible(False)
+plt.show()
 
 
+
+
+
+names = ['E_gPEPS', 'E_gPEPS_env', 'E_BP', 'E_BP_env', 'E_BP_f_belief', 'E_BP_f_belief_env']
+plt.figure()
+plt.title('10x10 AFH with D = 2')
+plt.plot(env_size, np.real(E_gPEPS[0]), 'o')
+plt.plot(env_size, np.real(E_gPEPS_env[0]), 'o')
+plt.plot(env_size, np.real(E_BP[0]), 'v')
+plt.plot(env_size, np.real(E_BP_env[0]), 'v')
+plt.plot(env_size, np.real(E_BP_f_belief[0]), 'x', markersize=12)
+plt.plot(env_size, np.real(E_BP_f_belief_env[0]), 'x', markersize=12)
+plt.legend(names)
+plt.xticks(env_size)
+plt.xlabel('environment size')
+plt.ylabel('energy per site')
+plt.grid()
+plt.show()
+'''
+'''
 plt.figure()
 plt.plot(D_max, E_gPEPS, 'o')
 #plt.plot(D_max, E_exact_gPEPS, 'o')
@@ -254,7 +301,7 @@ plt.show()
 #pickle.dump(parameters, open(file_name + '_parameters.p', "wb"))
 #pickle.dump(BP_data, open(file_name + '_BP.p', "wb"))
 #pickle.dump(gPEPS_data, open(file_name + '_gPEPS.p', "wb"))
-
+'''
 
 # ---------------------------------- BP, gPEPS and exact rdm's comparison --------------------------------------
 '''

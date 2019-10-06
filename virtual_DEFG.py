@@ -291,6 +291,19 @@ class Graph:
         return super_tensor
 
 
+    def absorb_message_into_factor_in_env_efficient(self, f, nodes_out):
+        # return a copy of f  tensor with absorbed message from node n
+        ne, ten, idx = cp.deepcopy(self.factors[f])
+        messages = self.messages_n2f
+        for n in ne:
+            if n in nodes_out:
+                idx = range(len(ten.shape))
+                final_idx = range(len(ten.shape))
+                final_idx[ne[n]] = len(ten.shape)
+                ten = np.einsum(ten, idx, messages[n][f], [len(ten.shape), ne[n]], final_idx)
+        return ten
+
+
     def f2n_message(self, f, n, messages):
         neighbors, tensor, index = cp.deepcopy(self.factors[f])
         conj_tensor = cp.copy(np.conj(tensor))

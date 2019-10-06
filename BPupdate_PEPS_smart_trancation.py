@@ -475,6 +475,7 @@ def energy_per_site_with_environment(network_shape, env_size, TT, LL, smat, Jk, 
     energy = 0
     n, m = np.shape(smat)
     for Ek in range(m):
+        print(Ek)
         Oij = np.reshape(-Jk[Ek] * Aij - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p))), (p, p, p, p))
         energy += two_site_expectation_with_environment(Ek, env_size, network_shape, TT, LL, smat, Oij)
     energy /= n
@@ -542,9 +543,10 @@ def BP_energy_per_site_using_factor_belief_with_environment(graph, env_size, net
         Aij += np.kron(Opi[i], Opj[i])
     n, m = np.shape(smat)
     for Ek in range(m):
+        print('Ek = ', Ek)
         Oij = np.reshape(-Jk[Ek] * Aij - 0.25 * h * (np.kron(np.eye(p), Op_field) + np.kron(Op_field, np.eye(p))), (p, p, p, p))
-        f_list, i_list, o_list = nlg.ncon_list_generator_two_site_expectation_with_factor_belief_env_peps_obc(Ek, graph, env_size, network_shape, smat, Oij)
-        f_list_n, i_list_n, o_list_n = nlg.ncon_list_generator_two_site_expectation_with_factor_belief_env_peps_obc(Ek, graph, env_size, network_shape, smat, Iop)
+        f_list, i_list, o_list = nlg.ncon_list_generator_two_site_expectation_with_factor_belief_env_peps_obc_efficient(Ek, graph, env_size, network_shape, smat, Oij)
+        f_list_n, i_list_n, o_list_n = nlg.ncon_list_generator_two_site_expectation_with_factor_belief_env_peps_obc_efficient(Ek, graph, env_size, network_shape, smat, Iop)
         expec = ncon.ncon(f_list, i_list, o_list)
         norm = ncon.ncon(f_list_n, i_list_n, o_list_n)
         expectation = expec / norm

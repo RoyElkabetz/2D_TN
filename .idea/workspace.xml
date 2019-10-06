@@ -2,12 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="39f4aadf-3039-4826-aca9-4bd799d9af66" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py" beforeDir="false" afterPath="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Heisenberg_model_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/Heisenberg_model_function.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Heisenberg_model_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Heisenberg_model_main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tensor_Network_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/Tensor_Network_functions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ncon_lists_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/ncon_lists_generator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp.py" beforeDir="false" afterPath="$PROJECT_DIR$/temp.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/virtual_DEFG.py" beforeDir="false" afterPath="$PROJECT_DIR$/virtual_DEFG.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -45,8 +44,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="234">
-              <caret line="545" selection-start-line="545" selection-end-line="545" />
+            <state relative-caret-position="227">
+              <caret line="478" column="27" selection-start-line="478" selection-start-column="27" selection-end-line="478" selection-end-column="27" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
                 <element signature="e#213#336#1" />
@@ -89,7 +88,6 @@
                 <element signature="e#17223#17319#0" />
                 <element signature="e#17394#17937#0" />
                 <element signature="e#17715#17903#0" />
-                <element signature="e#20228#20825#0" />
                 <element signature="e#18012#18561#0" />
                 <element signature="e#18339#18527#0" />
                 <element signature="e#18663#20344#0" />
@@ -120,8 +118,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ncon_lists_generator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="437" selection-start-line="437" selection-end-line="437" />
+            <state relative-caret-position="-16">
+              <caret line="479" column="66" selection-start-line="479" selection-start-column="66" selection-end-line="479" selection-end-column="66" />
               <folding>
                 <element signature="e#91#1500#0" />
                 <element signature="e#323#1471#0" />
@@ -156,6 +154,7 @@
                 <element signature="e#9692#10362#0" />
                 <element signature="e#10105#10182#0" />
                 <element signature="e#10572#12408#0" />
+                <element signature="e#12609#14489#0" />
               </folding>
             </state>
           </provider>
@@ -164,8 +163,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Heisenberg_model_function.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-99">
-              <caret line="135" column="139" selection-start-line="135" selection-start-column="139" selection-end-line="135" selection-end-column="139" />
+            <state relative-caret-position="2577">
+              <caret line="187" column="39" selection-start-line="187" selection-start-column="39" selection-end-line="187" selection-end-column="39" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -176,8 +175,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Heisenberg_model_main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="220">
-              <caret line="160" column="10" selection-start-line="160" selection-start-column="10" selection-end-line="160" selection-end-column="10" />
+            <state relative-caret-position="160">
+              <caret line="164" column="9" selection-start-line="164" selection-start-column="9" selection-end-line="164" selection-end-column="9" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -219,8 +218,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/temp.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="12" column="12" selection-start-line="12" selection-start-column="12" selection-end-line="12" selection-end-column="12" />
+            <state relative-caret-position="150">
+              <caret line="10" column="8" selection-start-line="10" selection-start-column="8" selection-end-line="10" selection-end-column="8" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
               </folding>
@@ -231,8 +230,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/virtual_DEFG.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="282" column="41" selection-start-line="282" selection-start-column="34" selection-end-line="282" selection-end-column="41" />
+            <state relative-caret-position="4244">
+              <caret line="293" column="51" lean-forward="true" selection-start-line="293" selection-start-column="8" selection-end-line="293" selection-end-column="51" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -305,12 +304,12 @@
         <option value="$USER_HOME$/Downloads/factor-to-nodes-demo.py" />
         <option value="$PROJECT_DIR$/double_edge_experiments.py" />
         <option value="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation2.py" />
-        <option value="$PROJECT_DIR$/temp.py" />
         <option value="$PROJECT_DIR$/Tensor_Network_functions.py" />
         <option value="$PROJECT_DIR$/virtual_DEFG.py" />
-        <option value="$PROJECT_DIR$/Heisenberg_model_function.py" />
-        <option value="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py" />
         <option value="$PROJECT_DIR$/ncon_lists_generator.py" />
+        <option value="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py" />
+        <option value="$PROJECT_DIR$/Heisenberg_model_function.py" />
+        <option value="$PROJECT_DIR$/temp.py" />
         <option value="$PROJECT_DIR$/Heisenberg_model_main.py" />
       </list>
     </option>
@@ -375,7 +374,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.Heisenberg_model_main">
+  <component name="RunManager" selected="Python.temp">
     <configuration name="Heisenberg_model_function" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="2D_TN" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -489,8 +488,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.Heisenberg_model_main" />
         <item itemvalue="Python.temp" />
+        <item itemvalue="Python.Heisenberg_model_main" />
         <item itemvalue="Python.Heisenberg_model_function" />
         <item itemvalue="Python.double_edge_experiments" />
         <item itemvalue="Python.factor-to-nodes-demo" />
@@ -520,12 +519,12 @@
       <workItem from="1568614729803" duration="15925000" />
       <workItem from="1568718300955" duration="1030000" />
       <workItem from="1568719405080" duration="124966000" />
-      <workItem from="1569482563539" duration="91028000" />
+      <workItem from="1569482563539" duration="110543000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="731482000" />
+    <option name="totallyTimeSpent" value="750997000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -539,7 +538,7 @@
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="791" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" weight="0.27753934" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.27753934" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.24973376" />
       <window_info id="Favorites" order="2" side_tool="true" weight="0.32960597" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -554,7 +553,7 @@
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32188842" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.3208191" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="12" visible="true" weight="0.3104435" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="12" visible="true" weight="0.33762518" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -657,12 +656,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Heisenberg_model_function.py</url>
-          <line>302</line>
+          <line>274</line>
           <option name="timeStamp" value="301" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Heisenberg_model_function.py</url>
-          <line>214</line>
+          <line>188</line>
           <option name="timeStamp" value="323" />
         </line-breakpoint>
       </breakpoints>
@@ -1086,59 +1085,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/temp.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" column="12" selection-start-line="12" selection-start-column="12" selection-end-line="12" selection-end-column="12" />
-          <folding>
-            <element signature="e#0#21#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/virtual_DEFG.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="282" column="41" selection-start-line="282" selection-start-column="34" selection-end-line="282" selection-end-column="41" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Tensor_Network_functions.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="18" column="26" selection-start-line="18" selection-start-column="26" selection-end-line="18" selection-end-column="26" />
-          <folding>
-            <element signature="e#56#500#0" />
-            <element signature="e#56#154#0" />
-            <element signature="e#534#1261#0" />
-            <element signature="e#847#1239#0" />
-            <element signature="e#1295#2411#0" />
-            <element signature="e#1463#1647#0" />
-            <element signature="e#1494#1647#0" />
-            <element signature="e#1836#2135#0" />
-            <element signature="e#2180#2389#0" />
-            <element signature="e#2458#2976#0" />
-            <element signature="e#2458#2556#0" />
-            <element signature="e#2725#2876#0" />
-            <element signature="e#2945#3752#0" />
-            <element signature="e#2945#3051#0" />
-            <element signature="e#3758#4213#0" />
-            <element signature="e#4326#4807#0" />
-            <element signature="e#4347#4461#0" />
-            <element signature="e#4399#4461#0" />
-            <element signature="e#4493#4607#0" />
-            <element signature="e#4545#4607#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Heisenberg_model_function.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-99">
-          <caret line="135" column="139" selection-start-line="135" selection-start-column="139" selection-end-line="135" selection-end-column="139" />
+        <state relative-caret-position="4244">
+          <caret line="293" column="51" lean-forward="true" selection-start-line="293" selection-start-column="8" selection-end-line="293" selection-end-column="51" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -1147,8 +1097,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="545" selection-start-line="545" selection-end-line="545" />
+        <state relative-caret-position="227">
+          <caret line="478" column="27" selection-start-line="478" selection-start-column="27" selection-end-line="478" selection-end-column="27" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
             <element signature="e#213#336#1" />
@@ -1191,7 +1141,6 @@
             <element signature="e#17223#17319#0" />
             <element signature="e#17394#17937#0" />
             <element signature="e#17715#17903#0" />
-            <element signature="e#20228#20825#0" />
             <element signature="e#18012#18561#0" />
             <element signature="e#18339#18527#0" />
             <element signature="e#18663#20344#0" />
@@ -1220,8 +1169,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ncon_lists_generator.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="437" selection-start-line="437" selection-end-line="437" />
+        <state relative-caret-position="-16">
+          <caret line="479" column="66" selection-start-line="479" selection-start-column="66" selection-end-line="479" selection-end-column="66" />
           <folding>
             <element signature="e#91#1500#0" />
             <element signature="e#323#1471#0" />
@@ -1256,14 +1205,64 @@
             <element signature="e#9692#10362#0" />
             <element signature="e#10105#10182#0" />
             <element signature="e#10572#12408#0" />
+            <element signature="e#12609#14489#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Tensor_Network_functions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="18" column="26" selection-start-line="18" selection-start-column="26" selection-end-line="18" selection-end-column="26" />
+          <folding>
+            <element signature="e#56#500#0" />
+            <element signature="e#56#154#0" />
+            <element signature="e#534#1261#0" />
+            <element signature="e#847#1239#0" />
+            <element signature="e#1295#2411#0" />
+            <element signature="e#1463#1647#0" />
+            <element signature="e#1494#1647#0" />
+            <element signature="e#1836#2135#0" />
+            <element signature="e#2180#2389#0" />
+            <element signature="e#2458#2976#0" />
+            <element signature="e#2458#2556#0" />
+            <element signature="e#2725#2876#0" />
+            <element signature="e#2945#3752#0" />
+            <element signature="e#2945#3051#0" />
+            <element signature="e#3758#4213#0" />
+            <element signature="e#4326#4807#0" />
+            <element signature="e#4347#4461#0" />
+            <element signature="e#4399#4461#0" />
+            <element signature="e#4493#4607#0" />
+            <element signature="e#4545#4607#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/temp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="8" selection-start-line="10" selection-start-column="8" selection-end-line="10" selection-end-column="8" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Heisenberg_model_function.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2577">
+          <caret line="187" column="39" selection-start-line="187" selection-start-column="39" selection-end-line="187" selection-end-column="39" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Heisenberg_model_main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="160" column="10" selection-start-line="160" selection-start-column="10" selection-end-line="160" selection-end-column="10" />
+        <state relative-caret-position="160">
+          <caret line="164" column="9" selection-start-line="164" selection-start-column="9" selection-end-line="164" selection-end-column="9" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>

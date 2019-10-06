@@ -450,6 +450,65 @@ def ncon_list_generator_two_site_expectation_with_factor_belief_env_peps_obc(Ek,
     return factors_list, idx_list, order_list
 
 
+def ncon_list_generator_two_site_expectation_with_factor_belief_env_peps_obc_efficient(Ek, graph, env_size, network_shape, smat, Oij):
+    last_edge = smat.shape[1]
+    counter_out = 2 * (last_edge + 1)
+
+    # get the environment matrix and the lists of inside and outside edges
+    emat = tnf.PEPS_OBC_edge_rect_env(Ek, smat, network_shape, env_size)
+    inside, outside = tnf.PEPS_OBC_divide_edge_regions(emat, smat)
+    sub_omat = tnf.PEPS_OBC_edge_environment_sub_order_matrix(emat)
+    N, M = sub_omat.shape
+    if N < M:
+        sub_omat = np.transpose(sub_omat)
+        N, M = sub_omat.shape
+    tensors_indices = sub_omat.ravel()
+    Oij_idx = range(2 * (counter_out + len(outside)), 2 * (counter_out + len(outside)) + 4)
+    spins_counter = Oij_idx[3] + 1
+    Ek_tensors = np.nonzero(smat[:, Ek])[0]
+
+    # make factors and nodes lists
+    nodes_out = []
+    for n in outside:
+        nodes_out.append('n' + str(n))
+    factors_list = []
+    idx_list = []
+    order_list = []
+    for i, t in enumerate(tensors_indices):
+        f = 'f' + str(t)
+        factors_list.append(graph.absorb_message_into_factor_in_env_efficient(f, nodes_out))
+        factors_list.append(np.conj(cp.deepcopy(graph.factors[f][1])))
+
+        idx = [0] * len(graph.factors[f][1].shape)
+        idx_conj = [0] * len(graph.factors[f][1].shape)
+        idx[0] = spins_counter
+        idx_conj[0] = spins_counter
+        spins_counter += 1
+        edges = np.nonzero(smat[t, :])[0]
+        legs = smat[t, edges]
+        for l, edge in enumerate(edges):
+            if edge in outside:
+                idx[legs[l]] = counter_out
+                idx_conj[legs[l]] = counter_out
+                counter_out += 1
+            if edge in inside:
+                idx[legs[l]] = edge
+                idx_conj[legs[l]] = edge + last_edge
+                if (edge == Ek) & (Ek_tensors[0] == t):
+                    idx[0] = Oij_idx[0]
+                    idx_conj[0] = Oij_idx[2]
+                if (edge == Ek) & (Ek_tensors[1] == t):
+                    idx[0] = Oij_idx[1]
+                    idx_conj[0] = Oij_idx[3]
+        idx_list.append(idx)
+        idx_list.append(idx_conj)
+        order_list += idx
+        order_list += idx_conj
+    factors_list.append(Oij)
+    idx_list.append(Oij_idx)
+    return factors_list, idx_list, order_list
+
+
 
 
 
