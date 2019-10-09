@@ -152,20 +152,20 @@ plt.show()
 
 np.random.seed(seed=14)
 
-N, M = 10, 10
+N, M = 4, 4
 
-env_size = [0, 1, 2, 3, 4]
+env_size = [0, 1]
 bc = 'open'
 dE = 1e-8
 t_max = 200
 dumping = 0.2
 epsilon = 1e-5
-D_max = [2]
+D_max = [2, 3, 4, 5]
 mu = -1
-sigma = 2
+sigma = 0
 Jk = np.random.normal(mu, sigma, np.int((N - 1) * M + (M - 1) * N)) # interaction constant list
 #Jk = np.random.normal(mu, sigma, np.int(2 * N[0])) # interaction constant list
-print('Jk = ', Jk)
+#print('Jk = ', Jk)
 
 
 
@@ -182,7 +182,6 @@ E_gPEPS = []
 E_gPEPS_env = []
 
 
-
 for n in range(len(D_max)):
     b = hmf.Heisenberg_PEPS_gPEPS(N, M, Jk, dE, D_max[n], bc, env_size)
     TT, LL = cp.deepcopy(b[2]), cp.deepcopy(b[3])
@@ -194,11 +193,11 @@ for n in range(len(D_max)):
     E_BP_env.append(a[2])
     E_BP_f_belief_env.append(a[3])
 
-E = [list(np.real(E_gPEPS_env[0])), list(np.real(E_BP_env[0])), list(np.real(E_BP_f_belief_env[0]))]
+E = np.array(list(np.real(E_BP_f_belief_env)))
 ## convert your array into a dataframe
-df = pd.DataFrame(E, columns=env_size, index=['E gPEPS', 'E BP', 'E BP f-belief'])
+df = pd.DataFrame(E, columns=env_size)
 ## save to xlsx file
-filepath = 'my_excel_file.xlsx'
+filepath = 'my_excel_file4x4AFH.xlsx'
 df.to_excel(filepath, index=True)
 
 '''
