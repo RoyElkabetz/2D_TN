@@ -129,6 +129,29 @@ def PEPS_OBC_edge_environment_sub_order_matrix(emat):
     return sub_omat
 
 
+def PEPS_OBC_broadcast_to_Itai(TT, PEPS_shape, p, d):
 
+    new_TT = []
+    new_order = [0, 1, 3, 2, 4]
+    N, M = PEPS_shape
+    for t, T in enumerate(TT):
+        i, j = np.unravel_index(t, PEPS_shape)
+        Dup = d
+        Ddown = d
+        Dleft = d
+        Dright = d
 
+        if i == 0:
+            Dup = 1
+        if i == N - 1:
+            Ddown = 1
+        if j == 0:
+            Dleft = 1
+        if j == M - 1:
+            Dright = 1
+
+        tensor = np.transpose(TT[t].reshape(p, Dleft, Dup, Dright, Ddown), new_order)
+        norm = np.einsum(tensor, [0, 1, 2, 3, 4], np.conj(tensor), [0, 1, 2, 3, 4])
+        new_TT.append(np.real(tensor / norm))
+    return new_TT
 

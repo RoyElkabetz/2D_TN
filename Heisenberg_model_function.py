@@ -11,7 +11,7 @@ import time
 import Tensor_Network_functions as tnf
 import pickle
 
-def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL, env_size):
+def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, env_size):
     np.random.seed(seed=13)
     s2 = time.time()
     #---------------------- Tensor Network paramas ------------------
@@ -68,18 +68,18 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL,
 
 
     # ------------- generating tensors and bond vectors ---------------------------
-    '''
+
     if bc == 'open':
         TT, LL = tnf.PEPS_OBC_random_tn_gen(smat, p, d)
     if bc == 'periodic':
         TT, LL = tnf.random_tn_gen(smat, p, d)
-    '''
+
 
     for ss in range(len(h)):
 
         counter = 0
         # --------------------- finding initial condition approximated ground state for BP using gPEPS -----------------
-        '''
+
         for dt in t_list:
             flag = 0
             for j in range(iterations):
@@ -98,7 +98,7 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL,
                 else:
                     TT = TT2
                     LL = LL2
-        
+        '''
         # --------------------------------- calculating magnetization matrices -------------------------------
         for l in range(N):
             for ll in range(M):
@@ -108,7 +108,7 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL,
         '''
 
         # ------------- generating the double-edge factor graph (defg) of the tensor network ---------------------------
-
+        TT_gpeps, LL_gpeps = cp.deepcopy(TT), cp.deepcopy(LL)
         graph = defg.Graph()
         graph = BP.PEPStoDEnFG_transform(graph, TT, LL, smat)
         graph.sum_product(t_max, epsilon, dumping)
@@ -205,7 +205,7 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, TT, LL,
     e2 = time.time()
     run_time_of_BPupdate = e2 - s2
 
-    return [E_BP, E_BP_f_belief, E_BP_env, E_BP_env_f_belief]
+    return [E_BP, E_BP_f_belief, E_BP_env, E_BP_env_f_belief, TT, LL, smat, TT_gpeps, LL_gpeps]
 
 
 def Heisenberg_PEPS_gPEPS(N, M, Jk, dE, D_max, bc, env_size):
