@@ -152,6 +152,6 @@ def PEPS_OBC_broadcast_to_Itai(TT, PEPS_shape, p, d):
 
         tensor = np.transpose(TT[t].reshape(p, Dleft, Dup, Dright, Ddown), new_order)
         norm = np.einsum(tensor, [0, 1, 2, 3, 4], np.conj(tensor), [0, 1, 2, 3, 4])
-        new_TT.append(np.real(tensor / norm))
+        new_TT.append(tensor / norm)
     return new_TT
 

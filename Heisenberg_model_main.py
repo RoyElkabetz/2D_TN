@@ -1,269 +1,175 @@
+
+
 import numpy as np
 import copy as cp
-import BPupdate_PEPS_smart_trancation as BP
-import BPupdate_PEPS_smart_trancation2 as gPEPS
 from scipy import linalg
 import matplotlib.pyplot as plt
-import ncon_lists_generator as nlg
-import virtual_DEFG as defg
 import ncon
 import time
-import Tensor_Network_functions as tnf
 import pickle
-import Heisenberg_model_function as hmf
 import pandas as pd
 
 
-#------------------------- main ----------------------------
-'''
-start = time.time()
-file_name = "2019_09_22_4_OBC_Antiferomagnetic_Heisenberg_lattice"
-file_name_single = "2019_09_22_4_OBC_Antiferomagnetic_Heisenberg_lattice_single_"
 
-N = [100]
-bc = 'open'
-dE = 1e-6
-t_max = 100
-dumping = 0.2
-epsilon = 1e-6
-D_max = 2
-mu = -1
-sigma = 0
-Jk = np.random.normal(mu, sigma, np.int(2 * N[0] - 2 * np.sqrt(N[0]))) # interaction constant list
-print('Jk = ', Jk)
-parameters = [['N', N], ['dE', dE], ['t_max', t_max], ['dumping', dumping], ['epsilon', epsilon], ['D_max', D_max]]
-BP_data = []
-gPEPS_data = []
-#pickle.dump(parameters, open(file_name + '_parameters.p', "wb"))
+import BPupdate_PEPS_smart_trancation as BP
+import BPupdate_PEPS_smart_trancation2 as gPEPS
+import ncon_lists_generator as nlg
+import virtual_DEFG as defg
+import Tensor_Network_functions as tnf
+import Heisenberg_model_function as hmf
+import bmpslib as bmps
 
 
-
-for n in range(len(N)):
-    
-    b = hmf.Heisenberg_PEPS_gPEPS(N[n], Jk, dE, D_max, bc)
-    a = hmf.Heisenberg_PEPS_BP(N[n], Jk, dE, D_max, t_max, epsilon, dumping, bc, b[6], b[7])
-    #pickle.dump(a, open(file_name_single + str(N[n]) + 'spins_BP.p', "wb"))
-    #pickle.dump(b, open(file_name_single + str(N[n]) + 'spins_gPEPS.p', "wb"))
-    BP_data.append(a)
-    gPEPS_data.append(b)
-    print('\n')
-    print('run time in seconds = ', time.time() - start)
-    print('\n')
-
-#pickle.dump(BP_data, open(file_name + '_BP.p', "wb"))
-#pickle.dump(gPEPS_data, open(file_name + '_gPEPS.p', "wb"))
+#
+#################################################    MAIN    ###########################################################
+#
 
 
-EBP = []
-EgPEPS = []
-iterationsBP = []
-iterationsPEPS = []
-timeBP = []
-timegPEPS = []
-stag_magnetization_zBP = []
-stag_magnetization_zgPEPS = []
-stag_magnetization_xBP = []
-stag_magnetization_xgPEPS = []
-
-
-for n in range(len(N)):
-    EBP.append(BP_data[n][0])
-    EgPEPS.append(gPEPS_data[n][0])
-    iterationsBP.append(BP_data[n][1])
-    iterationsPEPS.append(gPEPS_data[n][1])
-    timeBP.append(BP_data[n][4] / 60)
-    timegPEPS.append(gPEPS_data[n][4] / 60)
-    AzBP = 0
-    AxBP = 0
-    AzgPEPS = 0
-    AxgPEPS = 0
-    for i in range(np.int(np.sqrt(N[n]))):
-        for j in range(np.int(np.sqrt(N[n]))):
-            AzBP += ((-1.) ** (i + j)) * BP_data[n][2][i, j]
-            AxBP += ((-1.) ** (i + j)) * BP_data[n][3][i, j]
-            AzgPEPS += ((-1.) ** (i + j)) * gPEPS_data[n][2][i, j]
-            AxgPEPS += ((-1.) ** (i + j)) * gPEPS_data[n][3][i, j]
-    stag_magnetization_zBP.append(AzBP / N[n])
-    stag_magnetization_xBP.append(AxBP / N[n])
-    stag_magnetization_zgPEPS.append(AzgPEPS / N[n])
-    stag_magnetization_xgPEPS.append(AxgPEPS / N[n])
-
-
-
-names = ['BP', 'gPEPS']
-
-plt.figure()
-plt.title('Energy')
-plt.plot(N, EBP, 'o')
-plt.plot(N, EgPEPS, 'o')
-plt.xlabel('nXn gPEPS')
-plt.xticks(N)
-plt.ylabel('Energy per site')
-plt.legend(names)
-plt.grid()
-plt.show()
-
-plt.figure()
-plt.title('Iterations')
-plt.plot(N, iterationsBP, 'o')
-plt.plot(N, iterationsPEPS, 'o')
-plt.xlabel('nXn gPEPS')
-plt.xticks(N)
-plt.ylabel('# of iterations')
-plt.legend(names)
-plt.grid()
-plt.show()
-
-plt.figure()
-plt.title('Time')
-plt.plot(N, timeBP, 'o')
-plt.plot(N, timegPEPS, 'o')
-plt.xlabel('nXn gPEPS')
-plt.xticks(N)
-plt.ylabel('time [min]')
-plt.legend(names)
-plt.grid()
-plt.show()
-
-plt.figure()
-plt.title('x staggered magnetization')
-plt.plot(N, stag_magnetization_xBP, 'o')
-plt.plot(N, stag_magnetization_xgPEPS, 'o')
-plt.xlabel('nXn gPEPS')
-plt.xticks(N)
-plt.ylabel('magnetization in x')
-plt.legend(names)
-plt.grid()
-plt.show()
-
-plt.figure()
-plt.title('z staggered magnetization')
-plt.plot(N, stag_magnetization_zBP, 'o')
-plt.plot(N, stag_magnetization_zgPEPS, 'o')
-plt.xlabel('nXn gPEPS')
-plt.xticks(N)
-plt.ylabel('magnetization in z')
-plt.legend(names)
-plt.grid()
-plt.show()
-
-'''
-# ---------------------------------- BP and gPEPS comparison --------------------------------------
+#
+############################################    EXPERIMENT PARAMETERS    ###############################################
+#
 
 np.random.seed(seed=14)
 
 N, M = 4, 4
 
-env_size = [0, 1]
 bc = 'open'
-dE = 1e-8
+dE = 1e-4
 t_max = 200
 dumping = 0.2
 epsilon = 1e-5
-D_max = [2, 3, 4, 5]
+D_max = [2]
 mu = -1
 sigma = 0
-Jk = np.random.normal(mu, sigma, np.int((N - 1) * M + (M - 1) * N)) # interaction constant list
-#Jk = np.random.normal(mu, sigma, np.int(2 * N[0])) # interaction constant list
-#print('Jk = ', Jk)
+Jk = np.random.normal(mu, sigma, np.int((N - 1) * M + (M - 1) * N))
+dt = [0.5, 0.1, 0.05]
+iterations = 100
 
-
+#
+############################################  RUN AND COLLECT DATA  ####################################################
+#
 
 BP_data = []
 gPEPS_data = []
 
-# energies
-E_BP = []
-E_BP_env = []
-E_BP_f_belief = []
-E_BP_f_belief_env = []
+for D in D_max:
+    b = hmf.Heisenberg_PEPS_gPEPS(N, M, Jk, dE, D, bc, dt, iterations)
+    a = hmf.Heisenberg_PEPS_BP(N, M, Jk, dE, D, t_max, epsilon, dumping, bc, dt, iterations)
+    BP_data.append(a)
+    gPEPS_data.append(b)
+
+
+#
+#################################################  SAVING VARIABLES  ###################################################
+#
+
+#parameters = [['N, M', [N, M]], ['dE', dE], ['t_max', t_max], ['dumping', dumping], ['epsilon', epsilon], ['D_max', D_max]]
+#file_name = "2019_10_11_1_100_OBC_Antiferomagnetic_Heisenberg_lattice.p"
+#pickle.dump(parameters, open(file_name + '_parameters.p', "wb"))
+#pickle.dump(BP_data, open(file_name + '_BP.p', "wb"))
+#pickle.dump(gPEPS_data, open(file_name + '_gPEPS.p', "wb"))
+
+
+#
+#################################################  SAVING DATA TO XLSX  ################################################
+#
+
+#save_list = []
+#df = pd.DataFrame(E, columns=env_size)
+#filepath = 'my_excel_file4x4AFH.xlsx'
+#df.to_excel(filepath, index=True)
+
+
+#
+#################################################   LOADING DATA   #####################################################
+#
+
+#file_name = "2019_09_22_1_Antiferomagnetic_Heisenberg_lattice_single_100spins"
+#BP_data = pickle.load(open(file_name + '_BP.p', "rb"))
+#gPEPS_data = pickle.load(open(file_name + '_gPEPS.p', "rb"))
+
+
+
+#
+############################################  CALCULATING EXPECTATIONS  ################################################
+#
+graph, TT_BP, LL_BP, BP_energy = BP_data[0]
+TT_gPEPS, LL_gPEPS, gPEPS_energy = gPEPS_data[0]
+
+
+#
+######### PARAMETERS ########
+#
+if bc == 'open':
+    smat, imat = tnf.PEPS_OBC_smat_imat(N, M)
+elif bc == 'periodic':
+    smat, imat = tnf.PEPS_smat_imat_gen(N * M)
+
+Dp = 10
+p = 2
+h = 0
+environment_size = [0, 1]
+
+# pauli matrices
+pauli_z = np.array([[1, 0], [0, -1]])
+pauli_y = np.array([[0, -1j], [1j, 0]])
+pauli_x = np.array([[0, 1], [1, 0]])
+sz = 0.5 * pauli_z
+sy = 0.5 * pauli_y
+sx = 0.5 * pauli_x
+Opi = [sx, sy, sz]
+Opj = [sx, sy, sz]
+Op_field = np.eye(p)
+hij = np.zeros((p * p, p * p), dtype=complex)
+for i in range(len(Opi)):
+    hij += np.kron(Opi[i], Opj[i])
+hij = hij.reshape(p, p, p, p)
 
 E_gPEPS = []
-E_gPEPS_env = []
+E_BP = []
+E_BP_factor_belief = []
 
 
-for n in range(len(D_max)):
-    b = hmf.Heisenberg_PEPS_gPEPS(N, M, Jk, dE, D_max[n], bc, env_size)
-    TT, LL = cp.deepcopy(b[2]), cp.deepcopy(b[3])
-    a = hmf.Heisenberg_PEPS_BP(N, M, Jk, dE, D_max[n], t_max, epsilon, dumping, bc, TT, LL, env_size)
-    E_gPEPS.append(b[0])
-    E_gPEPS_env.append(b[1])
-    E_BP.append(a[0])
-    E_BP_f_belief.append(a[1])
-    E_BP_env.append(a[2])
-    E_BP_f_belief_env.append(a[3])
+for e in environment_size:
+    E_gPEPS.append(BP.energy_per_site_with_environment([N, M], e, TT_gPEPS, LL_gPEPS, smat, Jk, h, Opi, Opj, Op_field))
+    E_BP.append(BP.energy_per_site_with_environment([N, M], e, TT_BP, LL_BP, smat, Jk, h, Opi, Opj, Op_field))
+    E_BP_factor_belief.append(BP.BP_energy_per_site_using_factor_belief_with_environment(graph, e, [N, M], smat, Jk, h, Opi, Opj, Op_field))
 
-E = np.array(list(np.real(E_BP_f_belief_env)))
-## convert your array into a dataframe
-df = pd.DataFrame(E, columns=env_size)
-## save to xlsx file
-filepath = 'my_excel_file4x4AFH.xlsx'
-df.to_excel(filepath, index=True)
+
+E_bmps = []
+TT_bmps = cp.deepcopy(TT_BP)
+TT_bmps = BP.absorb_all_sqrt_bond_vectors(TT_bmps, LL_BP, smat)
+TT_bmps = tnf.PEPS_OBC_broadcast_to_Itai(TT_bmps, [N, M], p, D_max[0])
+peps = bmps.peps(N, M)
+for t, T in enumerate(TT_bmps):
+    i, j = np.unravel_index(t, [N, M])
+    peps.set_site(T, i, j)
+rho_bmps = bmps.calculate_PEPS_2RDM(peps, Dp)
+rho_bmps_sum = cp.deepcopy(rho_bmps[0])
+for i in range(1, len(rho_bmps)):
+    rho_bmps_sum += rho_bmps[i]
+E_bmps.append(np.einsum(rho_bmps_sum, [0, 1, 2, 3], hij, [0, 2, 1, 3]) / (N * M))
+
+
+
 
 '''
-columns = ('0', '1', '2')
-rows = ['E gPEPS', 'E BP', 'E BP f-belief']
-fig = plt.figure()
-ax = fig.add_subplot(111)
-# Draw table
-plt.title('Energy calculations with environment of 10x10 \n AFH with D = 2, Jij = normal(1, 0)')
-the_table = plt.table(cellText=E,
-                      colWidths=[0.03] * 4,
-                      rowLabels=rows,
-                      colLabels=columns,
-                      loc='center')
-the_table.auto_set_font_size(False)
-the_table.set_fontsize(10)
-the_table.scale(6, 4)
-
-# Removing ticks and spines enables you to get the figure only with table
-plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
-plt.tick_params(axis='y', which='both', right=False, left=False, labelleft=False)
-for pos in ['right','top','bottom','left']:
-    plt.gca().spines[pos].set_visible(False)
-plt.show()
-
-
-
-
-
-names = ['E_gPEPS', 'E_gPEPS_env', 'E_BP', 'E_BP_env', 'E_BP_f_belief', 'E_BP_f_belief_env']
 plt.figure()
-plt.title('10x10 AFH with D = 2')
-plt.plot(env_size, np.real(E_gPEPS[0]), 'o')
-plt.plot(env_size, np.real(E_gPEPS_env[0]), 'o')
-plt.plot(env_size, np.real(E_BP[0]), 'v')
-plt.plot(env_size, np.real(E_BP_env[0]), 'v')
-plt.plot(env_size, np.real(E_BP_f_belief[0]), 'x', markersize=12)
-plt.plot(env_size, np.real(E_BP_f_belief_env[0]), 'x', markersize=12)
-plt.legend(names)
-plt.xticks(env_size)
-plt.xlabel('environment size')
+plt.title('BP and gPEPS convergence comparison')
+plt.plot(range(len(BP_energy)), BP_energy, 'o')
+plt.plot(range(len(gPEPS_energy)), gPEPS_energy, 'o')
+plt.ylim([-0.54, -0.50])
 plt.ylabel('energy per site')
+plt.xlabel('# iterations')
+plt.legend(['BP', 'gPEPS'])
 plt.grid()
 plt.show()
 '''
+
+
+
+
 '''
-plt.figure()
-plt.plot(D_max, E_gPEPS, 'o')
-#plt.plot(D_max, E_exact_gPEPS, 'o')
-plt.plot(D_max, E_BP, 'o')
-#plt.plot(D_max, E_exact_BP, 'o')
-#plt.plot(D_max, E_BP_rdm_belief, 'o')
-plt.plot(D_max, E_BP_factor_belief, 'o')
-
-#plt.legend(['gPEPS', 'exact gPEPS', 'BP gPEPS', 'exact BP', 'BP factor'])
-plt.legend(['gPEPS', 'BP gPEPS', 'BP factor'])
-plt.show()
-
-E_dif = -(np.array(E_exact_gPEPS) - np.array(E_exact_BP))
-
-plt.figure()
-plt.plot(D_max, E_gPEPS, 'o')
-plt.plot(D_max, E_BP_factor_belief, 'o')
-#plt.plot(D_max, E_article, 'o')
-plt.legend(['gPEPS','BP'])
-plt.show()
 
 plt.figure()
 plt.subplot()
@@ -289,123 +195,10 @@ plt.tight_layout()  # otherwise the right y-label is slightly clipped
 plt.grid()
 plt.show()
 
-[5, 6, 7, 14, 15, 16]
-plt.imshow(np.real(BP_data[3][7]))
-plt.colorbar()
-plt.show()
-
-#parameters = [['N, M', [N, M]], ['dE', dE], ['t_max', t_max], ['dumping', dumping], ['epsilon', epsilon], ['D_max', D_max]]
-#file_name = "2019_10_2_1_100_OBC_glassy_Antiferomagnetic_Heisenberg_lattice"
-#file_name_single = "2019_10_2_1_100_OBC_glassy_Antiferomagnetic_Heisenberg_lattice_single_"
-#pickle.dump(parameters, open(file_name + '_parameters.p', "wb"))
-#pickle.dump(BP_data, open(file_name + '_BP.p', "wb"))
-#pickle.dump(gPEPS_data, open(file_name + '_gPEPS.p', "wb"))
-'''
-
-# ---------------------------------- BP, gPEPS and exact rdm's comparison --------------------------------------
-'''
-np.random.seed(seed=14)
-
-N = [16]
-bc = 'open'
-dE = 1e-8
-t_max = 100
-dumping = 0.2
-epsilon = 1e-10
-D_max = [4]
-mu = -1
-sigma = 0
-Jk = np.random.normal(mu, sigma, np.int(2 * N[0] - 2 * np.sqrt(N[0]))) # interaction constant list
-print('Jk = ', Jk)
-
-parameters = [['N', N], ['dE', dE], ['t_max', t_max], ['dumping', dumping], ['epsilon', epsilon], ['D_max', D_max]]
-
-BP_data = []
-gPEPS_data = []
-
-for n in range(len(D_max)):
-    b = hmf.Heisenberg_PEPS_gPEPS(N[0], Jk, dE, D_max[n], bc)
-    TT, LL = cp.deepcopy(b[7]), cp.deepcopy(b[8])
-    a = hmf.Heisenberg_PEPS_BP(N[0], Jk, dE, D_max[n], t_max, epsilon, dumping, bc, TT, LL)
-    BP_rdm = a[12]
-    gPEPS_rdm = a[11]
-    exact_rdm = a[13]
-    graph = a[14]
-
-d_BP_gPEPS_rdm = []
-d_BP_exact_rdm = []
-d_exact_gPEPS_rdm = []
-
-d_BP_gPEPS_rdm_trace_dis = []
-d_BP_exact_rdm_trace_dis = []
-d_exact_gPEPS_rdm_trace_dis = []
-for i in range(N[0]):
-    d_BP_gPEPS_rdm.append(np.abs(np.array(BP_rdm[i]) - np.array(gPEPS_rdm[i])))
-    d_BP_exact_rdm.append(np.abs(np.array(BP_rdm[i]) - np.array(exact_rdm[i])))
-    d_exact_gPEPS_rdm.append(np.abs(np.array(exact_rdm[i]) - np.array(gPEPS_rdm[i])))
-
-    d_BP_gPEPS_rdm_trace_dis.append(BP.trace_distance(np.array(BP_rdm[i]), np.array(gPEPS_rdm[i])))
-    d_BP_exact_rdm_trace_dis.append(BP.trace_distance(np.array(BP_rdm[i]), np.array(exact_rdm[i])))
-    d_exact_gPEPS_rdm_trace_dis.append(BP.trace_distance(np.array(exact_rdm[i]), np.array(gPEPS_rdm[i])))
-
-print('BP-gPEPS: ', np.sum(d_BP_gPEPS_rdm))
-print('BP-exact: ', np.sum(d_BP_exact_rdm))
-print('exact-gPEPS: ', np.sum(d_exact_gPEPS_rdm))
-print('\n')
-print('Total trance distance -> BP-gPEPS: ', np.sum(d_BP_gPEPS_rdm_trace_dis))
-print('Total trance distance -> BP-exact: ', np.sum(d_BP_exact_rdm_trace_dis))
-print('Total trance distance -> exact-gPEPS: ', np.sum(d_exact_gPEPS_rdm_trace_dis))
-
-#file_name = "2019_09_25_1_16_3_OBC_glassy_Antiferomagnetic_Heisenberg_lattice"
-#file_name_single = "2019_09_25_1_16_3_OBC_glassy_Antiferomagnetic_Heisenberg_lattice_single_"
-#pickle.dump(parameters, open(file_name + '_parameters.p', "wb"))
-#pickle.dump(BP_data, open(file_name + '_BP.p', "wb"))
-#pickle.dump(gPEPS_data, open(file_name + '_gPEPS.p', "wb"))
-
-# using absorb edges for graph
-#('Total trance distance -> BP-gPEPS: ', '0.00019925973838922696')
-#('Total trance distance -> BP-exact: ', '0.5931748480390501')
-#('Total trance distance -> exact-gPEPS: ', '0.5929756546259999')
-
-# using absorb edges
-#('Total trance distance -> BP-gPEPS: ', '0.00019954609285328088')
-#('Total trance distance -> BP-exact: ', '0.5957141951533694')
-#('Total trance distance -> exact-gPEPS: ', '0.5955147163308192')
-
-
-#[[0.274192  -5.17266778e-18j 0.05903992-4.85335739e-02j]
-# [0.05903992+4.85335739e-02j 0.725808  +5.17266778e-18j]]
-
-#[[ 0.72308918-1.03568695e-18j -0.05347533+4.48482259e-02j]
-# [-0.05347533-4.48482259e-02j  0.27691082+1.03568695e-18j]]
-
-#[[ 0.72262374-3.84747751e-18j -0.05336337+4.47538292e-02j]
-# [-0.05336337-4.47538292e-02j  0.27737626+3.84747751e-18j]]
-
-#[[0.28337498+5.57622080e-18j 0.05644523-4.64361896e-02j]
-# [0.05644523+4.64361896e-02j 0.71662502-5.57622080e-18j]]
 
 
 
-#[[0.29501479-2.12958749e-20j 0.08086003-6.72047305e-02j]
-# [0.08086003+6.72047305e-02j 0.70498521+2.12958749e-20j]]
 
-#[[ 0.70135976+3.30985433e-20j -0.07563283+6.37027882e-02j]
-# [-0.07563283-6.37027882e-02j  0.29864024-3.30985433e-20j]]
 
-#[[ 0.70129775+1.27811712e-20j -0.07550553+6.36205586e-02j]
-# [-0.07550553-6.36205586e-02j  0.29870225-1.27811712e-20j]]
 
-#[[0.30733656-9.28415934e-21j 0.0790835 -6.56153418e-02j]
-# [0.0790835 +6.56153418e-02j 0.69266344+9.28415934e-21j]]
-'''
-'''
-file_name = "2019_09_22_1_Antiferomagnetic_Heisenberg_lattice_single_100spins"
-#file_name_single = "2019_09_24_1_16_OBC_glassy_Antiferomagnetic_Heisenberg_lattice_single_"
-a = pickle.load(open(file_name + '_BP.p', "rb"))
-b = pickle.load(open(file_name + '_gPEPS.p', "rb"))
-
-plt.imshow(np.real(b[2]))
-plt.colorbar()
-plt.show()
 '''
