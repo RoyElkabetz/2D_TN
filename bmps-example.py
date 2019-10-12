@@ -21,9 +21,6 @@ from numpy import zeros, ones, tensordot, sqrt, array, trace, \
 
 import ncon
 import bmpslib
-import Heisenberg_model_function as hmf
-import BPupdate_PEPS_smart_trancation as BP
-import Tensor_Network_functions as tnf
 
 
 
@@ -60,7 +57,7 @@ def random_PEPS(M, N, D):
             if i==M-1:
                 Ddown=1
                 
-            A = np.random.normal(size=[d,Dleft,Dright,Dup,Ddown])
+            A = np.random.normal(size=[d,Dleft,Dright,Dup, Ddown])
             
             p.set_site(A, i,j)
             
@@ -261,51 +258,20 @@ def direct_2RDM(psi, i, j):
 
 np.random.seed(3)
 
-N=4    # how many rows
-M=4    # how many columns
+M=4    # how many rows
+N=3    # how many columns
 d=2    # physical dimension
-D=4    # Bond dimension
+D=6    # Bond dimension
 
-Dp=50 # boundary MPS maximal dimension (usually Dp ~ 2*D^2 is good)
+Dp=200 # boundary MPS maximal dimension (usually Dp ~ 2*D^2 is good)
+
 
 #
-# creat the TN using Roy's BP_truncation
-#
-
-env_size = [0]
-bc = 'open'
-dE = 1e-5
-t_max = 200
-dumping = 0.2
-epsilon = 1e-5
-mu = -1
-sigma = 0
-
-
-
-Jk = np.random.normal(mu, sigma, np.int((N - 1) * M + (M - 1) * N)) # interaction constant list
-data = hmf.Heisenberg_PEPS_BP(N, M, Jk, dE, D, t_max, epsilon, dumping, bc, env_size)
-TT, LL, smat, TT_gpeps, LL_gpeps = data[4], data[5], data[6], data[7], data[8]
-TT_prime_gpeps = BP.absorb_all_sqrt_bond_vectors(TT_gpeps, LL_gpeps, smat)
-TT_prime = BP.absorb_all_sqrt_bond_vectors(TT, LL, smat)
-TT_prime_gpeps = tnf.PEPS_OBC_broadcast_to_Itai(TT_prime_gpeps, [N, M], d, D)
-TT_prime = tnf.PEPS_OBC_broadcast_to_Itai(TT_prime, [N, M], d, D)
-
-p_roy = bmpslib.peps(N, M)
-for t, T in enumerate(TT_prime):
-    i, j = np.unravel_index(t, [N, M])
-    p_roy.set_site(T, i, j)
-
-p_roy_gpeps = bmpslib.peps(N, M)
-for t, T in enumerate(TT_prime_gpeps):
-    i, j = np.unravel_index(t, [N, M])
-    p_roy_gpeps.set_site(T, i, j)
-#
-# Creating a random NxM PEPS with physical dimension d and bond
+# Creating a random MxN PEPS with physical dimension d and bond 
 # dimension D
 #
 
-#p = random_PEPS(M,N,D)
+p = random_PEPS(M,N,D)
 
 
 #
@@ -315,36 +281,24 @@ for t, T in enumerate(TT_prime_gpeps):
 
 print("1. Calculate the 2-body RDMs using the boundary MPS method " \
       "with Dp={}\n".format(Dp))
-
-#rhoLA = bmpslib.calculate_PEPS_2RDM(p, Dp)
-
-
-rhoLA_roy = bmpslib.calculate_PEPS_2RDM(p_roy, Dp)
-
-
-rhoLA_roy_gpeps = bmpslib.calculate_PEPS_2RDM(p_roy_gpeps, Dp)
+      
+rhoLA = bmpslib.calculate_PEPS_2RDM(p, Dp)
 
 print("\n2. Calculate the 2-body RDMs directly by full contraction\n")
 
-#rhoLB = []
-#psi=get_psi(p)
-rhoLB_roy = []
-rhoLB_roy_gpeps = []
-psi_roy = get_psi(p_roy)
-psi_roy_gpeps = get_psi(p_roy_gpeps)
+rhoLB = []
+psi=get_psi(p)
 
-for i in range(N):
-    for j in range(M - 1):
-        t = i * M + j
-        rhoLB_roy.append(direct_2RDM(psi_roy,t,t+1))
-        rhoLB_roy_gpeps.append(direct_2RDM(psi_roy_gpeps, t, t + 1))
+for i in range(M):
+    for j in range(N-1):
+        t = i*N+j
+        rhoLB.append(direct_2RDM(psi,t,t+1))
 
         
-for j in range(M):
-    for i in range(N - 1):
-        t = i * M + j
-        rhoLB_roy.append(direct_2RDM(psi_roy, t, t + M))
-        rhoLB_roy_gpeps.append(direct_2RDM(psi_roy_gpeps, t, t + M))
+for j in range(N):
+    for i in range(M-1):
+        t = i*N+j
+        rhoLB.append(direct_2RDM(psi,t,t+N))
 
 
 
@@ -352,22 +306,19 @@ for j in range(M):
 # Calculate the average trace distance
 #
 
-s_roy = 0
-s_roy_gpeps = 0
-for i in range(len(rhoLA_roy)):
-    TD_roy = trace_distance(rhoLA_roy[i], rhoLB_roy[i])
-    TD_roy_gpeps = trace_distance(rhoLA_roy_gpeps[i], rhoLB_roy_gpeps[i])
-    s_roy += TD_roy
-    s_roy_gpeps += TD_roy_gpeps
+s=0
+for i in range(len(rhoLA)):
+    TD = trace_distance(rhoLA[i], rhoLB[i])
+    s = s+TD
     
-TD_roy = s_roy / len(rhoLA_roy)
-TD_roy_gpeps = s_roy_gpeps / len(rhoLA_roy_gpeps)
+TD = s/len(rhoLA)
 
-print("Overall, calculated {} 2-local RDMS using roy's BP_truncation. Average trace distance: "\
-    "{:}".format(len(rhoLA_roy), TD_roy))
+print("Overall, calculated {} 2-local RDMS. Average trace distance: "\
+    "{:}".format(len(rhoLA), TD))
+ 
 
-print("Overall, calculated {} 2-local RDMS using roy's gPEPS. Average trace distance: "\
-    "{:}".format(len(rhoLA_roy_gpeps), TD_roy_gpeps))
+
+
 
 
 
