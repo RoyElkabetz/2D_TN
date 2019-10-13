@@ -59,7 +59,7 @@ elif bc == 'periodic':
 Dp = [1]
 p = 2
 h = 0
-environment_size = [0, 1]
+environment_size = [0]
 
 #
 ############################################  RUN AND COLLECT DATA  ####################################################
@@ -110,7 +110,7 @@ E_gPEPS_bmps = []
 #
 ############################################  CALCULATING EXPECTATIONS  ################################################
 #
-for ii in [1, 2, 3]:
+for ii in [3]:
     if flag_calculating_expectations:
         graph, TT_BP, LL_BP, TT_gPEPS, LL_gPEPS, BP_energy, gPEPS_energy = data[ii]
         TT_BP_bmps = cp.deepcopy(TT_BP)
@@ -155,7 +155,7 @@ for ii in [1, 2, 3]:
         for t, T in enumerate(TT_BP_bmps):
             i, j = np.unravel_index(t, [N, M])
             BP_peps.set_site(T, i, j)
-        for dp in [1, 2, 4, 8]:
+        for dp in [1]:
             print(dp)
             rho_BP_bmps = bmps.calculate_PEPS_2RDM(BP_peps, dp)
             rho_BP_bmps_sum = cp.deepcopy(rho_BP_bmps[0])
@@ -169,7 +169,7 @@ for ii in [1, 2, 3]:
         for t, T in enumerate(TT_gPEPS_bmps):
             i, j = np.unravel_index(t, [N, M])
             gPEPS_peps.set_site(T, i, j)
-        for dp in [1, 2, 4, 8]:
+        for dp in [100]:
             print(dp)
             rho_gPEPS_bmps = bmps.calculate_PEPS_2RDM(gPEPS_peps, dp)
             rho_gPEPS_bmps_sum = cp.deepcopy(rho_gPEPS_bmps[0])
@@ -234,7 +234,7 @@ plt.show()
 
 if flag_save_xlsx:
     save_list = [E_BP, E_BP_factor_belief, E_gPEPS, E_BP_bmps, E_gPEPS_bmps]
-    df = pd.DataFrame(save_list, columns=range(12), index=['E BP', 'E BP factor belief', 'E gPEPS', 'E BP bmps', 'E gPEPS bmps'])
+    df = pd.DataFrame(save_list, columns=range(1), index=['E BP', 'E BP factor belief', 'E gPEPS', 'E BP bmps', 'E gPEPS bmps'])
     filepath = 'energies.xlsx'
     df.to_excel(filepath, index=True)
 
