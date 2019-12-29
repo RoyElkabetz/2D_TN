@@ -215,7 +215,7 @@ def Heisenberg_PEPS_gPEPS(N, M, Jk, dE, D_max, bc, t_list, iterations):
 
             print(energy1, energy2)
 
-            if np.abs(energy1 - energy2) < dE:
+            if np.abs(energy1 - energy2) < dE * dt:
                 TT = TT2
                 LL = LL2
                 break

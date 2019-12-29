@@ -2,14 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="39f4aadf-3039-4826-aca9-4bd799d9af66" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py" beforeDir="false" afterPath="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Heisenberg_model_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/Heisenberg_model_function.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Heisenberg_model_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Heisenberg_model_main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/glassy_1D_AFH_chain.py" beforeDir="false" afterPath="$PROJECT_DIR$/glassy_1D_AFH_chain.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/heisenberg_PEPS.py" beforeDir="false" afterPath="$PROJECT_DIR$/heisenberg_PEPS.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp.py" beforeDir="false" afterPath="$PROJECT_DIR$/temp.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/virtual_DEFG.py" beforeDir="false" afterPath="$PROJECT_DIR$/virtual_DEFG.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/energies100AFH.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/energies100AFH.xlsx" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -167,8 +162,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Heisenberg_model_main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="248">
-              <caret line="244" column="37" lean-forward="true" selection-start-line="240" selection-end-line="244" selection-end-column="37" />
+            <state relative-caret-position="38">
+              <caret line="165" column="51" selection-start-line="165" selection-start-column="51" selection-end-line="165" selection-end-column="51" />
               <folding>
                 <element signature="e#2#20#0" expanded="true" />
               </folding>
@@ -179,8 +174,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Heisenberg_model_function.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-230">
-              <caret line="79" selection-start-line="79" selection-end-line="79" />
+            <state relative-caret-position="149">
+              <caret line="219" column="24" lean-forward="true" selection-start-line="219" selection-start-column="24" selection-end-line="219" selection-end-column="24" />
             </state>
           </provider>
         </entry>
@@ -297,8 +292,8 @@
         <option value="$PROJECT_DIR$/glassy_1D_AFH_chain.py" />
         <option value="$PROJECT_DIR$/heisenberg_PEPS.py" />
         <option value="$PROJECT_DIR$/virtual_DEFG.py" />
-        <option value="$PROJECT_DIR$/Heisenberg_model_function.py" />
         <option value="$PROJECT_DIR$/BPupdate_PEPS_smart_trancation.py" />
+        <option value="$PROJECT_DIR$/Heisenberg_model_function.py" />
         <option value="$PROJECT_DIR$/Heisenberg_model_main.py" />
       </list>
     </option>
@@ -521,11 +516,12 @@
       <workItem from="1575112007438" duration="8550000" />
       <workItem from="1575927182113" duration="1906000" />
       <workItem from="1577550147661" duration="2347000" />
+      <workItem from="1577644987529" duration="2038000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="845178000" />
+    <option name="totallyTimeSpent" value="847216000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -537,7 +533,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="203" width="1440" height="795" extended-state="6" />
+    <frame x="0" y="23" width="1440" height="795" extended-state="6" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.21173105" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.24973376" />
@@ -553,8 +549,8 @@
       <window_info anchor="bottom" id="Database Changes" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32188842" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info anchor="bottom" id="Version Control" order="11" weight="0.3208191" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="12" visible="true" weight="0.46372688" />
+      <window_info anchor="bottom" id="Version Control" order="11" weight="0.3201133" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="12" visible="true" weight="0.46514937" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -672,8 +668,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Heisenberg_model_main.py</url>
-          <line>158</line>
+          <line>159</line>
           <option name="timeStamp" value="351" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Heisenberg_model_main.py</url>
+          <line>100</line>
+          <option name="timeStamp" value="352" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -705,7 +706,7 @@
     <SUITE FILE_PATH="coverage/2D_TN$honeycomb_su.coverage" NAME="honeycomb_su Coverage Results" MODIFIED="1562073891824" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$Heisenberg_model_function.coverage" NAME="Heisenberg_model_function Coverage Results" MODIFIED="1569414538447" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$ITE_testing.coverage" NAME="ITE_testing Coverage Results" MODIFIED="1562048176695" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/2D_TN$Heisenberg_model_main.coverage" NAME="Heisenberg_model_main Coverage Results" MODIFIED="1575928240284" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/2D_TN$Heisenberg_model_main.coverage" NAME="Heisenberg_model_main Coverage Results" MODIFIED="1577645160730" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$glassy_1D_AFH_chain_openBC1_smart_truncation.coverage" NAME="glassy_1D_AFH_chain_openBC1_smart_truncation Coverage Results" MODIFIED="1567588091465" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2D_TN$factor_to_nodes_demo.coverage" NAME="factor-to-nodes-demo Coverage Results" MODIFIED="1569333682689" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Downloads" />
     <SUITE FILE_PATH="coverage/2D_TN$glassy_1D_AFH_chain_smart_truncation.coverage" NAME="glassy_1D_AFH_chain_smart_truncation Coverage Results" MODIFIED="1567595356056" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -1353,15 +1354,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Heisenberg_model_function.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-230">
-          <caret line="79" selection-start-line="79" selection-end-line="79" />
+        <state relative-caret-position="149">
+          <caret line="219" column="24" lean-forward="true" selection-start-line="219" selection-start-column="24" selection-end-line="219" selection-end-column="24" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Heisenberg_model_main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="248">
-          <caret line="244" column="37" lean-forward="true" selection-start-line="240" selection-end-line="244" selection-end-column="37" />
+        <state relative-caret-position="38">
+          <caret line="165" column="51" selection-start-line="165" selection-start-column="51" selection-end-line="165" selection-end-column="51" />
           <folding>
             <element signature="e#2#20#0" expanded="true" />
           </folding>
