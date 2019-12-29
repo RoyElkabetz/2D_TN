@@ -28,35 +28,38 @@ flag_save_variables = 0
 flag_save_xlsx = 1
 flag_load_data = 1
 flag_calculating_expectations = 1
-flag_plot = 1
+flag_plot = 0
 
 #
 ############################################    EXPERIMENT PARAMETERS    ###############################################
 #
 
-np.random.seed(seed=14)
+np.random.seed(seed=8)
 
 N, M = 10, 10
 
 bc = 'open'
-dE = 1e-4
+dE = 1e-5
 t_max = 200
 dumping = 0.2
 epsilon = 1e-5
-D_max = [1, 2, 3, 4]
+D_max = [2, 3, 4]
 mu = -1
 sigma = 0
 Jk = np.random.normal(mu, sigma, np.int((N - 1) * M + (M - 1) * N))
-dt = [0.5, 0.1, 0.05]
+#Jk = np.random.normal(mu, sigma, np.int(2 * (N * M)))
+dt = [0.5, 0.1, 0.05, 0.01, 0.005]
 iterations = 100
+
 
 if bc == 'open':
     smat, imat = tnf.PEPS_OBC_smat_imat(N, M)
 elif bc == 'periodic':
     smat, imat = tnf.PEPS_smat_imat_gen(N * M)
 
-#Dp = [1, 2, 4, 8, 16, 32]
-Dp = [1]
+
+Dp = [1, 2, 4, 8, 16, 32, 100]
+#Dp = [1]
 p = 2
 h = 0
 environment_size = [0]
@@ -82,7 +85,7 @@ if flag_run_new_experiment:
 if flag_save_variables:
 
     parameters = [['N, M', [N, M]], ['dE', dE], ['t_max', t_max], ['dumping', dumping], ['epsilon', epsilon], ['D_max', D_max]]
-    file_name = "2019_10_11_1_100_OBC_Antiferomagnetic_Heisenberg_lattice.p"
+    file_name = "2019_12_28_1_100_OBC_Antiferomagnetic_Heisenberg_lattice.p"
     pickle.dump(parameters, open(file_name + '_parameters.p', "wb"))
     pickle.dump(BP_data, open(file_name + '_BP.p', "wb"))
     pickle.dump(gPEPS_data, open(file_name + '_gPEPS.p', "wb"))
@@ -94,10 +97,12 @@ if flag_save_variables:
 #
 if flag_load_data:
 
-    file_name = "2019_10_10_1_100_OBC_Antiferomagnetic_Heisenberg_lattice.p"
-    file_name1 = "2019_10_10_1_100_OBC_Antiferomagnetic_Heisenberg_lattice.p_parameters.p"
+    file_name_bp = "2019_12_28_1_100_OBC_Antiferomagnetic_Heisenberg_lattice.p_BP.p"
+    file_name_gpeps = "2019_12_28_1_100_OBC_Antiferomagnetic_Heisenberg_lattice.p_gPEPS.p"
+    file_name1 = "2019_12_28_1_100_OBC_Antiferomagnetic_Heisenberg_lattice.p_parameters.p"
 
-    data = pickle.load(open(file_name, "rb"))
+    data_bp = pickle.load(open(file_name_bp, "rb"))
+    data_gpeps = pickle.load(open(file_name_gpeps, "rb"))
     data_params = pickle.load(open(file_name1, "rb"))
 
 
@@ -110,9 +115,10 @@ E_gPEPS_bmps = []
 #
 ############################################  CALCULATING EXPECTATIONS  ################################################
 #
-for ii in [3]:
+for ii in [0, 1, 2]:
     if flag_calculating_expectations:
-        graph, TT_BP, LL_BP, TT_gPEPS, LL_gPEPS, BP_energy, gPEPS_energy = data[ii]
+        graph, TT_BP, LL_BP, BP_energy = data_bp[ii]
+        TT_gPEPS, LL_gPEPS, gPEPS_energy = data_gpeps[ii]
         TT_BP_bmps = cp.deepcopy(TT_BP)
         TT_gPEPS_bmps = cp.deepcopy(TT_gPEPS)
 
@@ -150,12 +156,12 @@ for ii in [3]:
 
 
         TT_BP_bmps = BP.absorb_all_sqrt_bond_vectors(TT_BP_bmps, LL_BP, smat)
-        TT_BP_bmps = tnf.PEPS_OBC_broadcast_to_Itai(TT_BP_bmps, [N, M], p, ii + 1)
+        TT_BP_bmps = tnf.PEPS_OBC_broadcast_to_Itai(TT_BP_bmps, [N, M], p, ii + 2)
         BP_peps = bmps.peps(N, M)
         for t, T in enumerate(TT_BP_bmps):
             i, j = np.unravel_index(t, [N, M])
             BP_peps.set_site(T, i, j)
-        for dp in [1]:
+        for dp in Dp:
             print(dp)
             rho_BP_bmps = bmps.calculate_PEPS_2RDM(BP_peps, dp)
             rho_BP_bmps_sum = cp.deepcopy(rho_BP_bmps[0])
@@ -164,12 +170,12 @@ for ii in [3]:
             E_BP_bmps.append(np.real(np.einsum(rho_BP_bmps_sum, [0, 1, 2, 3], hij, [0, 2, 1, 3]) / (N * M)))
 
         TT_gPEPS_bmps = BP.absorb_all_sqrt_bond_vectors(TT_gPEPS_bmps, LL_gPEPS, smat)
-        TT_gPEPS_bmps = tnf.PEPS_OBC_broadcast_to_Itai(TT_gPEPS_bmps, [N, M], p, ii + 1)
+        TT_gPEPS_bmps = tnf.PEPS_OBC_broadcast_to_Itai(TT_gPEPS_bmps, [N, M], p, ii + 2)
         gPEPS_peps = bmps.peps(N, M)
         for t, T in enumerate(TT_gPEPS_bmps):
             i, j = np.unravel_index(t, [N, M])
             gPEPS_peps.set_site(T, i, j)
-        for dp in [100]:
+        for dp in Dp:
             print(dp)
             rho_gPEPS_bmps = bmps.calculate_PEPS_2RDM(gPEPS_peps, dp)
             rho_gPEPS_bmps_sum = cp.deepcopy(rho_gPEPS_bmps[0])
@@ -234,8 +240,8 @@ plt.show()
 
 if flag_save_xlsx:
     save_list = [E_BP, E_BP_factor_belief, E_gPEPS, E_BP_bmps, E_gPEPS_bmps]
-    df = pd.DataFrame(save_list, columns=range(1), index=['E BP', 'E BP factor belief', 'E gPEPS', 'E BP bmps', 'E gPEPS bmps'])
-    filepath = 'energies.xlsx'
+    df = pd.DataFrame(save_list, columns=range(21), index=['E BP', 'E BP factor belief', 'E gPEPS', 'E BP bmps', 'E gPEPS bmps'])
+    filepath = 'energies100AFH.xlsx'
     df.to_excel(filepath, index=True)
 
 

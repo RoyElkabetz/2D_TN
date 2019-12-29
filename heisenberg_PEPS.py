@@ -8,29 +8,21 @@ import virtual_DEFG as defg
 import ncon
 import time
 import Tensor_Network_functions as tnf
-#from glassyPEPS_BPupdate_experiment2 import E, E_exact, mz, mx, mz_exact, mx_exact, time_to_converge, mx_mat, mx_mat_exact, mz_mat, mz_mat_exact, reduced_dm_gPEPS, reduced_dm_exact
-s1 = time.time()
-from heisenberg_PEPS2 import E, mz, mx, time_to_converge, mx_mat, mz_mat, reduced_dm_gPEPS, LLL, TTT
-e1 = time.time()
-run_time_of_gPEPS = e1 - s1
 
-date = '2019.22.09_'
-experiment_num = '_1_'
 
 np.random.seed(seed=15)
 
-s2 = time.time()
 
 #---------------------- Tensor Network paramas ------------------
 
-N = 16 # number of spins
+N = 4 # number of spins
 L = np.int(np.sqrt(N))
 
-t_max = 100  # BP maximal iterations
+t_max = 1000  # BP maximal iterations
 epsilon = 1e-5 # BP convergence error
 dumping = 0.1 # BP dumping
 
-d = 2  # virtual bond dimension
+d = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 100]  # virtual bond dimension
 p = 2  # physical bond dimension
 D_max = 2  # maximal virtual bond dimension
 J = 1  # Hamiltonian: interaction coeff
@@ -54,27 +46,7 @@ mx_exact_BP = []
 mz_exact_BP = []
 mx_graph = []
 mz_graph = []
-sum_of_trace_distance_BPexact_graph = []
-sum_of_trace_distance_BPexact_BPgPEPS = []
-sum_of_trace_distance_BPgPEPS_graph = []
-sum_of_trace_distance_gPEPS_graph = []
-sum_of_trace_distance_gPEPS_BPexact = []
-sum_of_trace_distance_gPEPS_BPgPEPS = []
-sum_of_trace_distance_exact_graph = []
-sum_of_trace_distance_exact_BPgPEPS = []
-sum_of_trace_distance_exact_BPexact = []
-sum_of_trace_distance_exact_gPEPS = []
 
-trace_distance_BPexact_graph = np.zeros((len(h), L, L))
-trace_distance_BPexact_BPgPEPS = np.zeros((len(h), L, L))
-trace_distance_BPgPEPS_graph = np.zeros((len(h), L, L))
-trace_distance_gPEPS_graph = np.zeros((len(h), L, L))
-trace_distance_gPEPS_BPexact = np.zeros((len(h), L, L))
-trace_distance_gPEPS_BPgPEPS = np.zeros((len(h), L, L))
-trace_distance_exact_graph = np.zeros((len(h), L, L))
-trace_distance_exact_BPgPEPS = np.zeros((len(h), L, L))
-trace_distance_exact_BPexact = np.zeros((len(h), L, L))
-trace_distance_exact_gPEPS = np.zeros((len(h), L, L))
 
 mx_mat_BP = np.zeros((len(h), L, L), dtype=complex)
 mz_mat_BP = np.zeros((len(h), L, L), dtype=complex)
@@ -91,7 +63,7 @@ sz = 0.5 * pauli_z
 sy = 0.5 * pauli_y
 sx = 0.5 * pauli_x
 
-t_list = [0.1]  # imaginary time evolution time steps list
+t_list = [0.1, 0.05, 0.01, 0.005, 0.]  # imaginary time evolution time steps list
 iterations = 100
 
 
@@ -102,8 +74,9 @@ Op_field = np.eye(p)
 #------------- generating the finite PEPS structure matrix------------------
 
 #smat, imat = tnf.PEPS_smat_imat_gen(N)
-smat, imat = tnf.PEPS_OBC_smat_imat(N)
+#smat, imat = tnf.PEPS_OBC_smat_imat(N)
 
+smat = np.array([[1, 2, 3, 0, 0, 4, 0, 0], [0, 0, 1, 2, 3, 0, 0, 4], [0, 0, 0, 4, 1, 2, 3, 0], [3, 4, 0, 0, 0, 0, 1, 2]])
 n, m = smat.shape
 
 # ------------- generating tensors and bond vectors ---------------------------

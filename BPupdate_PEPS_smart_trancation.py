@@ -521,6 +521,22 @@ def BP_energy_per_site_using_factor_belief(graph, smat, Jk, h, Opi, Opj, Op_fiel
         fj_idx[0] = Oij_idx[1]
         fj_idx[1] = Oij_idx[3]
         iedges, jedges = get_tensors_edges(Ek, smat)
+        '''
+        common_edges = []
+        for idx_edgei, edgei in enumerate(iedges[0]):
+            if edgei in jedges[0]:
+                idx_edgej = jedges[0].index(edgei)
+                fi_idx[2 * iedges[1][idx_edgei] + 1] = fj_idx[2 * jedges[1][idx_edgej] + 1]
+                fi_idx[2 * iedges[1][idx_edgei]] = fj_idx[2 * jedges[1][idx_edgej]]
+                common_edges.append(edgei)
+        for edge in common_edges:
+            idx_edgei = iedges[0].index(edge)
+            idx_edgej = jedges[0].index(edge)
+            iedges[0].remove(iedges[0][idx_edgei])
+            iedges[1].remove(iedges[1][idx_edgei])
+            jedges[0].remove(jedges[0][idx_edgej])
+            jedges[1].remove(jedges[1][idx_edgej])
+        '''
         for leg_idx, leg in enumerate(iedges[1]):
             fi_idx[2 * leg + 1] = fi_idx[2 * leg]
         for leg_idx, leg in enumerate(jedges[1]):

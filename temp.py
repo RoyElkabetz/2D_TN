@@ -32,6 +32,7 @@ TT_prime = tnf.PEPS_OBC_broadcast_to_Itai(TT_new, [n, m], p, d)
 for t, T in enumerate(TT_prime):
     print(np.max(np.abs(TT_prime[t] - TT_prime_tilde[t])))
 '''
+'''
 def quicksort(arr, lo, hi):
     if lo < hi:
         pi = partition(arr, lo, hi)
@@ -47,10 +48,33 @@ def partition(arr, lo, hi):
             arr[i], arr[j] = arr[j], arr[i]
     arr[i + 1], arr[hi] = arr[hi], arr[i + 1]
     return i + 1
-
+'''
+'''
 a = [6, 5, 77, 34, 2, 91, 8, 4, 1, 4, 0, 2, 45]
 quicksort(a, 0, len(a) - 1)
 print(a)
+'''
+
+
+
+def flipPancks(string, k):
+    l = list(string)
+    ll = [0] * len(l)
+    lll = [0] * len(l)
+    for i in range(len(l) - k + 1):
+        if l[i] == '-':
+            lll[i] += 1
+            for j in range(k):
+                ll[i + j] += 1
+                if l[i + j] == '-':
+                    l[i + j] = '+'
+                elif l[i + j] == '+':
+                    l[i + j] = '-'
+    return "".join(l), ll, lll
+
+s = '-+-++-'
+k = 2
+print(flipPancks(s, k))
 
 
 
@@ -70,10 +94,7 @@ print(a)
 
 
 
-
-
-
-
+'''
 def quicksort2(arr, lo, hi):
     if lo < hi:
         pi = partition2(arr, lo, hi)
@@ -89,6 +110,6 @@ def partition2(arr, lo, hi):
             arr[i], arr[j] = arr[j], arr[i]
     arr[i + 1], arr[hi] = arr[hi], arr[i + 1]
     return i + 1
-
+'''
 
 

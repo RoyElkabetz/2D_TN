@@ -265,11 +265,14 @@ class Graph:
     def two_factors_belief(self, f1, f2):
         ne1, ten1, idx1 = cp.deepcopy(self.factors[f1])
         ne2, ten2, idx2 = cp.deepcopy(self.factors[f2])
+        del_n = []
         for n in ne1:
             if n in ne2:
-                del ne1[n]
-                del ne2[n]
-                break
+                del_n.append(n)
+        for n in del_n:
+            del ne1[n]
+            del ne2[n]
+
         messages = self.messages_n2f
         super_tensor1 = self.make_super_physical_tensor(ten1)
         super_tensor2 = self.make_super_physical_tensor(ten2)

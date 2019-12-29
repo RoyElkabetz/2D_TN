@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 np.random.seed(seed=18)
 
-N = 10
+N = 2
 
 EE_exact = []
 EE_gpeps = []

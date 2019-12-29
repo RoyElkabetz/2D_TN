@@ -66,10 +66,17 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, t_list,
 
     # generating the PEPS structure matrix
 
+
     if bc == 'open':
         smat, imat = tnf.PEPS_OBC_smat_imat(N, M)
     if bc == 'periodic':
         smat, imat = tnf.PEPS_smat_imat_gen(N * M)
+    '''
+    smat = np.array([[1, 2, 3, 4, 0, 0, 0, 0],
+                     [1, 2, 0, 0, 3, 4, 0, 0],
+                     [0, 0, 1, 2, 0, 0, 3, 4],
+                     [0, 0, 0, 0, 1, 2, 3, 4]])
+    '''
     n, m = smat.shape
 
 
@@ -175,7 +182,13 @@ def Heisenberg_PEPS_gPEPS(N, M, Jk, dE, D_max, bc, t_list, iterations):
     if bc == 'open':
         smat, imat = tnf.PEPS_OBC_smat_imat(N, M)
     if bc == 'periodic':
-        smat, imat = tnf.PEPS_smat_imat_gen(N)
+        smat, imat = tnf.PEPS_smat_imat_gen(N * M)
+    '''
+    smat = np.array([[1, 2, 3, 4, 0, 0, 0, 0],
+                     [1, 2, 0, 0, 3, 4, 0, 0],
+                     [0, 0, 1, 2, 0, 0, 3, 4],
+                     [0, 0, 0, 0, 1, 2, 3, 4]])
+    '''
     n, m = smat.shape
 
 
