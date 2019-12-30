@@ -59,7 +59,7 @@ elif bc == 'periodic':
     smat, imat = tnf.PEPS_smat_imat_gen(N * M)
 
 
-Dp = [1, 2, 4, 8, 16, 32, 100]
+Dp = [64]
 #Dp = [1]
 p = 2
 h = 0
@@ -116,7 +116,7 @@ E_gPEPS_bmps = []
 #
 ############################################  CALCULATING EXPECTATIONS  ################################################
 #
-for ii in range(len(data_params[5][1])):
+for ii in range(5, len(data_params[5][1])):
     if flag_calculating_expectations:
         graph, TT_BP, LL_BP, BP_energy = data_bp[ii]
         TT_gPEPS, LL_gPEPS, gPEPS_energy = data_gpeps[ii]
@@ -171,7 +171,7 @@ for ii in range(len(data_params[5][1])):
             E_BP_bmps.append(np.real(np.einsum(rho_BP_bmps_sum, [0, 1, 2, 3], hij, [0, 2, 1, 3]) / (N * M)))
 
         TT_gPEPS_bmps = BP.absorb_all_sqrt_bond_vectors(TT_gPEPS_bmps, LL_gPEPS, smat)
-        TT_gPEPS_bmps = tnf.PEPS_OBC_broadcast_to_Itai(TT_gPEPS_bmps, [N, M], p, ii + 2)
+        TT_gPEPS_bmps = tnf.PEPS_OBC_broadcast_to_Itai(TT_gPEPS_bmps, [N, M], p, data_params[5][1][ii])
         gPEPS_peps = bmps.peps(N, M)
         for t, T in enumerate(TT_gPEPS_bmps):
             i, j = np.unravel_index(t, [N, M])
@@ -241,8 +241,8 @@ plt.show()
 
 if flag_save_xlsx:
     save_list = [E_BP, E_BP_factor_belief, E_gPEPS, E_BP_bmps, E_gPEPS_bmps]
-    df = pd.DataFrame(save_list, columns=range(len(Dp) * len(data_params[5][1])), index=['E BP', 'E BP factor belief', 'E gPEPS', 'E BP bmps', 'E gPEPS bmps'])
-    filepath = 'energies16AFH.xlsx'
+    df = pd.DataFrame(save_list, columns=range(len(Dp) * (len(data_params[5][1]) - 5)), index=['E BP', 'E BP factor belief', 'E gPEPS', 'E BP bmps', 'E gPEPS bmps'])
+    filepath = 'energies16AFH_D7_64.xlsx'
     df.to_excel(filepath, index=True)
 
 
