@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="39f4aadf-3039-4826-aca9-4bd799d9af66" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/Heisenberg_model_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Heisenberg_model_main.py" afterDir="false" />
-    </list>
+    <list default="true" id="39f4aadf-3039-4826-aca9-4bd799d9af66" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -160,8 +158,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Heisenberg_model_main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="68">
-              <caret line="243" column="104" lean-forward="true" selection-start-line="243" selection-start-column="104" selection-end-line="243" selection-end-column="104" />
+            <state relative-caret-position="-541">
+              <caret line="198" column="20" lean-forward="true" selection-start-line="198" selection-start-column="20" selection-end-line="198" selection-end-column="20" />
               <folding>
                 <element signature="e#2#20#0" expanded="true" />
               </folding>
@@ -514,12 +512,12 @@
       <workItem from="1575112007438" duration="8550000" />
       <workItem from="1575927182113" duration="1906000" />
       <workItem from="1577550147661" duration="2347000" />
-      <workItem from="1577644987529" duration="5345000" />
+      <workItem from="1577644987529" duration="6112000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="850523000" />
+    <option name="totallyTimeSpent" value="851290000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1354,8 +1352,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Heisenberg_model_main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="243" column="104" lean-forward="true" selection-start-line="243" selection-start-column="104" selection-end-line="243" selection-end-column="104" />
+        <state relative-caret-position="-541">
+          <caret line="198" column="20" lean-forward="true" selection-start-line="198" selection-start-column="20" selection-end-line="198" selection-end-column="20" />
           <folding>
             <element signature="e#2#20#0" expanded="true" />
           </folding>
