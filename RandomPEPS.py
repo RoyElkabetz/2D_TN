@@ -118,7 +118,7 @@ def RandomPEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, t_list, iter
                 TT = TT2
                 LL = LL2
     '''
-    return [graph, TT, LL]
+    return graph
 
 
 
@@ -158,7 +158,6 @@ def RandomPEPS_SU(N, M, Jk, dE, D_max, bc, t_list, iterations):
     d = D_max  # virtual bond dimension
     p = 2  # physical bond dimension
     h = 0  # Hamiltonian: magnetic field coeffs
-    gPEPS_energy = []
 
 
     Op = np.eye(p) / np.sqrt(3)
@@ -191,15 +190,14 @@ def RandomPEPS_SU(N, M, Jk, dE, D_max, bc, t_list, iterations):
             print('N, D max, dt, j = ', N * M, D_max, dt, j)
             TT1, LL1 = BP.PEPS_BP_update(TT, LL, dt, Jk, h, Opi, Opj, Op_field, smat, D_max, 'gPEPS')
             TT2, LL2 = BP.PEPS_BP_update(TT1, LL1, dt, Jk, h, Opi, Opj, Op_field, smat, D_max, 'gPEPS')
-            energy1 = BP.energy_per_site(TT1, LL1, smat, Jk, h, Opi, Opj, Op_field)
-            energy2 = BP.energy_per_site(TT2, LL2, smat, Jk, h, Opi, Opj, Op_field)
+            error = 0
+            for i in range(len(LL1)):
+                error += np.sum(np.abs(LL1[i] - LL2[i]))
 
-            gPEPS_energy.append(energy1)
-            gPEPS_energy.append(energy2)
 
-            print(energy1, energy2)
+            print('error = ', error)
 
-            if np.abs(energy1 - energy2) < dE * dt:
+            if error < dE * dt:
                 TT = TT2
                 LL = LL2
                 break

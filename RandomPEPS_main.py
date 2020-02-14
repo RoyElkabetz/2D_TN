@@ -27,7 +27,6 @@ flag_run_new_experiment = 1
 flag_save_variables = 1
 flag_load_data = 1
 flag_calculating_expectations = 1
-flag_plot = 0
 flag_save_xlsx = 0
 
 
@@ -50,7 +49,7 @@ sigma = 0
 Jk = np.random.normal(mu, sigma, np.int((N - 1) * M + (M - 1) * N))
 #Jk = np.random.normal(mu, sigma, np.int(2 * (N * M)))
 dt = [0.5, 0.1, 0.05, 0.01, 0.005]
-iterations = 100
+iterations = 10
 
 
 if bc == 'open':
@@ -108,11 +107,13 @@ if flag_load_data:
 
 
 rho_SU = []
-rho_BP = []
-rho_BP_factor_belief = []
-rho_BP_bmps = []
+rho_SU_0 = []
 rho_SU_bmps = []
-traceDistance = []
+rho_SU_0_bmps = []
+
+rho_SU_2site = []
+rho_SU_0_2site = []
+rho_BP_2site = []
 
 #
 ############################################  CALCULATING EXPECTATIONS  ################################################
@@ -120,30 +121,25 @@ traceDistance = []
 if flag_calculating_expectations:
     for ii in range(len(data_params[5][1])):
 
-        graph, TT_BP, LL_BP = data_bp[ii]
-        TT_SU, LL_SU = data_su[ii][2], data_su[ii][3]
-        TT_BP_bmps = cp.deepcopy(TT_BP)
+        graph = data_bp[ii]
+        TT_SU_0, LL_SU_0, TT_SU, LL_SU = data_su[ii]
         TT_SU_bmps = cp.deepcopy(TT_SU)
+        TT_SU_0_bmps = cp.deepcopy(TT_SU_0)
 
     #
     ######### CALCULATING REDUCED DENSITY MATRICES  ########
     #
 
-        for i in range(len(TT_BP)):
+        for i in range(len(TT_SU)):
             rho_SU.append(BP.tensor_reduced_dm(i, TT_SU, LL_SU, smat))
-            rho_BP.append(BP.tensor_reduced_dm(i, TT_BP, LL_BP, smat))
-        rho_BP_factor_belief.append(graph.rdm_using_factors())
+            rho_SU_0.append(BP.tensor_reduced_dm(i, TT_SU_0, LL_SU_0, smat))
+        rho_BP = graph.rdm_using_factors()
 
+        for Ek in range(len(LL_SU)):
+            rho_SU_2site.append(BP.two_site_reduced_density_matrix(Ek, TT_SU, LL_SU, smat))
+            rho_SU_0_2site.append(BP.two_site_reduced_density_matrix(Ek, TT_SU_0, LL_SU_0, smat))
+            rho_BP_2site.append(BP.BP_two_site_rdm_using_factor_beliefs(Ek, graph, smat))
 
-        TT_BP_bmps = BP.absorb_all_sqrt_bond_vectors(TT_BP_bmps, LL_BP, smat)
-        TT_BP_bmps = tnf.PEPS_OBC_broadcast_to_Itai(TT_BP_bmps, [N, M], p, data_params[5][1][ii])
-        BP_peps = bmps.peps(N, M)
-        for t, T in enumerate(TT_BP_bmps):
-            i, j = np.unravel_index(t, [N, M])
-            BP_peps.set_site(T, i, j)
-        for dp in Dp:
-            print('D, Dp = ',data_params[5][1][ii], dp)
-            rho_BP_bmps.append(bmps.calculate_PEPS_2RDM(BP_peps, dp))
 
 
         TT_SU_bmps = BP.absorb_all_sqrt_bond_vectors(TT_SU_bmps, LL_SU, smat)
@@ -156,39 +152,65 @@ if flag_calculating_expectations:
             print(dp)
             rho_SU_bmps.append(bmps.calculate_PEPS_2RDM(SU_peps, dp))
 
+        TT_SU_0_bmps = BP.absorb_all_sqrt_bond_vectors(TT_SU_0_bmps, LL_SU_0, smat)
+        TT_SU_0_bmps = tnf.PEPS_OBC_broadcast_to_Itai(TT_SU_0_bmps, [N, M], p, data_params[5][1][ii])
+        SU_0_peps = bmps.peps(N, M)
+        for t, T in enumerate(TT_SU_0_bmps):
+            i, j = np.unravel_index(t, [N, M])
+            SU_0_peps.set_site(T, i, j)
+        for dp in Dp:
+            print(dp)
+            rho_SU_0_bmps.append(bmps.calculate_PEPS_2RDM(SU_0_peps, dp))
 
     #
     ###################################################  PLOTTING DATA  ####################################################
     #
+# ttd stand for "total trace distance"
+ttd_su_su0 = 0
+ttd_su_bp = 0
+ttd_bp_su0 = 0
 
+ttd_su_bp_2site = 0
+ttd_su_su0_2site = 0
+ttd_bp_su0_2site = 0
+ttd_su_bmps_bp = []
+ttd_su_0_bmps_bp = []
 
+for i in range(len(rho_SU)):
+    ttd_su_su0 += BP.trace_distance(rho_SU[i], rho_SU_0[i])
+    ttd_su_bp += BP.trace_distance(rho_SU[i], rho_BP[i])
+    ttd_bp_su0 += BP.trace_distance(rho_BP[i], rho_SU_0[i])
 
+for i in range(len(rho_BP_2site)):
+    ttd_su_bp_2site += BP.trace_distance(rho_SU_2site[i], rho_BP_2site[i])
+    ttd_su_su0_2site += BP.trace_distance(rho_SU_2site[i], rho_SU_0_2site[i])
+    ttd_bp_su0_2site += BP.trace_distance(rho_SU_0_2site[i], rho_BP_2site[i])
 
-'''
+for i in range(len(Dp)):
+    tot_su_bp = 0
+    tot_su_0_bp = 0
+    for ii in range(len(rho_SU_bmps)):
+        tot_su_bp += BP.trace_distance(rho_SU_bmps[i][ii].reshape(4, 4), rho_SU_2site[ii])
+        tot_su_0_bp += BP.trace_distance(rho_SU_0_bmps[i][ii].reshape(4, 4), rho_SU_2site[ii])
+    ttd_su_bmps_bp.append(tot_su_bp)
+    ttd_su_0_bmps_bp.append(tot_su_0_bp)
+
+print('------------ Total Trace Distance (single site) ------------')
+print('SU - SU0 : ', ttd_su_su0)
+print('SU - BP : ', ttd_su_bp)
+print('BP - SU0 : ', ttd_bp_su0)
+print('------------------------------------------------------------')
+
+print('------------ Total Trace Distance (double site) ------------')
+print('SU - SU0 : ', ttd_su_su0_2site)
+print('SU - BP : ', ttd_su_bp_2site)
+print('BP - SU0 : ', ttd_bp_su0_2site)
+print('------------------------------------------------------------')
+
 plt.figure()
-plt.subplot()
-color = 'tab:red'
-plt.xlabel('D')
-#plt.ylabel('Energy per site', color=color)
-#plt.plot(D_max, E_exact_gPEPS, '.', color=color)
-#plt.plot(D_max, E_exact_BP, '+', color=color)
-#plt.plot(D_max, E_article, '.-', color=color)
-plt.ylabel('Energy per site')
-plt.plot(D_max, E_exact_gPEPS, 'o')
-plt.plot(D_max, E_exact_BP, 'o')
-
-plt.grid()
-plt.tick_params(axis='y', labelcolor=color)
-plt.legend(['exact gPEPS', 'exact BP'])
-plt.twinx()  # instantiate a second axes that shares the same x-axis
-color = 'tab:blue'
-plt.ylabel('dE BP gPEPS', color=color)  # we already handled the x-label with ax1
-plt.plot(D_max, E_dif, '+', color=color)
-plt.tick_params(axis='y', labelcolor=color)
-plt.tight_layout()  # otherwise the right y-label is slightly clipped
-plt.grid()
+plt.plot(Dp, ttd_su_bmps_bp, 'o')
+plt.plot(Dp, ttd_su_0_bmps_bp, 'o')
 plt.show()
-'''
 
 
 #

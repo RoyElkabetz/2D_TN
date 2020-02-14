@@ -80,7 +80,9 @@ def PEPS_OBC_random_tn_gen(smat, p, d):
         TT.append(np.random.random(shape) + 1j * np.random.random(shape))
     LL = []
     for i in range(m):
-        LL.append(np.ones(d, dtype=float) / d)
+        #LL.append(np.ones(d, dtype=float) / d)
+        L = np.random.rand(d)
+        LL.append(L / np.sum(L))
     return TT, LL
 
 

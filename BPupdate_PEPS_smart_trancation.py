@@ -404,6 +404,55 @@ def two_site_expectation(Ek, TT, LL, smat, Oij):
     return two_site_expec
 
 
+def two_site_reduced_density_matrix(Ek, TT, LL, smat):
+    TT = cp.deepcopy(TT)
+    LL = cp.deepcopy(LL)
+
+    # calculating the two site reduced density matrix given a mutual edge Ek of those two sites (tensors)
+    lamda_k = cp.copy(LL[Ek])
+
+    ## (a) Find tensors Ti, Tj and their corresponding legs connected along edge Ek.
+    Ti, Tj = get_edge_tensors(Ek, TT, smat)
+    Ti_conj, Tj_conj = get_edge_conj_tensors(Ek, TT, smat)
+
+    # collecting all neighboring (edges, dimensions) without the Ek (edge, dimension)
+    i_dim, j_dim = get_tensors_edges(Ek, smat)
+
+    ## (b) Absorb bond vectors (lambdas) to all Em != Ek of Ti, Tj tensors
+    Ti = absorb_edges(Ti, i_dim, LL)
+    Tj = absorb_edges(Tj, j_dim, LL)
+    Ti_conj = absorb_edges(Ti_conj, i_dim, LL)
+    Tj_conj = absorb_edges(Tj_conj, j_dim, LL)
+
+    ## preparing list of tensors and indices for ncon function
+
+    t = 2000
+    lamda_k_idx = [t, t + 1]
+    lamda_k_conj_idx = [t + 2, t + 3]
+
+    Ti_idx = range(len(Ti[0].shape))
+    Ti_conj_idx = range(len(Ti_conj[0].shape))
+    Ti_idx[0] = -1  # i
+    Ti_conj_idx[0] = -3  # i'
+    Ti_idx[Ti[2][0]] = lamda_k_idx[0]
+    Ti_conj_idx[Ti_conj[2][0]] = lamda_k_conj_idx[0]
+
+    Tj_idx = range(len(Ti[0].shape) + 1, len(Ti[0].shape) + 1 + len(Tj[0].shape))
+    Tj_conj_idx = range(len(Ti_conj[0].shape) + 1, len(Ti_conj[0].shape) + 1 + len(Tj_conj[0].shape))
+    Tj_idx[0] = -2  # j
+    Tj_conj_idx[0] = -4  # j'
+    Tj_idx[Tj[2][0]] = lamda_k_idx[1]
+    Tj_conj_idx[Tj_conj[2][0]] = lamda_k_conj_idx[1]
+
+    # two site expectation calculation
+    tensors = [Ti[0], Ti_conj[0], Tj[0], Tj_conj[0], np.diag(lamda_k), np.diag(lamda_k)]
+    indices = [Ti_idx, Ti_conj_idx, Tj_idx, Tj_conj_idx, lamda_k_idx, lamda_k_conj_idx]
+    rdm = ncon.ncon(tensors, indices)
+    rdm = rdm.reshape(rdm.shape[0] * rdm.shape[1], rdm.shape[2] * rdm.shape[3])
+    rdm /= np.trace(rdm)
+    return rdm
+
+
 def two_site_expectation_with_environment(Ek, env_size, network_shape, TT1, LL1, smat, Oij):
     TT = cp.deepcopy(TT1)
     TTconj = conjTN(cp.deepcopy(TT1))
@@ -550,6 +599,31 @@ def BP_energy_per_site_using_factor_belief(graph, smat, Jk, h, Opi, Opj, Op_fiel
         energy += E_normalized
     energy /= n
     return energy
+
+
+def BP_two_site_rdm_using_factor_beliefs(Ek, graph, smat):
+
+    tensors = np.nonzero(smat[:, Ek])[0]
+    fi_belief, fj_belief = graph.two_factors_belief('f' + str(tensors[0]), 'f' + str(tensors[1]))
+    fi_idx = range(len(fi_belief.shape))
+    fj_idx = range(len(fi_belief.shape), len(fi_belief.shape) + len(fj_belief.shape))
+    fi_idx[0] = -1
+    fi_idx[1] = -3
+    fj_idx[0] = -2
+    fj_idx[1] = -4
+    iedges, jedges = get_tensors_edges(Ek, smat)
+
+    for leg_idx, leg in enumerate(iedges[1]):
+        fi_idx[2 * leg + 1] = fi_idx[2 * leg]
+    for leg_idx, leg in enumerate(jedges[1]):
+        fj_idx[2 * leg + 1] = fj_idx[2 * leg]
+    Ek_legs = smat[np.nonzero(smat[:, Ek])[0], Ek]
+    fi_idx[2 * Ek_legs[0]] = fj_idx[2 * Ek_legs[1]]
+    fi_idx[2 * Ek_legs[0] + 1] = fj_idx[2 * Ek_legs[1] + 1]
+    rdm = ncon.ncon([fi_belief, fj_belief], [fi_idx, fj_idx])
+    rdm = rdm.reshape(rdm.shape[0] * rdm.shape[1], rdm.shape[2] * rdm.shape[3])
+    rdm /= np.trace(rdm)
+    return rdm
 
 
 def BP_energy_per_site_using_factor_belief_with_environment(graph, env_size, network_shape, smat, Jk, h, Opi, Opj, Op_field):
