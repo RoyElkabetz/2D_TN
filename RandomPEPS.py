@@ -89,7 +89,9 @@ def RandomPEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, t_list, iter
 
     graph = defg.Graph()
     graph = BP.PEPStoDEnFG_transform(graph, TT, LL, smat)
+    s = time.time()
     graph.sum_product(t_max, epsilon, dumping)
+    tot = time.time() - s
     graph.calc_factor_belief()
 
 
@@ -118,7 +120,7 @@ def RandomPEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, t_list, iter
                 TT = TT2
                 LL = LL2
     '''
-    return graph
+    return graph, tot
 
 
 
@@ -184,7 +186,7 @@ def RandomPEPS_SU(N, M, Jk, dE, D_max, bc, t_list, iterations):
     TT0, LL0 = cp.deepcopy(TT), cp.deepcopy(LL)
 
     # iterating the gPEPS algorithm
-
+    s = time.time()
     for dt in t_list:
         for j in range(iterations):
             print('N, D max, dt, j = ', N * M, D_max, dt, j)
@@ -204,8 +206,10 @@ def RandomPEPS_SU(N, M, Jk, dE, D_max, bc, t_list, iterations):
             else:
                 TT = TT2
                 LL = LL2
-
-    return [TT0, LL0, TT, LL]
+        if error < dE * dt:
+            break
+    tot = time.time() - s
+    return [TT0, LL0, TT, LL], tot
 
 
 

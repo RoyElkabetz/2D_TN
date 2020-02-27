@@ -8,6 +8,7 @@ import Tensor_Network_functions as tnf
 import virtual_DEFG as defg
 import BPupdate_PEPS_smart_trancation as BP
 
+
 '''
 Ek = 15
 n, m = 4, 4
@@ -202,7 +203,7 @@ for i in range(1, len(nums)):
         dups -= 1
 print(nums[:lenght])
 '''
-
+'''
 ###################### Sorting Algorithms #######################
 
 def minArgMin(s):
@@ -301,3 +302,54 @@ def mergeSort(arr):
 
 a = [9, 4, 5, 3, 8, 0, 4, 5, 12, 2, 18, 1]
 mergeSort(a)
+'''
+import RandomPEPS_main as rpm
+
+n = 100
+
+BP_times = np.zeros((1, n), dtype=float)
+SU_times = np.zeros((1, n), dtype=float)
+ttd_su_su0_bmps_stat = np.zeros((1, n), dtype=float)
+ttd_su_su0_stat = np.zeros((1, n), dtype=float)
+ttd_bp_su0_bmps_stat = np.zeros((1, n), dtype=float)
+ttd_bp_su0_stat = np.zeros((1, n), dtype=float)
+ttd_su_bp_stat = np.zeros((1, n), dtype=float)
+ttd_su_su_bmps_stat = np.zeros((1, n), dtype=float)
+ttd_bp_su_bmps_stat = np.zeros((1, n), dtype=float)
+ttd_su0_su0_bmps_stat = np.zeros((1, n), dtype=float)
+for i in range(n):
+    print('\n')
+    print('i:', i)
+    time_bp, time_su, ttd_su_su0, ttd_su_bp, ttd_bp_su0, ttd_su_su_bmps, ttd_su_su0_bmps, ttd_su0_su0_bmps, ttd_bp_su_bmps, ttd_bp_su0_bmps = rpm.randomPEPSmainFunction()
+    BP_times[0][i] = time_bp
+    SU_times[0][i] = time_su
+    ttd_su_su0_bmps_stat[0][i] = ttd_su_su0_bmps[0]
+    ttd_su_su0_stat[0][i] = ttd_su_su0[0]
+    ttd_bp_su0_bmps_stat[0][i] = ttd_bp_su0_bmps[0]
+    ttd_bp_su0_stat[0][i] = ttd_bp_su0[0]
+    ttd_su_bp_stat[0][i] = ttd_su_bp[0]
+    ttd_su_su_bmps_stat[0][i] = ttd_su_su_bmps[0]
+    ttd_bp_su_bmps_stat[0][i] = ttd_bp_su_bmps[0]
+    ttd_su0_su0_bmps_stat[0][i] = ttd_su0_su0_bmps[0]
+BP_av_time = np.sum(BP_times) / n
+SU_av_time = np.sum(SU_times) / n
+ttd_su_su0_bmps_stat_av = np.sum(ttd_su_su0_bmps_stat) / n
+ttd_su_su0_stat_av = np.sum(ttd_su_su0_stat) / n
+ttd_bp_su0_bmps_stat_av = np.sum(ttd_bp_su0_bmps_stat) / n
+ttd_bp_su0_stat_av = np.sum(ttd_bp_su0_stat) / n
+ttd_su_bp_stat_av = np.sum(ttd_su_bp_stat) / n
+ttd_su_su_bmps_stat_av = np.sum(ttd_su_su_bmps_stat) / n
+ttd_bp_su_bmps_stat_av = np.sum(ttd_bp_su_bmps_stat) / n
+ttd_su0_su0_bmps_stat = np.sum(ttd_su0_su0_bmps_stat) / n
+
+print('------------ Total Trace Distance (single site) statistics ------------')
+print('SU - SU0 : ', ttd_su_su0_stat_av)
+print('SU - BP : ', ttd_su_bp_stat_av)
+print('BP - SU0 : ', ttd_bp_su0_stat_av)
+print('SU - SU_bmps : ', ttd_su_su_bmps_stat_av)
+print('SU - SU0_bmps : ', ttd_su_su0_bmps_stat_av)
+print('SU0 - SU0_bmps : ', ttd_su0_su0_bmps_stat)
+print('BP - SU_bmps : ', ttd_bp_su_bmps_stat_av)
+print('BP - SU0_bmps : ', ttd_bp_su0_bmps_stat_av)
+print('------------------------------------------------------------')
+print('\n')

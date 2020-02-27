@@ -3,8 +3,8 @@
 S'N, M'
 p2
 a(lp3
-I4
-aI4
+I10
+aI10
 aaa(lp4
 S'dE'
 p5
@@ -25,5 +25,5 @@ aa(lp12
 S'D_max'
 p13
 a(lp14
-I2
+I3
 aaa.
