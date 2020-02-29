@@ -7,6 +7,7 @@ import copy as cp
 import Tensor_Network_functions as tnf
 import virtual_DEFG as defg
 import BPupdate_PEPS_smart_trancation as BP
+import pickle
 
 
 '''
@@ -303,6 +304,9 @@ def mergeSort(arr):
 a = [9, 4, 5, 3, 8, 0, 4, 5, 12, 2, 18, 1]
 mergeSort(a)
 '''
+
+'''
+################################### random PEPS experiments ###################################
 import RandomPEPS_main as rpm
 
 n = 100
@@ -353,3 +357,26 @@ print('BP - SU_bmps : ', ttd_bp_su_bmps_stat_av)
 print('BP - SU0_bmps : ', ttd_bp_su0_bmps_stat_av)
 print('------------------------------------------------------------')
 print('\n')
+
+data = [BP_av_time, SU_av_time, ttd_bp_su0_bmps_stat_av, ttd_su_su0_stat_av, ttd_bp_su0_bmps_stat_av, ttd_bp_su0_stat_av, ttd_su_bp_stat_av, ttd_su_su_bmps_stat_av, ttd_bp_su_bmps_stat_av, ttd_su0_su0_bmps_stat]
+file_name = "2019_02_27_1_100_OBC_Random_PEPS"
+pickle.dump(data, open(file_name + '_D_3_all_data.p', "wb"))
+'''
+
+import RandomPEPS_main as rpm
+
+n = 100
+ttd = np.zeros((1, n), dtype=float)
+
+for i in range(n):
+    print('\n')
+    print('i:', i)
+    rho_SU_0_bmps_single = rpm.randomPEPSmainFunction()
+    for j in range(100):
+        ttd[0][i] += BP.trace_distance(rho_SU_0_bmps_single[0][j], rho_SU_0_bmps_single[1][j]) / 100
+av_ttd = np.sum(ttd) / n
+print('\n')
+print('av_ttd_SU0_8_SU0_16', av_ttd)
+file_name = "2019_02_27_2_100_OBC_Random_PEPS"
+a = [ttd, av_ttd]
+pickle.dump(a, open(file_name + '_D_3_SU0_8vs16.p', "wb"))

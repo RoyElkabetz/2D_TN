@@ -59,7 +59,7 @@ def randomPEPSmainFunction():
         smat, imat = tnf.PEPS_smat_imat_gen(N * M)
 
 
-    Dp = [8]
+    Dp = [8, 16]
     p = 2
     h = 0
     environment_size = [0, 1, 2]
@@ -161,7 +161,7 @@ def randomPEPSmainFunction():
             #    rho_BP_2site.append(BP.BP_two_site_rdm_using_factor_beliefs(Ek, graph, smat))
 
 
-
+            '''
             TT_SU_bmps = BP.absorb_all_sqrt_bond_vectors(TT_SU_bmps, LL_SU, smat)
             TT_SU_bmps = tnf.PEPS_OBC_broadcast_to_Itai(TT_SU_bmps, [N, M], p, data_params[5][1][ii])
             SU_peps = bmps.peps(N, M)
@@ -173,11 +173,11 @@ def randomPEPSmainFunction():
                 rho_SU_bmps.append(bmps.calculate_PEPS_2RDM(SU_peps, dp))
                 rho_SU_bmps_single.append([])
                 # 4x4 [0, 1, 2, 21, 3, 4, 5, 22, 6, 7, 8, 23, 9, 10, 11]
-
+    
                 for jj in indices:
                     rho_SU_bmps_single[dp_idx].append(np.einsum(rho_SU_bmps[dp_idx][jj], [0, 1, 2, 2], [0, 1]))
                 rho_SU_bmps_single[dp_idx].append(np.einsum(rho_SU_bmps[dp_idx][jj], [1, 1, 2, 3], [2, 3]))
-
+            '''
             TT_SU_0_bmps = BP.absorb_all_sqrt_bond_vectors(TT_SU_0_bmps, LL_SU_0, smat)
             TT_SU_0_bmps = tnf.PEPS_OBC_broadcast_to_Itai(TT_SU_0_bmps, [N, M], p, data_params[5][1][ii])
             SU_0_peps = bmps.peps(N, M)
@@ -191,7 +191,7 @@ def randomPEPSmainFunction():
                 for jj in indices:
                     rho_SU_0_bmps_single[dp_idx].append(np.einsum(rho_SU_0_bmps[dp_idx][jj], [0, 1, 2, 2], [0, 1]))
                 rho_SU_0_bmps_single[dp_idx].append(np.einsum(rho_SU_0_bmps[dp_idx][jj], [1, 1, 2, 3], [2, 3]))
-
+    '''
         #
         ###################################################  PLOTTING DATA  ####################################################
         #
@@ -204,7 +204,7 @@ def randomPEPSmainFunction():
     ttd_su0_su0_bmps = [0] * len(Dp)
     ttd_bp_su_bmps = [0] * len(Dp)
     ttd_bp_su0_bmps = [0] * len(Dp)
-
+    
     #ttd_su_bp_2site = 0
     #ttd_su_su0_2site = 0
     #ttd_bp_su0_2site = 0
@@ -220,12 +220,12 @@ def randomPEPSmainFunction():
             ttd_su0_su0_bmps[dp_idx] += BP.trace_distance(rho_SU_0[i], rho_SU_0_bmps_single[dp_idx][i])
             ttd_bp_su_bmps[dp_idx] += BP.trace_distance(rho_BP[i], rho_SU_bmps_single[dp_idx][i])
             ttd_bp_su0_bmps[dp_idx] += BP.trace_distance(rho_BP[i], rho_SU_0_bmps_single[dp_idx][i])
-
+    
         #for i in range(len(rho_BP_2site)):
         #    ttd_su_bp_2site += BP.trace_distance(rho_SU_2site[i], rho_BP_2site[i])
         #    ttd_su_su0_2site += BP.trace_distance(rho_SU_2site[i], rho_SU_0_2site[i])
         #    ttd_bp_su0_2site += BP.trace_distance(rho_SU_0_2site[i], rho_BP_2site[i])
-
+    
         #for i in range(len(Dp)):
         #    tot_su_bp = 0
         #    tot_su_0_bp = 0
@@ -234,7 +234,8 @@ def randomPEPSmainFunction():
             #    tot_su_0_bp += BP.trace_distance(rho_SU_0_bmps[i][ii].reshape(4, 4), rho_SU_2site[ii])
             #ttd_su_bmps_bp.append(tot_su_bp)
             #ttd_su_0_bmps_bp.append(tot_su_0_bp)
-        '''
+        
+        
         print('Dp:', dp)
         print('------------ Total Trace Distance (single site) ------------')
         print('SU - SU0 : ', ttd_su_su0[dp_idx])
@@ -247,9 +248,10 @@ def randomPEPSmainFunction():
         print('BP - SU0_bmps : ', ttd_bp_su0_bmps[dp_idx])
         print('------------------------------------------------------------')
         print('\n')
-        '''
-    '''
+        
+    
     plt.figure()
+    plt.title('Total single-site trace distance for a 10x10 PEPS with D = 3')
     plt.plot(Dp, np.log(np.array(ttd_su_su0)))
     plt.plot(Dp, np.log(np.array(ttd_su_bp)))
     plt.plot(Dp, np.log(np.array(ttd_bp_su0)))
@@ -258,8 +260,10 @@ def randomPEPSmainFunction():
     plt.plot(Dp, np.log(np.array(ttd_su0_su0_bmps)), '>')
     plt.plot(Dp, np.log(np.array(ttd_bp_su_bmps)), 'o')
     plt.plot(Dp, np.log(np.array(ttd_bp_su0_bmps)), '<')
-    plt.legend(['SU - SU0', 'SU - BP', 'BP - SU0', 'SU - SU_bmps', 'SU - SU0_bmps', 'SU0 - SU0_bmps', 'BP - SU_bmps', 'BP - SU0_bmps'])
+    plt.legend(['SU - 0', 'SU - BP', 'BP - 0', 'SU - SU_bmps', 'SU - 0_bmps', '0 - 0_bmps', 'BP - SU_bmps', 'BP - 0_bmps'])
     plt.grid('on')
+    plt.ylabel('Log10(sum_{i}(TraceDistance(Ai, Bi)))')
+    plt.xlabel('Dp')
     plt.show()
     '''
 
@@ -274,7 +278,9 @@ def randomPEPSmainFunction():
         filepath = 'energies16AFH_D7_64.xlsx'
         df.to_excel(filepath, index=True)
         '''
-    return time_bp, time_su, ttd_su_su0, ttd_su_bp, ttd_bp_su0, ttd_su_su_bmps, ttd_su_su0_bmps, ttd_su0_su0_bmps, ttd_bp_su_bmps, ttd_bp_su0_bmps
+
+    #return time_bp, time_su, ttd_su_su0, ttd_su_bp, ttd_bp_su0, ttd_su_su_bmps, ttd_su_su0_bmps, ttd_su0_su0_bmps, ttd_bp_su_bmps, ttd_bp_su0_bmps
+    return rho_SU_0_bmps_single
 
 
 
