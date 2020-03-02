@@ -46,12 +46,11 @@ import bmpslib as bmps
 def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, t_list, iterations, TN=None):
 
     # Tensor Network parameters
-
     d = D_max  # virtual bond dimension
     p = 2  # physical bond dimension
     h = 0  # Hamiltonian: magnetic field coeffs
     BP_energy = []
-
+    print('running Heisenberg_PEPS_BP: D = ', D_max)
     # pauli matrices
     pauli_z = np.array([[1, 0], [0, -1]])
     pauli_y = np.array([[0, -1j], [1j, 0]])
@@ -102,7 +101,7 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, t_list,
 
     for dt in t_list:
         for j in range(iterations):
-            print('BP_N, D max, dt, j = ', N, D_max, dt, j)
+            #print('BP_N, D max, dt, j = ', N, D_max, dt, j)
             TT1, LL1 = BP.PEPS_BP_update(TT, LL, dt, Jk, h, Opi, Opj, Op_field, smat, D_max, 'BP', graph)
             graph.sum_product(t_max, epsilon, dumping, 'init_with_old_messages')
             energy1 = BP.BP_energy_per_site_using_factor_belief(graph, smat, Jk, h, Opi, Opj, Op_field)
@@ -113,7 +112,7 @@ def Heisenberg_PEPS_BP(N, M, Jk, dE, D_max, t_max, epsilon, dumping, bc, t_list,
             BP_energy.append(np.real(energy1))
             BP_energy.append(np.real(energy2))
 
-            print(energy1, energy2)
+            #print(energy1, energy2)
 
             if np.abs(energy1 - energy2) < dE * dt:
                 TT = TT2
@@ -164,7 +163,7 @@ def Heisenberg_PEPS_gPEPS(N, M, Jk, dE, D_max, bc, t_list, iterations):
     p = 2  # physical bond dimension
     h = 0  # Hamiltonian: magnetic field coeffs
     gPEPS_energy = []
-
+    print('running Heisenberg_PEPS_SU: D = ', D_max)
 
     pauli_z = np.array([[1, 0], [0, -1]])
     pauli_y = np.array([[0, -1j], [1j, 0]])
@@ -204,7 +203,7 @@ def Heisenberg_PEPS_gPEPS(N, M, Jk, dE, D_max, bc, t_list, iterations):
 
     for dt in t_list:
         for j in range(iterations):
-            print('N, D max, dt, j = ', N * M, D_max, dt, j)
+            #print('N, D max, dt, j = ', N * M, D_max, dt, j)
             TT1, LL1 = BP.PEPS_BP_update(TT, LL, dt, Jk, h, Opi, Opj, Op_field, smat, D_max, 'gPEPS')
             TT2, LL2 = BP.PEPS_BP_update(TT1, LL1, dt, Jk, h, Opi, Opj, Op_field, smat, D_max, 'gPEPS')
             energy1 = BP.energy_per_site(TT1, LL1, smat, Jk, h, Opi, Opj, Op_field)
@@ -213,7 +212,7 @@ def Heisenberg_PEPS_gPEPS(N, M, Jk, dE, D_max, bc, t_list, iterations):
             gPEPS_energy.append(energy1)
             gPEPS_energy.append(energy2)
 
-            print(energy1, energy2)
+            #print(energy1, energy2)
 
             if np.abs(energy1 - energy2) < dE * dt:
                 TT = TT2

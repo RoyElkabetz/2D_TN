@@ -138,7 +138,7 @@ class Graph:
             self.messages_f2n = factor2node
             if self.check_converge(old_messages_n2f, old_messages_f2n, epsilon):
                 break
-        print('t_final = ', t)
+        #print('t_final = ', t)
 
     def check_converge(self, n2f_old, f2n_old, epsilon):
         counter = 0
