@@ -59,7 +59,7 @@ def randomPEPSmainFunction():
         smat, imat = tnf.PEPS_smat_imat_gen(N * M)
 
 
-    Dp = [8, 16]
+    Dp = [16, 32]
     p = 2
     h = 0
     environment_size = [0, 1, 2]
@@ -152,7 +152,7 @@ def randomPEPSmainFunction():
 
             for i in range(len(TT_SU)):
                 rho_SU.append(BP.tensor_reduced_dm(i, TT_SU, LL_SU, smat))
-                rho_SU_0.append(BP.tensor_reduced_dm(i, TT_SU_0, LL_SU_0, smat))
+                #rho_SU_0.append(BP.tensor_reduced_dm(i, TT_SU_0, LL_SU_0, smat))
             rho_BP = graph.rdm_using_factors()
 
             #for Ek in range(len(LL_SU)):
@@ -280,7 +280,7 @@ def randomPEPSmainFunction():
         '''
 
     #return time_bp, time_su, ttd_su_su0, ttd_su_bp, ttd_bp_su0, ttd_su_su_bmps, ttd_su_su0_bmps, ttd_su0_su0_bmps, ttd_bp_su_bmps, ttd_bp_su0_bmps
-    return rho_SU_0_bmps_single
+    return rho_SU_0_bmps_single, rho_SU, rho_BP
 
 
 

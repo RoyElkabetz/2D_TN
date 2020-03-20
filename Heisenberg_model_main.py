@@ -36,7 +36,7 @@ flag_save_xlsx = 1
 #
 
 #np.random.seed(seed=8)
-file_name = "2020_03_02_1_100_OBC_AFH_PEPS"
+file_name = "2020_03_06_3_100_OBC_AFH_PEPS"
 N, M = 10, 10
 
 bc = 'open'
